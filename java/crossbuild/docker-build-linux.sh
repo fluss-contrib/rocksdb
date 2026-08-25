@@ -39,5 +39,4 @@ else
   PORTABLE=1 make -j$J rocksdbjavastatic
 fi
 
-cp java/target/librocksdbjni-linux*.so java/target/rocksdbjni-*-linux*.jar java/target/rocksdbjni-*-linux*.jar.sha1 /rocksdb-java-target
-
+cp java/target/libflussrocksdbjni-linux*.so java/target/rocksdbjni-*-linux*.jar java/target/rocksdbjni-*-linux*.jar.sha1 /rocksdb-java-target

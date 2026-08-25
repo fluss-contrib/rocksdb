@@ -10,15 +10,15 @@
 
 #include <jni.h>
 
-#include "include/org_rocksdb_ThreadStatus.h"
+#include "include/org_fluss_rocksdb_ThreadStatus.h"
 #include "portal.h"
 
 /*
- * Class:     org_rocksdb_ThreadStatus
+ * Class:     org_fluss_rocksdb_ThreadStatus
  * Method:    getThreadTypeName
  * Signature: (B)Ljava/lang/String;
  */
-jstring Java_org_rocksdb_ThreadStatus_getThreadTypeName(
+jstring Java_org_fluss_rocksdb_ThreadStatus_getThreadTypeName(
     JNIEnv* env, jclass, jbyte jthread_type_value) {
   auto name = ROCKSDB_NAMESPACE::ThreadStatus::GetThreadTypeName(
       ROCKSDB_NAMESPACE::ThreadTypeJni::toCppThreadType(jthread_type_value));
@@ -26,11 +26,11 @@ jstring Java_org_rocksdb_ThreadStatus_getThreadTypeName(
 }
 
 /*
- * Class:     org_rocksdb_ThreadStatus
+ * Class:     org_fluss_rocksdb_ThreadStatus
  * Method:    getOperationName
  * Signature: (B)Ljava/lang/String;
  */
-jstring Java_org_rocksdb_ThreadStatus_getOperationName(
+jstring Java_org_fluss_rocksdb_ThreadStatus_getOperationName(
     JNIEnv* env, jclass, jbyte joperation_type_value) {
   auto name = ROCKSDB_NAMESPACE::ThreadStatus::GetOperationName(
       ROCKSDB_NAMESPACE::OperationTypeJni::toCppOperationType(
@@ -39,11 +39,11 @@ jstring Java_org_rocksdb_ThreadStatus_getOperationName(
 }
 
 /*
- * Class:     org_rocksdb_ThreadStatus
+ * Class:     org_fluss_rocksdb_ThreadStatus
  * Method:    microsToStringNative
  * Signature: (J)Ljava/lang/String;
  */
-jstring Java_org_rocksdb_ThreadStatus_microsToStringNative(JNIEnv* env, jclass,
+jstring Java_org_fluss_rocksdb_ThreadStatus_microsToStringNative(JNIEnv* env, jclass,
                                                            jlong jmicros) {
   auto str = ROCKSDB_NAMESPACE::ThreadStatus::MicrosToString(
       static_cast<uint64_t>(jmicros));
@@ -51,11 +51,11 @@ jstring Java_org_rocksdb_ThreadStatus_microsToStringNative(JNIEnv* env, jclass,
 }
 
 /*
- * Class:     org_rocksdb_ThreadStatus
+ * Class:     org_fluss_rocksdb_ThreadStatus
  * Method:    getOperationStageName
  * Signature: (B)Ljava/lang/String;
  */
-jstring Java_org_rocksdb_ThreadStatus_getOperationStageName(
+jstring Java_org_fluss_rocksdb_ThreadStatus_getOperationStageName(
     JNIEnv* env, jclass, jbyte joperation_stage_value) {
   auto name = ROCKSDB_NAMESPACE::ThreadStatus::GetOperationStageName(
       ROCKSDB_NAMESPACE::OperationStageJni::toCppOperationStage(
@@ -64,11 +64,11 @@ jstring Java_org_rocksdb_ThreadStatus_getOperationStageName(
 }
 
 /*
- * Class:     org_rocksdb_ThreadStatus
+ * Class:     org_fluss_rocksdb_ThreadStatus
  * Method:    getOperationPropertyName
  * Signature: (BI)Ljava/lang/String;
  */
-jstring Java_org_rocksdb_ThreadStatus_getOperationPropertyName(
+jstring Java_org_fluss_rocksdb_ThreadStatus_getOperationPropertyName(
     JNIEnv* env, jclass, jbyte joperation_type_value, jint jindex) {
   auto name = ROCKSDB_NAMESPACE::ThreadStatus::GetOperationPropertyName(
       ROCKSDB_NAMESPACE::OperationTypeJni::toCppOperationType(
@@ -78,11 +78,11 @@ jstring Java_org_rocksdb_ThreadStatus_getOperationPropertyName(
 }
 
 /*
- * Class:     org_rocksdb_ThreadStatus
+ * Class:     org_fluss_rocksdb_ThreadStatus
  * Method:    interpretOperationProperties
  * Signature: (B[J)Ljava/util/Map;
  */
-jobject Java_org_rocksdb_ThreadStatus_interpretOperationProperties(
+jobject Java_org_fluss_rocksdb_ThreadStatus_interpretOperationProperties(
     JNIEnv* env, jclass, jbyte joperation_type_value,
     jlongArray joperation_properties) {
   // convert joperation_properties
@@ -113,11 +113,11 @@ jobject Java_org_rocksdb_ThreadStatus_interpretOperationProperties(
 }
 
 /*
- * Class:     org_rocksdb_ThreadStatus
+ * Class:     org_fluss_rocksdb_ThreadStatus
  * Method:    getStateName
  * Signature: (B)Ljava/lang/String;
  */
-jstring Java_org_rocksdb_ThreadStatus_getStateName(JNIEnv* env, jclass,
+jstring Java_org_fluss_rocksdb_ThreadStatus_getStateName(JNIEnv* env, jclass,
                                                    jbyte jstate_type_value) {
   auto name = ROCKSDB_NAMESPACE::ThreadStatus::GetStateName(
       ROCKSDB_NAMESPACE::StateTypeJni::toCppStateType(jstate_type_value));

@@ -15,17 +15,17 @@
 #include <string>
 #include <vector>
 
-#include "include/org_rocksdb_TtlDB.h"
+#include "include/org_fluss_rocksdb_TtlDB.h"
 #include "rocksdb/utilities/db_ttl.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_TtlDB
+ * Class:     org_fluss_rocksdb_TtlDB
  * Method:    open
  * Signature: (JLjava/lang/String;IZ)J
  */
-jlong Java_org_rocksdb_TtlDB_open(JNIEnv* env, jclass, jlong joptions_handle,
+jlong Java_org_fluss_rocksdb_TtlDB_open(JNIEnv* env, jclass, jlong joptions_handle,
                                   jstring jdb_path, jint jttl,
                                   jboolean jread_only) {
   const char* db_path = env->GetStringUTFChars(jdb_path, nullptr);
@@ -51,11 +51,11 @@ jlong Java_org_rocksdb_TtlDB_open(JNIEnv* env, jclass, jlong joptions_handle,
 }
 
 /*
- * Class:     org_rocksdb_TtlDB
+ * Class:     org_fluss_rocksdb_TtlDB
  * Method:    openCF
  * Signature: (JLjava/lang/String;[[B[J[IZ)[J
  */
-jlongArray Java_org_rocksdb_TtlDB_openCF(JNIEnv* env, jclass, jlong jopt_handle,
+jlongArray Java_org_fluss_rocksdb_TtlDB_openCF(JNIEnv* env, jclass, jlong jopt_handle,
                                          jstring jdb_path,
                                          jobjectArray jcolumn_names,
                                          jlongArray jcolumn_options,
@@ -150,22 +150,22 @@ jlongArray Java_org_rocksdb_TtlDB_openCF(JNIEnv* env, jclass, jlong jopt_handle,
 }
 
 /*
- * Class:     org_rocksdb_TtlDB
+ * Class:     org_fluss_rocksdb_TtlDB
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_TtlDB_disposeInternalJni(JNIEnv*, jclass, jlong jhandle) {
+void Java_org_fluss_rocksdb_TtlDB_disposeInternalJni(JNIEnv*, jclass, jlong jhandle) {
   auto* ttl_db = reinterpret_cast<ROCKSDB_NAMESPACE::DBWithTTL*>(jhandle);
   assert(ttl_db != nullptr);
   delete ttl_db;
 }
 
 /*
- * Class:     org_rocksdb_TtlDB
+ * Class:     org_fluss_rocksdb_TtlDB
  * Method:    closeDatabase
  * Signature: (J)V
  */
-void Java_org_rocksdb_TtlDB_closeDatabase(JNIEnv* /* env */, jclass,
+void Java_org_fluss_rocksdb_TtlDB_closeDatabase(JNIEnv* /* env */, jclass,
                                           jlong /* jhandle */) {
   // auto* ttl_db = reinterpret_cast<ROCKSDB_NAMESPACE::DBWithTTL*>(jhandle);
   // assert(ttl_db != nullptr);
@@ -177,11 +177,11 @@ void Java_org_rocksdb_TtlDB_closeDatabase(JNIEnv* /* env */, jclass,
 }
 
 /*
- * Class:     org_rocksdb_TtlDB
+ * Class:     org_fluss_rocksdb_TtlDB
  * Method:    createColumnFamilyWithTtl
- * Signature: (JLorg/rocksdb/ColumnFamilyDescriptor;[BJI)J;
+ * Signature: (JLorg/fluss/rocksdb/ColumnFamilyDescriptor;[BJI)J;
  */
-jlong Java_org_rocksdb_TtlDB_createColumnFamilyWithTtl(JNIEnv* env, jclass,
+jlong Java_org_fluss_rocksdb_TtlDB_createColumnFamilyWithTtl(JNIEnv* env, jclass,
                                                        jlong jdb_handle,
                                                        jbyteArray jcolumn_name,
                                                        jlong jcolumn_options,

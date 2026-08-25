@@ -14,16 +14,16 @@
 
 #include <string>
 
-#include "include/org_rocksdb_Checkpoint.h"
+#include "include/org_fluss_rocksdb_Checkpoint.h"
 #include "rocksdb/db.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 /*
- * Class:     org_rocksdb_Checkpoint
+ * Class:     org_fluss_rocksdb_Checkpoint
  * Method:    newCheckpoint
  * Signature: (J)J
  */
-jlong Java_org_rocksdb_Checkpoint_newCheckpoint(JNIEnv* /*env*/,
+jlong Java_org_fluss_rocksdb_Checkpoint_newCheckpoint(JNIEnv* /*env*/,
                                                 jclass /*jclazz*/,
                                                 jlong jdb_handle) {
   auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb_handle);
@@ -33,11 +33,11 @@ jlong Java_org_rocksdb_Checkpoint_newCheckpoint(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_Checkpoint
+ * Class:     org_fluss_rocksdb_Checkpoint
  * Method:    dispose
  * Signature: (J)V
  */
-void Java_org_rocksdb_Checkpoint_disposeInternalJni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_Checkpoint_disposeInternalJni(JNIEnv* /*env*/,
                                                     jclass /*jobj*/,
                                                     jlong jhandle) {
   auto* checkpoint = reinterpret_cast<ROCKSDB_NAMESPACE::Checkpoint*>(jhandle);
@@ -46,11 +46,11 @@ void Java_org_rocksdb_Checkpoint_disposeInternalJni(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_Checkpoint
+ * Class:     org_fluss_rocksdb_Checkpoint
  * Method:    createCheckpoint
  * Signature: (JLjava/lang/String;)V
  */
-void Java_org_rocksdb_Checkpoint_createCheckpoint(JNIEnv* env, jclass /*jcls*/,
+void Java_org_fluss_rocksdb_Checkpoint_createCheckpoint(JNIEnv* env, jclass /*jcls*/,
                                                   jlong jcheckpoint_handle,
                                                   jstring jcheckpoint_path) {
   const char* checkpoint_path = env->GetStringUTFChars(jcheckpoint_path, 0);
@@ -71,11 +71,11 @@ void Java_org_rocksdb_Checkpoint_createCheckpoint(JNIEnv* env, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_rocksdb_Checkpoint
+ * Class:     org_fluss_rocksdb_Checkpoint
  * Method:    exportColumnFamily
- * Signature: (JJLjava/lang/String;)Lorg/rocksdb/ExportImportFilesMetaData;
+ * Signature: (JJLjava/lang/String;)Lorg/fluss/rocksdb/ExportImportFilesMetaData;
  */
-jlong Java_org_rocksdb_Checkpoint_exportColumnFamily(
+jlong Java_org_fluss_rocksdb_Checkpoint_exportColumnFamily(
     JNIEnv* env, jobject /*jobj*/, jlong jcheckpoint_handle,
     jlong jcolumn_family_handle, jstring jexport_path) {
   const char* export_path = env->GetStringUTFChars(jexport_path, 0);

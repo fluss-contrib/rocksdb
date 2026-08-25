@@ -12,18 +12,18 @@
 
 #include <string>
 
-#include "include/org_rocksdb_BloomFilter.h"
-#include "include/org_rocksdb_Filter.h"
+#include "include/org_fluss_rocksdb_BloomFilter.h"
+#include "include/org_fluss_rocksdb_Filter.h"
 #include "rocksdb/filter_policy.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_BloomFilter
+ * Class:     org_fluss_rocksdb_BloomFilter
  * Method:    createBloomFilter
  * Signature: (DZ)J
  */
-jlong Java_org_rocksdb_BloomFilter_createNewBloomFilter(JNIEnv* /*env*/,
+jlong Java_org_fluss_rocksdb_BloomFilter_createNewBloomFilter(JNIEnv* /*env*/,
                                                         jclass /*jcls*/,
                                                         jdouble bits_per_key) {
   auto* sptr_filter =
@@ -33,11 +33,11 @@ jlong Java_org_rocksdb_BloomFilter_createNewBloomFilter(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_Filter
+ * Class:     org_fluss_rocksdb_Filter
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_Filter_disposeInternalJni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_Filter_disposeInternalJni(JNIEnv* /*env*/,
                                                 jclass /*jcls*/,
                                                 jlong jhandle) {
   auto* handle =

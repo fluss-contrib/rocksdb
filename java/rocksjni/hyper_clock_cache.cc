@@ -9,15 +9,15 @@
 #include <jni.h>
 
 #include "cache/clock_cache.h"
-#include "include/org_rocksdb_HyperClockCache.h"
+#include "include/org_fluss_rocksdb_HyperClockCache.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_rocksdb_HyperClockCache
+ * Class:     org_fluss_rocksdb_HyperClockCache
  * Method:    newHyperClockCache
  * Signature: (JJIZ)J
  */
-jlong Java_org_rocksdb_HyperClockCache_newHyperClockCache(
+jlong Java_org_fluss_rocksdb_HyperClockCache_newHyperClockCache(
     JNIEnv*, jclass, jlong capacity, jlong estimatedEntryCharge,
     jint numShardBits, jboolean strictCapacityLimit) {
   ROCKSDB_NAMESPACE::HyperClockCacheOptions cacheOptions =
@@ -30,11 +30,11 @@ jlong Java_org_rocksdb_HyperClockCache_newHyperClockCache(
 }
 
 /*
- * Class:     org_rocksdb_HyperClockCache
+ * Class:     org_fluss_rocksdb_HyperClockCache
  * Method:    disposeInternalJni
  * Signature: (J)V
  */
-void Java_org_rocksdb_HyperClockCache_disposeInternalJni(JNIEnv*, jclass,
+void Java_org_fluss_rocksdb_HyperClockCache_disposeInternalJni(JNIEnv*, jclass,
                                                          jlong jhandle) {
   auto* hyper_clock_cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::Cache>*>(jhandle);

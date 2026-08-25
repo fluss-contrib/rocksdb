@@ -10,15 +10,15 @@
 
 #include <jni.h>
 
-#include "include/org_rocksdb_ClockCache.h"
+#include "include/org_fluss_rocksdb_ClockCache.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_rocksdb_ClockCache
+ * Class:     org_fluss_rocksdb_ClockCache
  * Method:    newClockCache
  * Signature: (JIZ)J
  */
-jlong Java_org_rocksdb_ClockCache_newClockCache(
+jlong Java_org_fluss_rocksdb_ClockCache_newClockCache(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jcapacity, jint jnum_shard_bits,
     jboolean jstrict_capacity_limit) {
   auto* sptr_clock_cache = new std::shared_ptr<ROCKSDB_NAMESPACE::Cache>(
@@ -29,11 +29,11 @@ jlong Java_org_rocksdb_ClockCache_newClockCache(
 }
 
 /*
- * Class:     org_rocksdb_ClockCache
+ * Class:     org_fluss_rocksdb_ClockCache
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_ClockCache_disposeInternalJni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_ClockCache_disposeInternalJni(JNIEnv* /*env*/,
                                                     jclass /*jcls*/,
                                                     jlong jhandle) {
   auto* sptr_clock_cache =

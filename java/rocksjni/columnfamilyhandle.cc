@@ -10,15 +10,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "include/org_rocksdb_ColumnFamilyHandle.h"
+#include "include/org_fluss_rocksdb_ColumnFamilyHandle.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_ColumnFamilyHandle
+ * Class:     org_fluss_rocksdb_ColumnFamilyHandle
  * Method:    getName
  * Signature: (J)[B
  */
-jbyteArray Java_org_rocksdb_ColumnFamilyHandle_getName(JNIEnv* env,
+jbyteArray Java_org_fluss_rocksdb_ColumnFamilyHandle_getName(JNIEnv* env,
                                                        jclass /*jobj*/,
                                                        jlong jhandle) {
   auto* cfh = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jhandle);
@@ -27,11 +27,11 @@ jbyteArray Java_org_rocksdb_ColumnFamilyHandle_getName(JNIEnv* env,
 }
 
 /*
- * Class:     org_rocksdb_ColumnFamilyHandle
+ * Class:     org_fluss_rocksdb_ColumnFamilyHandle
  * Method:    getID
  * Signature: (J)I
  */
-jint Java_org_rocksdb_ColumnFamilyHandle_getID(JNIEnv* /*env*/, jclass /*jcls*/,
+jint Java_org_fluss_rocksdb_ColumnFamilyHandle_getID(JNIEnv* /*env*/, jclass /*jcls*/,
                                                jlong jhandle) {
   auto* cfh = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jhandle);
   const int32_t id = cfh->GetID();
@@ -39,11 +39,11 @@ jint Java_org_rocksdb_ColumnFamilyHandle_getID(JNIEnv* /*env*/, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_rocksdb_ColumnFamilyHandle
+ * Class:     org_fluss_rocksdb_ColumnFamilyHandle
  * Method:    getDescriptor
- * Signature: (J)Lorg/rocksdb/ColumnFamilyDescriptor;
+ * Signature: (J)Lorg/fluss/rocksdb/ColumnFamilyDescriptor;
  */
-jobject Java_org_rocksdb_ColumnFamilyHandle_getDescriptor(JNIEnv* env,
+jobject Java_org_fluss_rocksdb_ColumnFamilyHandle_getDescriptor(JNIEnv* env,
                                                           jclass /*jcls*/,
                                                           jlong jhandle) {
   auto* cfh = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jhandle);
@@ -58,11 +58,11 @@ jobject Java_org_rocksdb_ColumnFamilyHandle_getDescriptor(JNIEnv* env,
 }
 
 /*
- * Class:     org_rocksdb_ColumnFamilyHandle
+ * Class:     org_fluss_rocksdb_ColumnFamilyHandle
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_ColumnFamilyHandle_disposeInternalJni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_ColumnFamilyHandle_disposeInternalJni(JNIEnv* /*env*/,
                                                             jclass /*jobj*/,
                                                             jlong jhandle) {
   auto* cfh = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jhandle);

@@ -9,16 +9,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "include/org_rocksdb_Snapshot.h"
+#include "include/org_fluss_rocksdb_Snapshot.h"
 #include "rocksdb/db.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_Snapshot
+ * Class:     org_fluss_rocksdb_Snapshot
  * Method:    getSequenceNumber
  * Signature: (J)J
  */
-jlong Java_org_rocksdb_Snapshot_getSequenceNumber(JNIEnv* /*env*/,
+jlong Java_org_fluss_rocksdb_Snapshot_getSequenceNumber(JNIEnv* /*env*/,
                                                   jclass /*jcls*/,
                                                   jlong jsnapshot_handle) {
   auto* snapshot =

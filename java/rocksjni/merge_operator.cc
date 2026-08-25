@@ -16,8 +16,8 @@
 #include <memory>
 #include <string>
 
-#include "include/org_rocksdb_StringAppendOperator.h"
-#include "include/org_rocksdb_UInt64AddOperator.h"
+#include "include/org_fluss_rocksdb_StringAppendOperator.h"
+#include "include/org_fluss_rocksdb_UInt64AddOperator.h"
 #include "rocksdb/db.h"
 #include "rocksdb/memtablerep.h"
 #include "rocksdb/options.h"
@@ -29,11 +29,11 @@
 #include "utilities/merge_operators.h"
 
 /*
- * Class:     org_rocksdb_StringAppendOperator
+ * Class:     org_fluss_rocksdb_StringAppendOperator
  * Method:    newSharedStringAppendOperator
  * Signature: (C)J
  */
-jlong Java_org_rocksdb_StringAppendOperator_newSharedStringAppendOperator__C(
+jlong Java_org_fluss_rocksdb_StringAppendOperator_newSharedStringAppendOperator__C(
     JNIEnv* /*env*/, jclass /*jclazz*/, jchar jdelim) {
   auto* sptr_string_append_op =
       new std::shared_ptr<ROCKSDB_NAMESPACE::MergeOperator>(
@@ -42,7 +42,7 @@ jlong Java_org_rocksdb_StringAppendOperator_newSharedStringAppendOperator__C(
   return GET_CPLUSPLUS_POINTER(sptr_string_append_op);
 }
 
-jlong Java_org_rocksdb_StringAppendOperator_newSharedStringAppendOperator__Ljava_lang_String_2(
+jlong Java_org_fluss_rocksdb_StringAppendOperator_newSharedStringAppendOperator__Ljava_lang_String_2(
     JNIEnv* env, jclass /*jclass*/, jstring jdelim) {
   jboolean has_exception = JNI_FALSE;
   auto delim =
@@ -57,11 +57,11 @@ jlong Java_org_rocksdb_StringAppendOperator_newSharedStringAppendOperator__Ljava
 }
 
 /*
- * Class:     org_rocksdb_StringAppendOperator
+ * Class:     org_fluss_rocksdb_StringAppendOperator
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_StringAppendOperator_disposeInternalJni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_StringAppendOperator_disposeInternalJni(JNIEnv* /*env*/,
                                                               jclass /*jcls*/,
                                                               jlong jhandle) {
   auto* sptr_string_append_op =
@@ -71,11 +71,11 @@ void Java_org_rocksdb_StringAppendOperator_disposeInternalJni(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_UInt64AddOperator
+ * Class:     org_fluss_rocksdb_UInt64AddOperator
  * Method:    newSharedUInt64AddOperator
  * Signature: ()J
  */
-jlong Java_org_rocksdb_UInt64AddOperator_newSharedUInt64AddOperator(
+jlong Java_org_fluss_rocksdb_UInt64AddOperator_newSharedUInt64AddOperator(
     JNIEnv* /*env*/, jclass /*jclazz*/) {
   auto* sptr_uint64_add_op =
       new std::shared_ptr<ROCKSDB_NAMESPACE::MergeOperator>(
@@ -84,11 +84,11 @@ jlong Java_org_rocksdb_UInt64AddOperator_newSharedUInt64AddOperator(
 }
 
 /*
- * Class:     org_rocksdb_UInt64AddOperator
+ * Class:     org_fluss_rocksdb_UInt64AddOperator
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_UInt64AddOperator_disposeInternalJni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_UInt64AddOperator_disposeInternalJni(JNIEnv* /*env*/,
                                                            jclass /*jobj*/,
                                                            jlong jhandle) {
   auto* sptr_uint64_add_op =

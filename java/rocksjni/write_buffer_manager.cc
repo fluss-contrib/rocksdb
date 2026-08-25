@@ -9,16 +9,16 @@
 
 #include <cassert>
 
-#include "include/org_rocksdb_WriteBufferManager.h"
+#include "include/org_fluss_rocksdb_WriteBufferManager.h"
 #include "rocksdb/cache.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_rocksdb_WriteBufferManager
+ * Class:     org_fluss_rocksdb_WriteBufferManager
  * Method:    newWriteBufferManager
  * Signature: (JJ)J
  */
-jlong Java_org_rocksdb_WriteBufferManager_newWriteBufferManager(
+jlong Java_org_fluss_rocksdb_WriteBufferManager_newWriteBufferManager(
     JNIEnv* /*env*/, jclass /*jclazz*/, jlong jbuffer_size, jlong jcache_handle,
     jboolean allow_stall) {
   auto* cache_ptr =
@@ -32,11 +32,11 @@ jlong Java_org_rocksdb_WriteBufferManager_newWriteBufferManager(
 }
 
 /*
- * Class:     org_rocksdb_WriteBufferManager
+ * Class:     org_fluss_rocksdb_WriteBufferManager
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_WriteBufferManager_disposeInternalJni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_WriteBufferManager_disposeInternalJni(JNIEnv* /*env*/,
                                                             jclass /*jcls*/,
                                                             jlong jhandle) {
   auto* write_buffer_manager =

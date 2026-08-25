@@ -14,15 +14,15 @@
 
 #include <algorithm>
 
-#include "include/org_rocksdb_RocksIterator.h"
+#include "include/org_fluss_rocksdb_RocksIterator.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_RocksIterator_disposeInternalJni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_RocksIterator_disposeInternalJni(JNIEnv* /*env*/,
                                                        jclass /*cls*/,
                                                        jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
@@ -31,64 +31,64 @@ void Java_org_rocksdb_RocksIterator_disposeInternalJni(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    isValid0
  * Signature: (J)Z
  */
-jboolean Java_org_rocksdb_RocksIterator_isValid0Jni(JNIEnv* /*env*/,
+jboolean Java_org_fluss_rocksdb_RocksIterator_isValid0Jni(JNIEnv* /*env*/,
                                                     jclass /*jcls*/,
                                                     jlong handle) {
   return reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->Valid();
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    seekToFirst0
  * Signature: (J)V
  */
-void Java_org_rocksdb_RocksIterator_seekToFirst0Jni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_RocksIterator_seekToFirst0Jni(JNIEnv* /*env*/,
                                                     jclass /*jcls*/,
                                                     jlong handle) {
   reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->SeekToFirst();
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    seekToLast0
  * Signature: (J)V
  */
-void Java_org_rocksdb_RocksIterator_seekToLast0Jni(JNIEnv* /*env*/,
+void Java_org_fluss_rocksdb_RocksIterator_seekToLast0Jni(JNIEnv* /*env*/,
                                                    jclass /*jcls*/,
                                                    jlong handle) {
   reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->SeekToLast();
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    next0
  * Signature: (J)V
  */
-void Java_org_rocksdb_RocksIterator_next0Jni(JNIEnv* /*env*/, jclass /*jcls*/,
+void Java_org_fluss_rocksdb_RocksIterator_next0Jni(JNIEnv* /*env*/, jclass /*jcls*/,
                                              jlong handle) {
   reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->Next();
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    prev0
  * Signature: (J)V
  */
-void Java_org_rocksdb_RocksIterator_prev0Jni(JNIEnv* /*env*/, jclass /*jobj*/,
+void Java_org_fluss_rocksdb_RocksIterator_prev0Jni(JNIEnv* /*env*/, jclass /*jobj*/,
                                              jlong handle) {
   reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->Prev();
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    refresh0
  * Signature: (J)V
  */
-void Java_org_rocksdb_RocksIterator_refresh0Jni(JNIEnv* env, jclass /*jcls*/,
+void Java_org_fluss_rocksdb_RocksIterator_refresh0Jni(JNIEnv* env, jclass /*jcls*/,
                                                 jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   ROCKSDB_NAMESPACE::Status s = it->Refresh();
@@ -101,11 +101,11 @@ void Java_org_rocksdb_RocksIterator_refresh0Jni(JNIEnv* env, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    refresh1
  * Signature: (JJ)V
  */
-void Java_org_rocksdb_RocksIterator_refresh1(JNIEnv* env, jobject /*jobj*/,
+void Java_org_fluss_rocksdb_RocksIterator_refresh1(JNIEnv* env, jobject /*jobj*/,
                                              jlong handle,
                                              jlong snapshot_handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
@@ -121,11 +121,11 @@ void Java_org_rocksdb_RocksIterator_refresh1(JNIEnv* env, jobject /*jobj*/,
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    seek0
  * Signature: (J[BI)V
  */
-void Java_org_rocksdb_RocksIterator_seek0Jni(JNIEnv* env, jclass /*jcls*/,
+void Java_org_fluss_rocksdb_RocksIterator_seek0Jni(JNIEnv* env, jclass /*jcls*/,
                                              jlong handle, jbyteArray jtarget,
                                              jint jtarget_len) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
@@ -140,11 +140,11 @@ void Java_org_rocksdb_RocksIterator_seek0Jni(JNIEnv* env, jclass /*jcls*/,
  * the Java wrapper extracts the byte[] and passes it here.
  * In this case, the buffer offset of the key may be non-zero.
  *
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    seek0
  * Signature: (J[BII)V
  */
-void Java_org_rocksdb_RocksIterator_seekByteArray0Jni(
+void Java_org_fluss_rocksdb_RocksIterator_seekByteArray0Jni(
     JNIEnv* env, jclass /*jcls*/, jlong handle, jbyteArray jtarget,
     jint jtarget_off, jint jtarget_len) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
@@ -156,11 +156,11 @@ void Java_org_rocksdb_RocksIterator_seekByteArray0Jni(
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    seekDirect0
  * Signature: (JLjava/nio/ByteBuffer;II)V
  */
-void Java_org_rocksdb_RocksIterator_seekDirect0Jni(JNIEnv* env, jclass /*jobj*/,
+void Java_org_fluss_rocksdb_RocksIterator_seekDirect0Jni(JNIEnv* env, jclass /*jobj*/,
                                                    jlong handle,
                                                    jobject jtarget,
                                                    jint jtarget_off,
@@ -174,11 +174,11 @@ void Java_org_rocksdb_RocksIterator_seekDirect0Jni(JNIEnv* env, jclass /*jobj*/,
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    seekForPrevDirect0
  * Signature: (JLjava/nio/ByteBuffer;II)V
  */
-void Java_org_rocksdb_RocksIterator_seekForPrevDirect0Jni(
+void Java_org_fluss_rocksdb_RocksIterator_seekForPrevDirect0Jni(
     JNIEnv* env, jclass /*jcls*/, jlong handle, jobject jtarget,
     jint jtarget_off, jint jtarget_len) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
@@ -190,11 +190,11 @@ void Java_org_rocksdb_RocksIterator_seekForPrevDirect0Jni(
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    seekForPrev0
  * Signature: (J[BI)V
  */
-void Java_org_rocksdb_RocksIterator_seekForPrev0Jni(JNIEnv* env,
+void Java_org_fluss_rocksdb_RocksIterator_seekForPrev0Jni(JNIEnv* env,
                                                     jclass /*jcls*/,
                                                     jlong handle,
                                                     jbyteArray jtarget,
@@ -211,11 +211,11 @@ void Java_org_rocksdb_RocksIterator_seekForPrev0Jni(JNIEnv* env,
  * the Java wrapper extracts the byte[] and passes it here.
  * In this case, the buffer offset of the key may be non-zero.
  *
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    seek0
  * Signature: (J[BII)V
  */
-void Java_org_rocksdb_RocksIterator_seekForPrevByteArray0Jni(
+void Java_org_fluss_rocksdb_RocksIterator_seekForPrevByteArray0Jni(
     JNIEnv* env, jclass /*jcls*/, jlong handle, jbyteArray jtarget,
     jint jtarget_off, jint jtarget_len) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
@@ -227,11 +227,11 @@ void Java_org_rocksdb_RocksIterator_seekForPrevByteArray0Jni(
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    status0
  * Signature: (J)V
  */
-void Java_org_rocksdb_RocksIterator_status0Jni(JNIEnv* env, jclass /*jcls*/,
+void Java_org_fluss_rocksdb_RocksIterator_status0Jni(JNIEnv* env, jclass /*jcls*/,
                                                jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   ROCKSDB_NAMESPACE::Status s = it->status();
@@ -244,11 +244,11 @@ void Java_org_rocksdb_RocksIterator_status0Jni(JNIEnv* env, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    key0
  * Signature: (J)[B
  */
-jbyteArray Java_org_rocksdb_RocksIterator_key0(JNIEnv* env, jclass /*jcls*/,
+jbyteArray Java_org_fluss_rocksdb_RocksIterator_key0(JNIEnv* env, jclass /*jcls*/,
                                                jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   ROCKSDB_NAMESPACE::Slice key_slice = it->key();
@@ -265,11 +265,11 @@ jbyteArray Java_org_rocksdb_RocksIterator_key0(JNIEnv* env, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    keyDirect0
  * Signature: (JLjava/nio/ByteBuffer;II)I
  */
-jint Java_org_rocksdb_RocksIterator_keyDirect0(JNIEnv* env, jclass /*jcls*/,
+jint Java_org_fluss_rocksdb_RocksIterator_keyDirect0(JNIEnv* env, jclass /*jcls*/,
                                                jlong handle, jobject jtarget,
                                                jint jtarget_off,
                                                jint jtarget_len) {
@@ -283,11 +283,11 @@ jint Java_org_rocksdb_RocksIterator_keyDirect0(JNIEnv* env, jclass /*jcls*/,
  * This method supports fetching into indirect byte buffers;
  * the Java wrapper extracts the byte[] and passes it here.
  *
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    keyByteArray0
  * Signature: (J[BII)I
  */
-jint Java_org_rocksdb_RocksIterator_keyByteArray0(JNIEnv* env, jclass /*jcls*/,
+jint Java_org_fluss_rocksdb_RocksIterator_keyByteArray0(JNIEnv* env, jclass /*jcls*/,
                                                   jlong handle, jbyteArray jkey,
                                                   jint jkey_off,
                                                   jint jkey_len) {
@@ -303,11 +303,11 @@ jint Java_org_rocksdb_RocksIterator_keyByteArray0(JNIEnv* env, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    value0
  * Signature: (J)[B
  */
-jbyteArray Java_org_rocksdb_RocksIterator_value0(JNIEnv* env, jclass /*jcls*/,
+jbyteArray Java_org_fluss_rocksdb_RocksIterator_value0(JNIEnv* env, jclass /*jcls*/,
                                                  jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   ROCKSDB_NAMESPACE::Slice value_slice = it->value();
@@ -325,11 +325,11 @@ jbyteArray Java_org_rocksdb_RocksIterator_value0(JNIEnv* env, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    valueDirect0
  * Signature: (JLjava/nio/ByteBuffer;II)I
  */
-jint Java_org_rocksdb_RocksIterator_valueDirect0(JNIEnv* env, jclass /*jcls*/,
+jint Java_org_fluss_rocksdb_RocksIterator_valueDirect0(JNIEnv* env, jclass /*jcls*/,
                                                  jlong handle, jobject jtarget,
                                                  jint jtarget_off,
                                                  jint jtarget_len) {
@@ -343,11 +343,11 @@ jint Java_org_rocksdb_RocksIterator_valueDirect0(JNIEnv* env, jclass /*jcls*/,
  * This method supports fetching into indirect byte buffers;
  * the Java wrapper extracts the byte[] and passes it here.
  *
- * Class:     org_rocksdb_RocksIterator
+ * Class:     org_fluss_rocksdb_RocksIterator
  * Method:    valueByteArray0
  * Signature: (J[BII)I
  */
-jint Java_org_rocksdb_RocksIterator_valueByteArray0(
+jint Java_org_fluss_rocksdb_RocksIterator_valueByteArray0(
     JNIEnv* env, jclass /*jcls*/, jlong handle, jbyteArray jvalue_target,
     jint jvalue_off, jint jvalue_len) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
