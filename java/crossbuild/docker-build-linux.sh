@@ -16,24 +16,26 @@ rm -rf /rocksdb-local-build/*
 cp -r /rocksdb-host/* /rocksdb-local-build
 cd /rocksdb-local-build
 
+# Use the same dependency mirror as the upstream GitHub Actions setup. The
+# Makefile still verifies every downloaded archive against its pinned SHA-256.
+export ZLIB_DOWNLOAD_BASE="${ZLIB_DOWNLOAD_BASE:-https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/zlib}"
+export BZIP2_DOWNLOAD_BASE="${BZIP2_DOWNLOAD_BASE:-https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/bzip2}"
+export SNAPPY_DOWNLOAD_BASE="${SNAPPY_DOWNLOAD_BASE:-https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/snappy}"
+export LZ4_DOWNLOAD_BASE="${LZ4_DOWNLOAD_BASE:-https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/lz4}"
+export ZSTD_DOWNLOAD_BASE="${ZSTD_DOWNLOAD_BASE:-https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/zstd}"
+
 # Use scl devtoolset if available
 if hash scl 2>/dev/null; then
-  if scl --list | grep -q 'devtoolset-8'; then
-    # CentOS 6+
-    scl enable devtoolset-8 'make clean-not-downloaded'
-    scl enable devtoolset-8 "PORTABLE=1 J=$J make -j$J rocksdbjavastatic"
-  elif scl --list | grep -q 'devtoolset-7'; then
-    # CentOS 6+
-    scl enable devtoolset-7 'make clean-not-downloaded'
-    scl enable devtoolset-7 "PORTABLE=1 J=$J make -j$J rocksdbjavastatic"
-  elif scl --list | grep -q 'devtoolset-2'; then
-    # CentOS 5 or 6
-    scl enable devtoolset-2 'make clean-not-downloaded'
-    scl enable devtoolset-2 "PORTABLE=1 J=$J make -j$J rocksdbjavastatic"
-  else
+  DEVTOOLSET=$(scl --list 2>/dev/null | grep '^devtoolset-' | sort -V | tail -1)
+  if [ -z "$DEVTOOLSET" ]; then
     echo "Could not find devtoolset"
     exit 1;
   fi
+  if [ "$DEVTOOLSET" = "devtoolset-12" ]; then
+    export EXTRA_CXXFLAGS="${EXTRA_CXXFLAGS:-} -Wno-error=restrict"
+  fi
+  scl enable "$DEVTOOLSET" 'make clean-not-downloaded'
+  scl enable "$DEVTOOLSET" "PORTABLE=1 J=$J make -j$J rocksdbjavastatic"
 else
   make clean-not-downloaded
   PORTABLE=1 make -j$J rocksdbjavastatic
