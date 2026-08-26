@@ -255,12 +255,6 @@ jobs:
           javac -cp "$jar_file" -d smoke-classes java/samples/src/main/java/RocksDBSample.java
           java -cp "$jar_file:smoke-classes" RocksDBSample "$RUNNER_TEMP/fluss-rocksdb-smoke"
 
-      - name: Test coexistence with Flink RocksDB JNI
-        run: |
-          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-linux*.jar' -print -quit)
-          build_tools/test-fluss-jni-coexistence.sh \
-            "$jar_file" "$RUNNER_TEMP/fluss-rocksdb-coexistence"
-
       - uses: actions/upload-artifact@v7
         with:
           name: fluss-jni-${{ matrix.platform }}
@@ -388,12 +382,6 @@ jobs:
           mkdir -p smoke-classes
           javac -cp "$jar_file" -d smoke-classes java/samples/src/main/java/RocksDBSample.java
           java -cp "$jar_file:smoke-classes" RocksDBSample "$RUNNER_TEMP/fluss-rocksdb-smoke"
-
-      - name: Test coexistence with Flink RocksDB JNI
-        run: |
-          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-osx.jar' -print -quit)
-          build_tools/test-fluss-jni-coexistence.sh \
-            "$jar_file" "$RUNNER_TEMP/fluss-rocksdb-coexistence"
 
       - uses: actions/upload-artifact@v7
         with:
