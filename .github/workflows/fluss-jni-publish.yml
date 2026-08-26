@@ -215,6 +215,7 @@ jobs:
           test -n "$jar_file"
 
           file "$library" | grep -qi "$EXPECTED_ARCHITECTURE"
+          build_tools/check-fluss-jni-exports.sh "$library"
           max_glibc=$(readelf --version-info "$library" \
             | grep -o 'GLIBC_[0-9.]*' \
             | sort -Vu \
@@ -253,6 +254,12 @@ jobs:
           mkdir -p smoke-classes
           javac -cp "$jar_file" -d smoke-classes java/samples/src/main/java/RocksDBSample.java
           java -cp "$jar_file:smoke-classes" RocksDBSample "$RUNNER_TEMP/fluss-rocksdb-smoke"
+
+      - name: Test coexistence with Flink RocksDB JNI
+        run: |
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-linux*.jar' -print -quit)
+          build_tools/test-fluss-jni-coexistence.sh \
+            "$jar_file" "$RUNNER_TEMP/fluss-rocksdb-coexistence"
 
       - uses: actions/upload-artifact@v7
         with:
@@ -344,6 +351,7 @@ jobs:
           jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-osx.jar' -print -quit)
           file "$library" | grep -qi "$EXPECTED_ARCHITECTURE"
           test -n "$jar_file"
+          build_tools/check-fluss-jni-exports.sh "$library"
 
           minimum_macos_version=$(otool -l "$library" \
             | awk '$1 == "minos" { print $2; exit }')
@@ -380,6 +388,12 @@ jobs:
           mkdir -p smoke-classes
           javac -cp "$jar_file" -d smoke-classes java/samples/src/main/java/RocksDBSample.java
           java -cp "$jar_file:smoke-classes" RocksDBSample "$RUNNER_TEMP/fluss-rocksdb-smoke"
+
+      - name: Test coexistence with Flink RocksDB JNI
+        run: |
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-osx.jar' -print -quit)
+          build_tools/test-fluss-jni-coexistence.sh \
+            "$jar_file" "$RUNNER_TEMP/fluss-rocksdb-coexistence"
 
       - uses: actions/upload-artifact@v7
         with:
