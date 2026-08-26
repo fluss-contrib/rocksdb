@@ -539,8 +539,22 @@ jobs:
           component_directory="preflight-repository/io/github/fluss-contrib/fluss-rocksdbjni/$VERSION"
           test -d "$component_directory"
 
-          for suffix in .jar -sources.jar -javadoc.jar .pom; do
-            file="$component_directory/$artifact$suffix"
+          mapfile -t main_jars < <(
+            find "$component_directory" -maxdepth 1 -type f -name '*.jar' \
+              ! -name '*-sources.jar' ! -name '*-javadoc.jar' | sort
+          )
+          if [[ "${#main_jars[@]}" -ne 1 ]]; then
+            echo "Expected exactly one deployed main JAR, found ${#main_jars[@]}" >&2
+            find "$component_directory" -maxdepth 1 -type f -print >&2
+            exit 1
+          fi
+          deployed_artifact="${main_jars[0]%.jar}"
+
+          for file in \
+            "$deployed_artifact.jar" \
+            "$deployed_artifact-sources.jar" \
+            "$deployed_artifact-javadoc.jar" \
+            "$deployed_artifact.pom"; do
             test -f "$file"
             test -f "$file.asc"
             gpg --batch --verify "$file.asc" "$file"
