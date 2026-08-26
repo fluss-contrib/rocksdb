@@ -61,23 +61,33 @@ jobs:
               mode=snapshot
               version="$source_rocksdb_version-fluss-SNAPSHOT"
 
-              deployments=$(gh api --method GET \
+              deployments=$(gh api --paginate --slurp --method GET \
                 "repos/$GITHUB_REPOSITORY/deployments" \
                 -f environment=maven-snapshots \
                 -F per_page=100)
               latest_successful_sha=
-              while IFS= read -r deployment_id; do
-                latest_state=$(gh api --method GET \
+              while IFS=$'\t' read -r deployment_id deployment_sha; do
+                statuses=$(gh api --paginate --slurp --method GET \
                   "repos/$GITHUB_REPOSITORY/deployments/$deployment_id/statuses" \
-                  -F per_page=1 \
-                  --jq '.[0].state // ""')
+                  -F per_page=100)
+                latest_state=$(jq -r '
+                  [.[][]]
+                  | sort_by([.created_at, .id])
+                  | reverse
+                  | .[0].state // ""
+                ' <<<"$statuses")
                 if [[ "$latest_state" == success ]]; then
-                  latest_successful_sha=$(gh api \
-                    "repos/$GITHUB_REPOSITORY/deployments/$deployment_id" \
-                    --jq '.sha')
+                  latest_successful_sha=$deployment_sha
                   break
                 fi
-              done < <(jq -r '.[].id' <<<"$deployments")
+              done < <(jq -r '
+                [.[][]]
+                | sort_by([.created_at, .id])
+                | reverse
+                | .[]
+                | [.id, .sha]
+                | @tsv
+              ' <<<"$deployments")
 
               if [[ -n "$latest_successful_sha" && "$latest_successful_sha" == "$GITHUB_SHA" ]]; then
                 should_build=false
@@ -577,20 +587,21 @@ jobs:
           java-version: '8'
 
       - name: Prepare publication credentials
+        env:
+          GNUPGHOME: ${{ runner.temp }}/fluss-snapshot-gnupg
+          MAVEN_SETTINGS: ${{ runner.temp }}/fluss-snapshot-settings.xml
         run: |
           set -euo pipefail
           printf '::add-mask::%s\n' "$CENTRAL_USERNAME"
           printf '::add-mask::%s\n' "$CENTRAL_TOKEN"
           printf '::add-mask::%s\n' "$MAVEN_GPG_PASSPHRASE"
 
-          export GNUPGHOME="$RUNNER_TEMP/fluss-snapshot-gnupg"
           mkdir -p "$GNUPGHOME"
           chmod 700 "$GNUPGHOME"
           printf '%s' "$MAVEN_GPG_KEY" | gpg --batch --import
-          printf 'GNUPGHOME=%s\n' "$GNUPGHOME" >> "$GITHUB_ENV"
 
-          settings_file="$RUNNER_TEMP/fluss-snapshot-settings.xml"
-          cat > "$settings_file" <<'XML'
+          install -m 600 /dev/null "$MAVEN_SETTINGS"
+          cat > "$MAVEN_SETTINGS" <<'XML'
           <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
             <servers>
               <server>
@@ -601,11 +612,11 @@ jobs:
             </servers>
           </settings>
           XML
-          chmod 600 "$settings_file"
-          printf 'MAVEN_SETTINGS=%s\n' "$settings_file" >> "$GITHUB_ENV"
 
       - name: Sign and publish Snapshot
         env:
+          GNUPGHOME: ${{ runner.temp }}/fluss-snapshot-gnupg
+          MAVEN_SETTINGS: ${{ runner.temp }}/fluss-snapshot-settings.xml
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
@@ -628,15 +639,13 @@ jobs:
 
       - name: Remove publication credentials
         if: always()
+        env:
+          GNUPGHOME: ${{ runner.temp }}/fluss-snapshot-gnupg
+          MAVEN_SETTINGS: ${{ runner.temp }}/fluss-snapshot-settings.xml
         run: |
           gpgconf --kill gpg-agent || true
-          if [[ "${GNUPGHOME:-}" == "$RUNNER_TEMP/fluss-snapshot-gnupg" ]]; then
-            find "$GNUPGHOME" -mindepth 1 -delete
-            rmdir "$GNUPGHOME"
-          fi
-          if [[ "${MAVEN_SETTINGS:-}" == "$RUNNER_TEMP/fluss-snapshot-settings.xml" ]]; then
-            rm -f "$MAVEN_SETTINGS"
-          fi
+          find "$GNUPGHOME" -depth -delete 2>/dev/null || true
+          rm -f -- "$MAVEN_SETTINGS"
 
   draft-release:
     name: Create draft GitHub Release
@@ -656,6 +665,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
           if release_json=$(gh api \
@@ -663,6 +673,47 @@ jobs:
             if [[ "$(jq -r '.draft' <<<"$release_json")" == true ]]; then
               gh release upload "$RELEASE_TAG" component/* --clobber
             else
+              artifact="fluss-rocksdbjni-$VERSION"
+              base_url="https://repo1.maven.org/maven2/io/github/fluss-contrib/fluss-rocksdbjni/$VERSION"
+              present=0
+              absent=0
+              for suffix in .jar -sources.jar -javadoc.jar .pom; do
+                filename="$artifact$suffix"
+                status=$(curl --silent --show-error --location \
+                  --head --output /dev/null --write-out '%{http_code}' \
+                  "$base_url/$filename")
+                case "$status" in
+                  200) present=$((present + 1)) ;;
+                  404) absent=$((absent + 1)) ;;
+                  *)
+                    echo "Unexpected Central response $status for existing public Release payload $filename" >&2
+                    exit 1
+                    ;;
+                esac
+              done
+              if [[ "$present" -ne 4 ]]; then
+                if [[ "$absent" -eq 4 ]]; then
+                  echo "Maven Central component is absent for existing public GitHub Release" >&2
+                else
+                  echo "Maven Central component is only partially present for existing public GitHub Release" >&2
+                fi
+                exit 1
+              fi
+
+              mkdir -p published-central
+              for suffix in .jar -sources.jar -javadoc.jar .pom; do
+                filename="$artifact$suffix"
+                curl --silent --show-error --fail --location \
+                  --output "published-central/$filename" \
+                  "$base_url/$filename"
+                expected_sha=$(sha256sum "component/$filename" | awk '{print $1}')
+                published_sha=$(sha256sum "published-central/$filename" | awk '{print $1}')
+                if [[ "$expected_sha" != "$published_sha" ]]; then
+                  echo "Published Central payload differs before existing public Release: $filename" >&2
+                  exit 1
+                fi
+              done
+
               mkdir -p published-assets
               for component_file in component/*; do
                 filename=$(basename "$component_file")
@@ -708,6 +759,7 @@ jobs:
       - name: Sign and stage Central bundle
         env:
           GH_TOKEN: ${{ github.token }}
+          GNUPGHOME: ${{ runner.temp }}/fluss-central-gnupg
           RELEASE_TAG: ${{ github.ref_name }}
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
@@ -716,11 +768,9 @@ jobs:
           printf '::add-mask::%s\n' "$CENTRAL_TOKEN"
           printf '::add-mask::%s\n' "$MAVEN_GPG_PASSPHRASE"
 
-          export GNUPGHOME="$RUNNER_TEMP/fluss-central-gnupg"
           mkdir -p "$GNUPGHOME"
           chmod 700 "$GNUPGHOME"
           printf '%s' "$MAVEN_GPG_KEY" | gpg --batch --import
-          printf 'GNUPGHOME=%s\n' "$GNUPGHOME" >> "$GITHUB_ENV"
 
           artifact="fluss-rocksdbjni-$VERSION"
           mkdir -p central-repository
@@ -900,12 +950,11 @@ jobs:
 
       - name: Remove publication credentials
         if: always()
+        env:
+          GNUPGHOME: ${{ runner.temp }}/fluss-central-gnupg
         run: |
           gpgconf --kill gpg-agent || true
-          if [[ "${GNUPGHOME:-}" == "$RUNNER_TEMP/fluss-central-gnupg" ]]; then
-            find "$GNUPGHOME" -mindepth 1 -delete
-            rmdir "$GNUPGHOME"
-          fi
+          find "$GNUPGHOME" -depth -delete 2>/dev/null || true
 
   publish-release:
     name: Publish GitHub Release
