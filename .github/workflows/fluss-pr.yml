@@ -1,4 +1,4 @@
-name: Fluss JNI PR
+name: Fluss PR
 
 on:
   pull_request:
@@ -7,10 +7,42 @@ permissions:
   contents: read
 
 concurrency:
-  group: fluss-jni-pr-${{ github.event.pull_request.number }}
+  group: fluss-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
+  source-checks:
+    name: Source checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Prepare format checker
+        run: |
+          wget https://rocksdb-deps.s3.us-west-2.amazonaws.com/llvm/llvm-project/release/12.x/clang/tools/clang-format/clang-format-diff.py
+
+      - name: Check format
+        env:
+          FORMAT_UPSTREAM: origin/${{ github.base_ref }}
+          VERBOSE_CHECK: '1'
+        run: |
+          git fetch --no-tags origin \
+            "${GITHUB_BASE_REF}:refs/remotes/origin/${GITHUB_BASE_REF}"
+          make check-format
+
+      - name: Compare buckify output
+        run: make check-buck-targets
+
+      - name: Check sources
+        run: make check-sources
+
   test-linux-x86-64:
     name: Test Linux x86_64
     runs-on: ubuntu-24.04
