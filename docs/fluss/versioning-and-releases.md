@@ -45,7 +45,7 @@ Maven:    10.10.1-fluss-1
 
 The Fluss revision starts at `1` for an upstream baseline and increases for an
 immutable replacement release on the same baseline. RC sequences start at `1`
-within a revision. An RC is optional; a final release may be published directly.
+within a revision.
 
 ## Publication modes
 
@@ -67,6 +67,9 @@ The preflight receives neither Central credentials nor the production signing
 key. It does not publish a Snapshot, create a tag, or create a GitHub Release.
 
 ### Development Snapshots
+
+Snapshot publication is the only publication mode that runs directly from
+`fluss-main`.
 
 A scheduled job checks the current `fluss-main` head daily. It publishes only
 when that head differs from the commit associated with the latest successful
@@ -95,17 +98,25 @@ policy.
 
 ### Release candidates and final releases
 
-An RC or final release starts from a Git tag matching the formats above. The
-workflow rejects a tag when:
+An RC or final release starts from a Git tag matching the formats above on
+`fluss-release-X.Y`, where `X.Y` comes from the tag's RocksDB version. The
+release branch starts from the selected upstream RocksDB tag `vX.Y.Z`, then
+replays or adapts the applicable Fluss changes from `fluss-main`. RC and final
+release tags are never published directly from `fluss-main`.
+
+The workflow rejects a tag when:
 
 - the RocksDB portion does not match `include/rocksdb/version.h`;
 - the Fluss revision or RC sequence is not a positive integer;
-- the tag target is not contained in `fluss-main`; or
+- the tag target is not contained in `origin/fluss-release-X.Y`;
+- the upstream RocksDB tag `vX.Y.Z` is not an ancestor of the release tag
+  commit; or
 - the corresponding immutable Maven version already exists with different
   content.
 
 RC and final releases follow the same build, verification, signing, and
-publication path. The version string is their only behavioral difference.
+publication pipeline. An RC's GitHub Release is marked as a prerelease. An RC
+remains optional; a final release may be published directly.
 
 ## Supported artifacts
 
@@ -158,7 +169,8 @@ environment and cannot access its secrets.
 
 ## RC and final publication order
 
-1. Validate the tag, version, and `fluss-main` ancestry.
+1. Validate the tag and version, require its commit on the matching
+   `origin/fluss-release-X.Y`, and verify ancestry from upstream tag `vX.Y.Z`.
 2. Build and smoke-test every supported platform.
 3. Assemble and verify the four-platform JNI JAR.
 4. Generate and verify the complete signed Maven component.

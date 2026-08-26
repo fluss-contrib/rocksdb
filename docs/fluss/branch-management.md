@@ -5,20 +5,22 @@ Fluss changes on top of an explicit upstream RocksDB release.
 
 ## Repository branches
 
-`main` mirrors `facebook/rocksdb/main`. It contains no Fluss-specific commits
-and is never used as the base of a Fluss release without selecting an upstream
-release tag first.
+`main` mirrors `facebook/rocksdb/main`. It contains no Fluss-specific commits.
+An immutable upstream RocksDB release tag is the baseline for each Fluss
+release line.
 
-`fluss-main` is the default branch and the current Fluss development and release
-line. It is protected, requires pull requests for ordinary changes, and requires
-linear history.
+`fluss-main` is the default branch and the current Fluss development and
+Snapshot line. It is protected, requires pull requests for ordinary changes,
+and requires linear history. RC and final release tags are never created
+directly from `fluss-main`.
 
 Feature branches are short-lived. Their names use lowercase letters, numbers,
 hyphens, and dots. A feature branch may be rebased before integration.
 
-A `release-<rocksdb-version>` branch is created only when a previously released
-line requires maintenance after `fluss-main` has moved to a newer upstream
-release.
+Fluss release branches are named `fluss-release-X.Y`, where `X.Y` is the major
+and minor series of the selected RocksDB release. This name is intentionally
+distinct from the Facebook/RocksDB release-branch naming scheme. RC and final
+releases for the series are built only from this Fluss release branch.
 
 ## Ordinary changes
 
@@ -30,6 +32,20 @@ Pull requests are squash-merged. The squash commit describes the resulting
 change rather than the development process. Merge commits and GitHub rebase
 merges are disabled. Ordinary feature and fix integration never force-pushes or
 rewrites `fluss-main`.
+
+## Preparing a release branch
+
+1. Select the immutable Facebook/RocksDB release tag `vX.Y.Z` that will be the
+   release baseline. Do not use an arbitrary `facebook/rocksdb/main` commit.
+2. Create `fluss-release-X.Y` from that upstream tag.
+3. Replay the applicable Fluss changes from `fluss-main` onto the release
+   branch in their logical order. Adapt a change within its own commit when the
+   selected RocksDB baseline requires compatibility work.
+4. Review and validate the complete release branch, including the full
+   supported JNI platform matrix.
+5. Create RC or final tags only from commits contained in
+   `origin/fluss-release-X.Y`. The selected upstream tag `vX.Y.Z` must be an
+   ancestor of every such tag commit.
 
 ## Upstream release upgrades
 
@@ -60,8 +76,9 @@ is the only operation allowed to rewrite that branch.
 
 Published release tags are immutable and remain attached to their original
 histories. Rewriting `fluss-main` therefore does not rewrite a published
-release. If an old line still needs fixes, create its release branch from the
-published tag before making those fixes.
+release. Fixes for an existing released series are developed on its
+`fluss-release-X.Y` branch and published under a new immutable RC sequence or
+Fluss revision.
 
 ## Fork synchronization
 
