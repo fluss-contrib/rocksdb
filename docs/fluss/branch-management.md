@@ -43,9 +43,9 @@ rewrites `fluss-main`.
    selected RocksDB baseline requires compatibility work.
 4. Review and validate the complete release branch, including the full
    supported JNI platform matrix.
-5. Create RC or final tags only from commits contained in
-   `origin/fluss-release-X.Y`. The selected upstream tag `vX.Y.Z` must be an
-   ancestor of every such tag commit.
+5. Create RC or final tags only from commits that are not contained in
+   `origin/fluss-main` and are contained in `origin/fluss-release-X.Y`. The
+   selected upstream tag `vX.Y.Z` must be an ancestor of every such tag commit.
 
 ## Upstream release upgrades
 

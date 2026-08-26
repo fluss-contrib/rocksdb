@@ -121,9 +121,16 @@ jobs:
               upstream_tag="v$tagged_rocksdb_version"
 
               git fetch --no-tags origin \
+                '+refs/heads/fluss-main:refs/remotes/origin/fluss-main' \
                 "+refs/heads/$release_branch:$release_ref" \
                 "+refs/tags/$upstream_tag:refs/tags/$upstream_tag"
               tag_commit=$(git rev-parse "$RELEASE_TAG^{commit}")
+              if git merge-base --is-ancestor \
+                "$tag_commit" refs/remotes/origin/fluss-main; then
+                echo "RC/final release tags must not target a commit contained in origin/fluss-main" >&2
+                exit 1
+              fi
+
               if ! git merge-base --is-ancestor \
                 "$tag_commit" "$release_ref"; then
                 echo "Release tag target is not contained in origin/$release_branch" >&2

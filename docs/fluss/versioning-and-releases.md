@@ -108,6 +108,7 @@ The workflow rejects a tag when:
 
 - the RocksDB portion does not match `include/rocksdb/version.h`;
 - the Fluss revision or RC sequence is not a positive integer;
+- the tag target is contained in `origin/fluss-main`;
 - the tag target is not contained in `origin/fluss-release-X.Y`;
 - the upstream RocksDB tag `vX.Y.Z` is not an ancestor of the release tag
   commit; or
@@ -169,8 +170,9 @@ environment and cannot access its secrets.
 
 ## RC and final publication order
 
-1. Validate the tag and version, require its commit on the matching
-   `origin/fluss-release-X.Y`, and verify ancestry from upstream tag `vX.Y.Z`.
+1. Validate the tag and version, reject a commit contained in
+   `origin/fluss-main`, require it on the matching `origin/fluss-release-X.Y`,
+   and verify ancestry from upstream tag `vX.Y.Z`.
 2. Build and smoke-test every supported platform.
 3. Assemble and verify the four-platform JNI JAR.
 4. Generate and verify the complete signed Maven component.
