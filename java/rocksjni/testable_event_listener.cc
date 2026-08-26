@@ -7,7 +7,7 @@
 #include <iostream>
 #include <utility>
 
-#include "include/org_rocksdb_test_TestableEventListener.h"
+#include "include/org_fluss_rocksdb_test_TestableEventListener.h"
 #include "rocksdb/listener.h"
 #include "rocksdb/status.h"
 #include "rocksdb/table_properties.h"
@@ -73,11 +73,11 @@ static TableProperties newTablePropertiesForTest() {
 }
 
 /*
- * Class:     org_rocksdb_test_TestableEventListener
+ * Class:     org_fluss_rocksdb_test_TestableEventListener
  * Method:    invokeAllCallbacks
  * Signature: (J)V
  */
-void Java_org_rocksdb_test_TestableEventListener_invokeAllCallbacks(
+void Java_org_fluss_rocksdb_test_TestableEventListener_invokeAllCallbacks(
     JNIEnv *, jclass, jlong jhandle) {
   const auto &el =
       *reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::EventListener> *>(

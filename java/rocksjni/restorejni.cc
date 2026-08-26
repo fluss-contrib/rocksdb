@@ -13,29 +13,29 @@
 
 #include <string>
 
-#include "include/org_rocksdb_RestoreOptions.h"
+#include "include/org_fluss_rocksdb_RestoreOptions.h"
 #include "rocksdb/utilities/backup_engine.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 /*
- * Class:     org_rocksdb_RestoreOptions
+ * Class:     org_fluss_rocksdb_RestoreOptions
  * Method:    newRestoreOptions
  * Signature: (Z)J
  */
-jlong Java_org_rocksdb_RestoreOptions_newRestoreOptions(
+jlong Java_org_fluss_rocksdb_RestoreOptions_newRestoreOptions(
     JNIEnv* /*env*/, jclass /*jcls*/, jboolean keep_log_files) {
   auto* ropt = new ROCKSDB_NAMESPACE::RestoreOptions(keep_log_files);
   return GET_CPLUSPLUS_POINTER(ropt);
 }
 
 /*
- * Class:     org_rocksdb_RestoreOptions
+ * Class:     org_fluss_rocksdb_RestoreOptions
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_RestoreOptions_disposeInternalJni(JNIEnv* /*env*/,
-                                                        jclass /*jobj*/,
-                                                        jlong jhandle) {
+void Java_org_fluss_rocksdb_RestoreOptions_disposeInternalJni(JNIEnv* /*env*/,
+                                                              jclass /*jobj*/,
+                                                              jlong jhandle) {
   auto* ropt = reinterpret_cast<ROCKSDB_NAMESPACE::RestoreOptions*>(jhandle);
   assert(ropt);
   delete ropt;

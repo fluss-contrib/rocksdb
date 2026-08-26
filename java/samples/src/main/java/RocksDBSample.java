@@ -4,13 +4,12 @@
 //  (found in the LICENSE.Apache file in the root directory).
 
 import java.lang.IllegalArgumentException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-
-import org.rocksdb.*;
-import org.rocksdb.util.SizeUnit;
+import org.fluss.rocksdb.*;
+import org.fluss.rocksdb.util.SizeUnit;
 
 public class RocksDBSample {
   static {

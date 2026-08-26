@@ -11,10 +11,10 @@
 
 #include "db/memtable.h"
 #include "db/write_batch_internal.h"
-#include "include/org_rocksdb_WriteBatch.h"
-#include "include/org_rocksdb_WriteBatchTest.h"
-#include "include/org_rocksdb_WriteBatchTestInternalHelper.h"
-#include "include/org_rocksdb_WriteBatch_Handler.h"
+#include "include/org_fluss_rocksdb_WriteBatch.h"
+#include "include/org_fluss_rocksdb_WriteBatchTest.h"
+#include "include/org_fluss_rocksdb_WriteBatchTestInternalHelper.h"
+#include "include/org_fluss_rocksdb_WriteBatch_Handler.h"
 #include "options/cf_options.h"
 #include "rocksdb/db.h"
 #include "rocksdb/env.h"
@@ -26,13 +26,13 @@
 #include "util/string_util.h"
 
 /*
- * Class:     org_rocksdb_WriteBatchTest
+ * Class:     org_fluss_rocksdb_WriteBatchTest
  * Method:    getContents
  * Signature: (J)[B
  */
-jbyteArray Java_org_rocksdb_WriteBatchTest_getContents(JNIEnv* env,
-                                                       jclass /*jclazz*/,
-                                                       jlong jwb_handle) {
+jbyteArray Java_org_fluss_rocksdb_WriteBatchTest_getContents(JNIEnv* env,
+                                                             jclass /*jclazz*/,
+                                                             jlong jwb_handle) {
   auto* b = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle);
   assert(b != nullptr);
 
@@ -154,11 +154,11 @@ jbyteArray Java_org_rocksdb_WriteBatchTest_getContents(JNIEnv* env,
 }
 
 /*
- * Class:     org_rocksdb_WriteBatchTestInternalHelper
+ * Class:     org_fluss_rocksdb_WriteBatchTestInternalHelper
  * Method:    setSequence
  * Signature: (JJ)V
  */
-void Java_org_rocksdb_WriteBatchTestInternalHelper_setSequence(
+void Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_setSequence(
     JNIEnv* /*env*/, jclass /*jclazz*/, jlong jwb_handle, jlong jsn) {
   auto* wb = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle);
   assert(wb != nullptr);
@@ -168,13 +168,12 @@ void Java_org_rocksdb_WriteBatchTestInternalHelper_setSequence(
 }
 
 /*
- * Class:     org_rocksdb_WriteBatchTestInternalHelper
+ * Class:     org_fluss_rocksdb_WriteBatchTestInternalHelper
  * Method:    sequence
  * Signature: (J)J
  */
-jlong Java_org_rocksdb_WriteBatchTestInternalHelper_sequence(JNIEnv* /*env*/,
-                                                             jclass /*jclazz*/,
-                                                             jlong jwb_handle) {
+jlong Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_sequence(
+    JNIEnv* /*env*/, jclass /*jclazz*/, jlong jwb_handle) {
   auto* wb = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle);
   assert(wb != nullptr);
 
@@ -183,14 +182,13 @@ jlong Java_org_rocksdb_WriteBatchTestInternalHelper_sequence(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_WriteBatchTestInternalHelper
+ * Class:     org_fluss_rocksdb_WriteBatchTestInternalHelper
  * Method:    append
  * Signature: (JJ)V
  */
-void Java_org_rocksdb_WriteBatchTestInternalHelper_append(JNIEnv* /*env*/,
-                                                          jclass /*jclazz*/,
-                                                          jlong jwb_handle_1,
-                                                          jlong jwb_handle_2) {
+void Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_append(
+    JNIEnv* /*env*/, jclass /*jclazz*/, jlong jwb_handle_1,
+    jlong jwb_handle_2) {
   auto* wb1 = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle_1);
   assert(wb1 != nullptr);
   auto* wb2 = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle_2);

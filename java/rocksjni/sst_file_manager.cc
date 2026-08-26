@@ -13,16 +13,16 @@
 
 #include <memory>
 
-#include "include/org_rocksdb_SstFileManager.h"
+#include "include/org_fluss_rocksdb_SstFileManager.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    newSstFileManager
  * Signature: (JJJDJ)J
  */
-jlong Java_org_rocksdb_SstFileManager_newSstFileManager(
+jlong Java_org_fluss_rocksdb_SstFileManager_newSstFileManager(
     JNIEnv* jnienv, jclass /*jcls*/, jlong jenv_handle, jlong jlogger_handle,
     jlong jrate_bytes, jdouble jmax_trash_db_ratio,
     jlong jmax_delete_chunk_bytes) {
@@ -56,11 +56,11 @@ jlong Java_org_rocksdb_SstFileManager_newSstFileManager(
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    setMaxAllowedSpaceUsage
  * Signature: (JJ)V
  */
-void Java_org_rocksdb_SstFileManager_setMaxAllowedSpaceUsage(
+void Java_org_fluss_rocksdb_SstFileManager_setMaxAllowedSpaceUsage(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jmax_allowed_space) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
@@ -69,11 +69,11 @@ void Java_org_rocksdb_SstFileManager_setMaxAllowedSpaceUsage(
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    setCompactionBufferSize
  * Signature: (JJ)V
  */
-void Java_org_rocksdb_SstFileManager_setCompactionBufferSize(
+void Java_org_fluss_rocksdb_SstFileManager_setCompactionBufferSize(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jcompaction_buffer_size) {
   auto* sptr_sst_file_manager =
@@ -84,11 +84,11 @@ void Java_org_rocksdb_SstFileManager_setCompactionBufferSize(
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    isMaxAllowedSpaceReached
  * Signature: (J)Z
  */
-jboolean Java_org_rocksdb_SstFileManager_isMaxAllowedSpaceReached(
+jboolean Java_org_fluss_rocksdb_SstFileManager_isMaxAllowedSpaceReached(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
@@ -97,12 +97,12 @@ jboolean Java_org_rocksdb_SstFileManager_isMaxAllowedSpaceReached(
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    isMaxAllowedSpaceReachedIncludingCompactions
  * Signature: (J)Z
  */
 jboolean
-Java_org_rocksdb_SstFileManager_isMaxAllowedSpaceReachedIncludingCompactions(
+Java_org_fluss_rocksdb_SstFileManager_isMaxAllowedSpaceReachedIncludingCompactions(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
@@ -112,13 +112,13 @@ Java_org_rocksdb_SstFileManager_isMaxAllowedSpaceReachedIncludingCompactions(
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    getTotalSize
  * Signature: (J)J
  */
-jlong Java_org_rocksdb_SstFileManager_getTotalSize(JNIEnv* /*env*/,
-                                                   jclass /*jcls*/,
-                                                   jlong jhandle) {
+jlong Java_org_fluss_rocksdb_SstFileManager_getTotalSize(JNIEnv* /*env*/,
+                                                         jclass /*jcls*/,
+                                                         jlong jhandle) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
           jhandle);
@@ -126,13 +126,13 @@ jlong Java_org_rocksdb_SstFileManager_getTotalSize(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    getTrackedFiles
  * Signature: (J)Ljava/util/Map;
  */
-jobject Java_org_rocksdb_SstFileManager_getTrackedFiles(JNIEnv* env,
-                                                        jclass /*jcls*/,
-                                                        jlong jhandle) {
+jobject Java_org_fluss_rocksdb_SstFileManager_getTrackedFiles(JNIEnv* env,
+                                                              jclass /*jcls*/,
+                                                              jlong jhandle) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
           jhandle);
@@ -180,11 +180,11 @@ jobject Java_org_rocksdb_SstFileManager_getTrackedFiles(JNIEnv* env,
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    getDeleteRateBytesPerSecond
  * Signature: (J)J
  */
-jlong Java_org_rocksdb_SstFileManager_getDeleteRateBytesPerSecond(
+jlong Java_org_fluss_rocksdb_SstFileManager_getDeleteRateBytesPerSecond(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
@@ -193,11 +193,11 @@ jlong Java_org_rocksdb_SstFileManager_getDeleteRateBytesPerSecond(
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    setDeleteRateBytesPerSecond
  * Signature: (JJ)V
  */
-void Java_org_rocksdb_SstFileManager_setDeleteRateBytesPerSecond(
+void Java_org_fluss_rocksdb_SstFileManager_setDeleteRateBytesPerSecond(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jdelete_rate) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
@@ -206,13 +206,12 @@ void Java_org_rocksdb_SstFileManager_setDeleteRateBytesPerSecond(
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    getMaxTrashDBRatio
  * Signature: (J)D
  */
-jdouble Java_org_rocksdb_SstFileManager_getMaxTrashDBRatio(JNIEnv* /*env*/,
-                                                           jclass /*jcls*/,
-                                                           jlong jhandle) {
+jdouble Java_org_fluss_rocksdb_SstFileManager_getMaxTrashDBRatio(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
           jhandle);
@@ -220,14 +219,14 @@ jdouble Java_org_rocksdb_SstFileManager_getMaxTrashDBRatio(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    setMaxTrashDBRatio
  * Signature: (JD)V
  */
-void Java_org_rocksdb_SstFileManager_setMaxTrashDBRatio(JNIEnv* /*env*/,
-                                                        jclass /*jcls*/,
-                                                        jlong jhandle,
-                                                        jdouble jratio) {
+void Java_org_fluss_rocksdb_SstFileManager_setMaxTrashDBRatio(JNIEnv* /*env*/,
+                                                              jclass /*jcls*/,
+                                                              jlong jhandle,
+                                                              jdouble jratio) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
           jhandle);
@@ -235,13 +234,13 @@ void Java_org_rocksdb_SstFileManager_setMaxTrashDBRatio(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_SstFileManager
+ * Class:     org_fluss_rocksdb_SstFileManager
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_SstFileManager_disposeInternalJni(JNIEnv* /*env*/,
-                                                        jclass /*cls*/,
-                                                        jlong jhandle) {
+void Java_org_fluss_rocksdb_SstFileManager_disposeInternalJni(JNIEnv* /*env*/,
+                                                              jclass /*cls*/,
+                                                              jlong jhandle) {
   auto* sptr_sst_file_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::SstFileManager>*>(
           jhandle);

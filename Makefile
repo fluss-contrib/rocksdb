@@ -2090,9 +2090,9 @@ endif
 
 ifeq (,$(ROCKSDBJNILIB))
 ifneq (,$(filter ppc% s390x arm64 aarch64 riscv64 sparc64 loongarch64, $(MACHINE)))
-	ROCKSDBJNILIB = librocksdbjni-linux-$(MACHINE)$(JNI_LIBC_POSTFIX).so
+	ROCKSDBJNILIB = libflussrocksdbjni-linux-$(MACHINE)$(JNI_LIBC_POSTFIX).so
 else
-	ROCKSDBJNILIB = librocksdbjni-linux$(ARCH)$(JNI_LIBC_POSTFIX).so
+	ROCKSDBJNILIB = libflussrocksdbjni-linux$(ARCH)$(JNI_LIBC_POSTFIX).so
 endif
 endif
 ROCKSDB_JAVA_VERSION ?= $(ROCKSDB_MAJOR).$(ROCKSDB_MINOR).$(ROCKSDB_PATCH)
@@ -2120,13 +2120,13 @@ ZSTD_DOWNLOAD_BASE ?= https://github.com/facebook/zstd/archive
 CURL_SSL_OPTS ?= --tlsv1
 
 ifeq ($(PLATFORM), OS_MACOSX)
-ifeq (,$(findstring librocksdbjni-osx,$(ROCKSDBJNILIB)))
+ifeq (,$(findstring libflussrocksdbjni-osx,$(ROCKSDBJNILIB)))
 ifeq ($(MACHINE),arm64)
-	ROCKSDBJNILIB = librocksdbjni-osx-arm64.jnilib
+	ROCKSDBJNILIB = libflussrocksdbjni-osx-arm64.jnilib
 else ifeq ($(MACHINE),x86_64)
-	ROCKSDBJNILIB = librocksdbjni-osx-x86_64.jnilib
+	ROCKSDBJNILIB = libflussrocksdbjni-osx-x86_64.jnilib
 else
-	ROCKSDBJNILIB = librocksdbjni-osx.jnilib
+	ROCKSDBJNILIB = libflussrocksdbjni-osx.jnilib
 endif
 endif
 	ROCKSDB_JAR = rocksdbjni-$(ROCKSDB_JAVA_VERSION)-osx.jar
@@ -2140,24 +2140,24 @@ endif
 
 ifeq ($(PLATFORM), OS_FREEBSD)
 	JAVA_INCLUDE = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/freebsd
-	ROCKSDBJNILIB = librocksdbjni-freebsd$(ARCH).so
+	ROCKSDBJNILIB = libflussrocksdbjni-freebsd$(ARCH).so
 	ROCKSDB_JAR = rocksdbjni-$(ROCKSDB_JAVA_VERSION)-freebsd$(ARCH).jar
 endif
 ifeq ($(PLATFORM), OS_SOLARIS)
-	ROCKSDBJNILIB = librocksdbjni-solaris$(ARCH).so
+	ROCKSDBJNILIB = libflussrocksdbjni-solaris$(ARCH).so
 	ROCKSDB_JAR = rocksdbjni-$(ROCKSDB_MAJOR).$(ROCKSDB_MINOR).$(ROCKSDB_PATCH)-solaris$(ARCH).jar
 	JAVA_INCLUDE = -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/solaris
 	SHA256_CMD = digest -a sha256
 endif
 ifeq ($(PLATFORM), OS_AIX)
 	JAVA_INCLUDE = -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/aix
-	ROCKSDBJNILIB = librocksdbjni-aix.so
+	ROCKSDBJNILIB = libflussrocksdbjni-aix.so
 	EXTRACT_SOURCES = gunzip < TAR_GZ | tar xvf -
 	SNAPPY_MAKE_TARGET = libsnappy.la
 endif
 ifeq ($(PLATFORM), OS_OPENBSD)
 	JAVA_INCLUDE = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/openbsd
-	ROCKSDBJNILIB = librocksdbjni-openbsd$(ARCH).so
+	ROCKSDBJNILIB = libflussrocksdbjni-openbsd$(ARCH).so
 	ROCKSDB_JAR = rocksdbjni-$(ROCKSDB_JAVA_VERSION)-openbsd$(ARCH).jar
 endif
 export SHA256_CMD
@@ -2244,6 +2244,9 @@ endif
 
 JAVA_STATIC_FLAGS = -DZLIB -DBZIP2 -DSNAPPY -DLZ4 -DZSTD
 JAVA_STATIC_INCLUDES = -I./zlib-$(ZLIB_VER) -I./bzip2-$(BZIP2_VER) -I./snappy-$(SNAPPY_VER) -I./snappy-$(SNAPPY_VER)/build -I./lz4-$(LZ4_VER)/lib -I./zstd-$(ZSTD_VER)/lib -I./zstd-$(ZSTD_VER)/lib/dictBuilder
+ifeq ($(PLATFORM), OS_LINUX)
+JAVA_STATIC_LDFLAGS += -static-libstdc++ -static-libgcc
+endif
 
 ifneq ($(findstring rocksdbjavastatic, $(filter-out rocksdbjavastatic_deps, $(MAKECMDGOALS))),)
 CXXFLAGS += $(JAVA_STATIC_FLAGS) $(JAVA_STATIC_INCLUDES)
@@ -2260,15 +2263,15 @@ endif
 
 rocksdbjavastaticosx: rocksdbjavastaticosx_archs
 	cd java; $(JAR_CMD)  -cf target/$(ROCKSDB_JAR) HISTORY*.md
-	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR) librocksdbjni-osx-x86_64.jnilib librocksdbjni-osx-arm64.jnilib
-	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR) org/rocksdb/*.class org/rocksdb/util/*.class
+	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR) libflussrocksdbjni-osx-x86_64.jnilib libflussrocksdbjni-osx-arm64.jnilib
+	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR) org/fluss/rocksdb/*.class org/fluss/rocksdb/util/*.class
 	openssl sha1 java/target/$(ROCKSDB_JAR) | sed 's/.*= \([0-9a-f]*\)/\1/' > java/target/$(ROCKSDB_JAR).sha1
 
 rocksdbjavastaticosx_ub: rocksdbjavastaticosx_archs
-	cd java/target; lipo -create -output librocksdbjni-osx.jnilib librocksdbjni-osx-x86_64.jnilib librocksdbjni-osx-arm64.jnilib
+	cd java/target; lipo -create -output libflussrocksdbjni-osx.jnilib libflussrocksdbjni-osx-x86_64.jnilib libflussrocksdbjni-osx-arm64.jnilib
 	cd java; $(JAR_CMD)  -cf target/$(ROCKSDB_JAR) HISTORY*.md
-	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR) librocksdbjni-osx.jnilib
-	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR) org/rocksdb/*.class org/rocksdb/util/*.class
+	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR) libflussrocksdbjni-osx.jnilib
+	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR) org/fluss/rocksdb/*.class org/fluss/rocksdb/util/*.class
 	openssl sha1 java/target/$(ROCKSDB_JAR) | sed 's/.*= \([0-9a-f]*\)/\1/' > java/target/$(ROCKSDB_JAR).sha1
 
 rocksdbjavastaticosx_archs:
@@ -2283,7 +2286,7 @@ endif
 	$(MAKE) clean-rocks
 	ARCHFLAG="-arch $*" $(MAKE) rocksdbjavastatic_deps
 	ARCHFLAG="-arch $*" $(MAKE) rocksdbjavastatic_libobjects
-	ARCHFLAG="-arch $*" ROCKSDBJNILIB="librocksdbjni-osx-$*.jnilib" $(MAKE) rocksdbjavastatic_javalib
+	ARCHFLAG="-arch $*" ROCKSDBJNILIB="libflussrocksdbjni-osx-$*.jnilib" $(MAKE) rocksdbjavastatic_javalib
 
 ifeq ($(JAR_CMD),)
 ifneq ($(JAVA_HOME),)
@@ -2306,7 +2309,7 @@ rocksdbjavastatic_javalib:
 rocksdbjava_jar:
 	cd java; $(JAR_CMD)  -cf target/$(ROCKSDB_JAR) HISTORY*.md
 	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR) $(ROCKSDBJNILIB)
-	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR) org/rocksdb/*.class org/rocksdb/util/*.class
+	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR) org/fluss/rocksdb/*.class org/fluss/rocksdb/util/*.class
 	openssl sha1 java/target/$(ROCKSDB_JAR) | sed 's/.*= \([0-9a-f]*\)/\1/' > java/target/$(ROCKSDB_JAR).sha1
 
 rocksdbjava_javadocs_jar:
@@ -2324,14 +2327,14 @@ rocksdbjavastatic_libobjects: $(LIB_OBJECTS)
 rocksdbjavastaticrelease: rocksdbjavastaticosx rocksdbjava_javadocs_jar rocksdbjava_sources_jar
 	cd java/crossbuild && (vagrant destroy -f || true) && vagrant up linux32 && vagrant halt linux32 && vagrant up linux64 && vagrant halt linux64 && vagrant up linux64-musl && vagrant halt linux64-musl
 	cd java; $(JAR_CMD) -cf target/$(ROCKSDB_JAR_ALL) HISTORY*.md
-	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR_ALL) librocksdbjni-*.so librocksdbjni-*.jnilib
-	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR_ALL) org/rocksdb/*.class org/rocksdb/util/*.class
+	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR_ALL) libflussrocksdbjni-*.so libflussrocksdbjni-*.jnilib
+	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR_ALL) org/fluss/rocksdb/*.class org/fluss/rocksdb/util/*.class
 	openssl sha1 java/target/$(ROCKSDB_JAR_ALL) | sed 's/.*= \([0-9a-f]*\)/\1/' > java/target/$(ROCKSDB_JAR_ALL).sha1
 
 rocksdbjavastaticreleasedocker: rocksdbjavastaticosx rocksdbjavastaticdockerx86 rocksdbjavastaticdockerx86_64 rocksdbjavastaticdockerx86musl rocksdbjavastaticdockerx86_64musl rocksdbjava_javadocs_jar rocksdbjava_sources_jar
 	cd java; $(JAR_CMD) -cf target/$(ROCKSDB_JAR_ALL) HISTORY*.md
-	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR_ALL) librocksdbjni-*.so librocksdbjni-*.jnilib
-	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR_ALL) org/rocksdb/*.class org/rocksdb/util/*.class
+	cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR_ALL) libflussrocksdbjni-*.so libflussrocksdbjni-*.jnilib
+	cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR_ALL) org/fluss/rocksdb/*.class org/fluss/rocksdb/util/*.class
 	openssl sha1 java/target/$(ROCKSDB_JAR_ALL) | sed 's/.*= \([0-9a-f]*\)/\1/' > java/target/$(ROCKSDB_JAR_ALL).sha1
 
 rocksdbjavastaticdockerx86:
@@ -2416,7 +2419,7 @@ endif
 	$(AM_V_at)$(CXX) $(CXXFLAGS) -I./java/. -I./java/rocksjni $(JAVA_INCLUDE) $(ROCKSDB_PLUGIN_JNI_CXX_INCLUDEFLAGS) -shared -fPIC -o ./java/target/$(ROCKSDBJNILIB) $(ALL_JNI_NATIVE_SOURCES) $(LIB_OBJECTS) $(JAVA_LDFLAGS) $(COVERAGEFLAGS)
 	$(AM_V_at)cd java; $(JAR_CMD) -cf target/$(ROCKSDB_JAR) HISTORY*.md
 	$(AM_V_at)cd java/target; $(JAR_CMD) -uf $(ROCKSDB_JAR) $(ROCKSDBJNILIB)
-	$(AM_V_at)cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR) org/rocksdb/*.class org/rocksdb/util/*.class
+	$(AM_V_at)cd java/target/classes; $(JAR_CMD) -uf ../$(ROCKSDB_JAR) org/fluss/rocksdb/*.class org/fluss/rocksdb/util/*.class
 	$(AM_V_at)openssl sha1 java/target/$(ROCKSDB_JAR) | sed 's/.*= \([0-9a-f]*\)/\1/' > java/target/$(ROCKSDB_JAR).sha1
 
 jclean:

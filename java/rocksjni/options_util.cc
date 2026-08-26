@@ -12,7 +12,7 @@
 
 #include <string>
 
-#include "include/org_rocksdb_OptionsUtil.h"
+#include "include/org_fluss_rocksdb_OptionsUtil.h"
 #include "rocksdb/db.h"
 #include "rocksdb/env.h"
 #include "rocksjni/portal.h"
@@ -52,11 +52,11 @@ void build_column_family_descriptor_list(
 }
 
 /*
- * Class:     org_rocksdb_OptionsUtil
+ * Class:     org_fluss_rocksdb_OptionsUtil
  * Method:    loadLatestOptions
  * Signature: (JLjava/lang/String;JLjava/util/List;)V
  */
-void Java_org_rocksdb_OptionsUtil_loadLatestOptions(
+void Java_org_fluss_rocksdb_OptionsUtil_loadLatestOptions(
     JNIEnv* env, jclass /*jcls*/, jlong cfg_handle, jstring jdbpath,
     jlong jdb_opts_handle, jobject jcfds) {
   jboolean has_exception = JNI_FALSE;
@@ -82,11 +82,11 @@ void Java_org_rocksdb_OptionsUtil_loadLatestOptions(
 }
 
 /*
- * Class:     org_rocksdb_OptionsUtil
+ * Class:     org_fluss_rocksdb_OptionsUtil
  * Method:    loadOptionsFromFile
  * Signature: (JLjava/lang/String;JLjava/util/List;)V
  */
-void Java_org_rocksdb_OptionsUtil_loadOptionsFromFile(
+void Java_org_fluss_rocksdb_OptionsUtil_loadOptionsFromFile(
     JNIEnv* env, jclass /*jcls*/, jlong cfg_handle, jstring jopts_file_name,
     jlong jdb_opts_handle, jobject jcfds) {
   jboolean has_exception = JNI_FALSE;
@@ -112,11 +112,11 @@ void Java_org_rocksdb_OptionsUtil_loadOptionsFromFile(
 }
 
 /*
- * Class:     org_rocksdb_OptionsUtil
+ * Class:     org_fluss_rocksdb_OptionsUtil
  * Method:    getLatestOptionsFileName
  * Signature: (Ljava/lang/String;J)Ljava/lang/String;
  */
-jstring Java_org_rocksdb_OptionsUtil_getLatestOptionsFileName(
+jstring Java_org_fluss_rocksdb_OptionsUtil_getLatestOptionsFileName(
     JNIEnv* env, jclass /*jcls*/, jstring jdbpath, jlong jenv_handle) {
   jboolean has_exception = JNI_FALSE;
   auto db_path =
@@ -139,12 +139,12 @@ jstring Java_org_rocksdb_OptionsUtil_getLatestOptionsFileName(
 }
 
 /*
- * Class:     org_rocksdb_OptionsUtil
+ * Class:     org_fluss_rocksdb_OptionsUtil
  * Method:    readTableFormatConfig
- * Signature: (J)Lorg/rocksdb/TableFormatConfig;
+ * Signature: (J)Lorg/fluss/rocksdb/TableFormatConfig;
  */
-jobject Java_org_rocksdb_OptionsUtil_readTableFormatConfig(JNIEnv* env, jclass,
-                                                           jlong jcf_options) {
+jobject Java_org_fluss_rocksdb_OptionsUtil_readTableFormatConfig(
+    JNIEnv* env, jclass, jlong jcf_options) {
   if (jcf_options == 0) {
     env->ThrowNew(
         ROCKSDB_NAMESPACE::IllegalArgumentExceptionJni::getJClass(env),
