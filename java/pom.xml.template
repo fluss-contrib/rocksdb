@@ -2,15 +2,15 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.rocksdb</groupId>
-    <artifactId>rocksdbjni</artifactId>
+    <groupId>io.github.fluss-contrib</groupId>
+    <artifactId>fluss-rocksdbjni</artifactId>
     <version>${ROCKSDB_JAVA_VERSION}</version>  <!-- this will be replaced by the Makefile's rocksdbjavageneratepom target -->
 
-    <name>RocksDB JNI</name>
+    <name>Fluss RocksDB JNI</name>
     <description>RocksDB fat jar that contains .so files for linux32 and linux64 (glibc and musl-libc), jnilib files
         for Mac OSX, and a .dll for Windows x64.
     </description>
-    <url>https://rocksdb.org</url>
+    <url>https://github.com/fluss-contrib/rocksdb</url>
     <inceptionYear>2012</inceptionYear>
 
     <licenses>
@@ -27,14 +27,14 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://github.com/facebook/rocksdb.git</connection>
-        <developerConnection>scm:git:https://github.com/facebook/rocksdb.git</developerConnection>
-        <url>scm:git:https://github.com/facebook/rocksdb.git</url>
+        <connection>scm:git:https://github.com/fluss-contrib/rocksdb.git</connection>
+        <developerConnection>scm:git:https://github.com/fluss-contrib/rocksdb.git</developerConnection>
+        <url>scm:git:https://github.com/fluss-contrib/rocksdb.git</url>
     </scm>
 
     <organization>
-        <name>Facebook</name>
-        <url>https://www.facebook.com</url>
+        <name>Fluss</name>
+        <url>https://github.com/fluss-contrib/rocksdb</url>
     </organization>
 
     <developers>
