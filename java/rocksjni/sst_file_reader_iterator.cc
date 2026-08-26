@@ -19,9 +19,8 @@
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_SstFileReaderIterator_disposeInternalJni(JNIEnv* /*env*/,
-                                                               jclass /*jobj*/,
-                                                               jlong handle) {
+void Java_org_fluss_rocksdb_SstFileReaderIterator_disposeInternalJni(
+    JNIEnv* /*env*/, jclass /*jobj*/, jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   assert(it != nullptr);
   delete it;
@@ -32,9 +31,8 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_disposeInternalJni(JNIEnv* /*e
  * Method:    isValid0
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_SstFileReaderIterator_isValid0Jni(JNIEnv* /*env*/,
-                                                            jclass /*cls*/,
-                                                            jlong handle) {
+jboolean Java_org_fluss_rocksdb_SstFileReaderIterator_isValid0Jni(
+    JNIEnv* /*env*/, jclass /*cls*/, jlong handle) {
   return reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->Valid();
 }
 
@@ -43,9 +41,8 @@ jboolean Java_org_fluss_rocksdb_SstFileReaderIterator_isValid0Jni(JNIEnv* /*env*
  * Method:    seekToFirst0
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_SstFileReaderIterator_seekToFirst0Jni(JNIEnv* /*env*/,
-                                                            jclass /*cls*/,
-                                                            jlong handle) {
+void Java_org_fluss_rocksdb_SstFileReaderIterator_seekToFirst0Jni(
+    JNIEnv* /*env*/, jclass /*cls*/, jlong handle) {
   reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->SeekToFirst();
 }
 
@@ -54,9 +51,8 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_seekToFirst0Jni(JNIEnv* /*env*
  * Method:    seekToLast0
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_SstFileReaderIterator_seekToLast0Jni(JNIEnv* /*env*/,
-                                                           jclass /*cls*/,
-                                                           jlong handle) {
+void Java_org_fluss_rocksdb_SstFileReaderIterator_seekToLast0Jni(
+    JNIEnv* /*env*/, jclass /*cls*/, jlong handle) {
   reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->SeekToLast();
 }
 
@@ -66,8 +62,8 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_seekToLast0Jni(JNIEnv* /*env*/
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_SstFileReaderIterator_next0Jni(JNIEnv* /*env*/,
-                                                     jclass /*cls*/,
-                                                     jlong handle) {
+                                                           jclass /*cls*/,
+                                                           jlong handle) {
   reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->Next();
 }
 
@@ -77,8 +73,8 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_next0Jni(JNIEnv* /*env*/,
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_SstFileReaderIterator_prev0Jni(JNIEnv* /*env*/,
-                                                     jclass /*cls*/,
-                                                     jlong handle) {
+                                                           jclass /*cls*/,
+                                                           jlong handle) {
   reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle)->Prev();
 }
 
@@ -88,10 +84,10 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_prev0Jni(JNIEnv* /*env*/,
  * Signature: (J[BI)V
  */
 void Java_org_fluss_rocksdb_SstFileReaderIterator_seek0Jni(JNIEnv* env,
-                                                     jclass /*cls*/,
-                                                     jlong handle,
-                                                     jbyteArray jtarget,
-                                                     jint jtarget_len) {
+                                                           jclass /*cls*/,
+                                                           jlong handle,
+                                                           jbyteArray jtarget,
+                                                           jint jtarget_len) {
   jbyte* target = env->GetByteArrayElements(jtarget, nullptr);
   if (target == nullptr) {
     // exception thrown: OutOfMemoryError
@@ -112,11 +108,9 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_seek0Jni(JNIEnv* env,
  * Method:    seekForPrev0
  * Signature: (J[BI)V
  */
-void Java_org_fluss_rocksdb_SstFileReaderIterator_seekForPrev0Jni(JNIEnv* env,
-                                                            jclass /*cls*/,
-                                                            jlong handle,
-                                                            jbyteArray jtarget,
-                                                            jint jtarget_len) {
+void Java_org_fluss_rocksdb_SstFileReaderIterator_seekForPrev0Jni(
+    JNIEnv* env, jclass /*cls*/, jlong handle, jbyteArray jtarget,
+    jint jtarget_len) {
   jbyte* target = env->GetByteArrayElements(jtarget, nullptr);
   if (target == nullptr) {
     // exception thrown: OutOfMemoryError
@@ -138,8 +132,8 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_seekForPrev0Jni(JNIEnv* env,
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_SstFileReaderIterator_status0Jni(JNIEnv* env,
-                                                       jclass /*cls*/,
-                                                       jlong handle) {
+                                                             jclass /*cls*/,
+                                                             jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   ROCKSDB_NAMESPACE::Status s = it->status();
 
@@ -156,8 +150,8 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_status0Jni(JNIEnv* env,
  * Signature: (J)[B
  */
 jbyteArray Java_org_fluss_rocksdb_SstFileReaderIterator_key0(JNIEnv* env,
-                                                       jclass /*jcls*/,
-                                                       jlong handle) {
+                                                             jclass /*jcls*/,
+                                                             jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   ROCKSDB_NAMESPACE::Slice key_slice = it->key();
 
@@ -178,8 +172,8 @@ jbyteArray Java_org_fluss_rocksdb_SstFileReaderIterator_key0(JNIEnv* env,
  * Signature: (J)[B
  */
 jbyteArray Java_org_fluss_rocksdb_SstFileReaderIterator_value0(JNIEnv* env,
-                                                         jclass /*jcls*/,
-                                                         jlong handle) {
+                                                               jclass /*jcls*/,
+                                                               jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   ROCKSDB_NAMESPACE::Slice value_slice = it->value();
 
@@ -361,8 +355,8 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_seekForPrevByteArray0Jni(
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_SstFileReaderIterator_refresh0Jni(JNIEnv* env,
-                                                        jclass /*cls*/,
-                                                        jlong handle) {
+                                                              jclass /*cls*/,
+                                                              jlong handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   ROCKSDB_NAMESPACE::Status s = it->Refresh();
 
@@ -378,10 +372,8 @@ void Java_org_fluss_rocksdb_SstFileReaderIterator_refresh0Jni(JNIEnv* env,
  * Method:    refresh1
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_SstFileReaderIterator_refresh1(JNIEnv* env,
-                                                     jobject /*jobj*/,
-                                                     jlong handle,
-                                                     jlong snapshot_handle) {
+void Java_org_fluss_rocksdb_SstFileReaderIterator_refresh1(
+    JNIEnv* env, jobject /*jobj*/, jlong handle, jlong snapshot_handle) {
   auto* it = reinterpret_cast<ROCKSDB_NAMESPACE::Iterator*>(handle);
   auto* snapshot =
       reinterpret_cast<ROCKSDB_NAMESPACE::Snapshot*>(snapshot_handle);

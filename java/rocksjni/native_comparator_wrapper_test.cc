@@ -33,7 +33,8 @@ class NativeComparatorWrapperTestStringComparator : public Comparator {
 }  // namespace ROCKSDB_NAMESPACE
 
 /*
- * Class: org_fluss_rocksdb_NativeComparatorWrapperTest_NativeStringComparatorWrapper
+ * Class:
+ * org_fluss_rocksdb_NativeComparatorWrapperTest_NativeStringComparatorWrapper
  * Method:    newStringComparator
  * Signature: ()J
  */

@@ -5,19 +5,18 @@
 
 package org.fluss.rocksdb;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.fluss.rocksdb.util.ByteUtil.bytes;
+import static org.fluss.rocksdb.util.TestUtil.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.fluss.rocksdb.util.ByteUtil.bytes;
-import static org.fluss.rocksdb.util.TestUtil.*;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class WalFilterTest {
 

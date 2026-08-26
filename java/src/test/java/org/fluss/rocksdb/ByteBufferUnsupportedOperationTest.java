@@ -8,11 +8,11 @@ package org.fluss.rocksdb;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import org.fluss.rocksdb.util.ReverseBytewiseComparator;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.util.ReverseBytewiseComparator;
 
 public class ByteBufferUnsupportedOperationTest {
   @ClassRule

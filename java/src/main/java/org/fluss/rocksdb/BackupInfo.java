@@ -9,7 +9,6 @@ package org.fluss.rocksdb;
  * {@link org.fluss.rocksdb.BackupEngine}.
  */
 public class BackupInfo {
-
   /**
    * Package private constructor used to create instances
    * of BackupInfo by {@link org.fluss.rocksdb.BackupEngine}

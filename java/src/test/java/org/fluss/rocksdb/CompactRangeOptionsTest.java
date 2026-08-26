@@ -5,10 +5,10 @@
 
 package org.fluss.rocksdb;
 
-import org.junit.Test;
-import org.fluss.rocksdb.CompactRangeOptions.BottommostLevelCompaction;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.fluss.rocksdb.CompactRangeOptions.BottommostLevelCompaction;
+import org.junit.Test;
 
 public class CompactRangeOptionsTest {
 

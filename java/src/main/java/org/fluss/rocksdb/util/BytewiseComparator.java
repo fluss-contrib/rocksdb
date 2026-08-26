@@ -5,11 +5,10 @@
 
 package org.fluss.rocksdb.util;
 
-import org.fluss.rocksdb.*;
+import static org.fluss.rocksdb.util.ByteUtil.memcmp;
 
 import java.nio.ByteBuffer;
-
-import static org.fluss.rocksdb.util.ByteUtil.memcmp;
+import org.fluss.rocksdb.*;
 
 /**
  * This is a Java Native implementation of the C++

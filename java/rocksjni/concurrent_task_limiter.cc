@@ -40,8 +40,9 @@ jlong Java_org_fluss_rocksdb_ConcurrentTaskLimiterImpl_newConcurrentTaskLimiterI
  * Method:    name
  * Signature: (J)Ljava/lang/String;
  */
-jstring Java_org_fluss_rocksdb_ConcurrentTaskLimiterImpl_name(JNIEnv* env, jclass,
-                                                        jlong handle) {
+jstring Java_org_fluss_rocksdb_ConcurrentTaskLimiterImpl_name(JNIEnv* env,
+                                                              jclass,
+                                                              jlong handle) {
   const auto& limiter = *reinterpret_cast<
       std::shared_ptr<ROCKSDB_NAMESPACE::ConcurrentTaskLimiter>*>(handle);
   return ROCKSDB_NAMESPACE::JniUtil::toJavaString(env, &limiter->GetName());
@@ -76,8 +77,8 @@ void Java_org_fluss_rocksdb_ConcurrentTaskLimiterImpl_resetMaxOutstandingTask(
  * Method:    outstandingTask
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_ConcurrentTaskLimiterImpl_outstandingTask(JNIEnv*, jclass,
-                                                                jlong handle) {
+jint Java_org_fluss_rocksdb_ConcurrentTaskLimiterImpl_outstandingTask(
+    JNIEnv*, jclass, jlong handle) {
   const auto& limiter = *reinterpret_cast<
       std::shared_ptr<ROCKSDB_NAMESPACE::ConcurrentTaskLimiter>*>(handle);
   return static_cast<jint>(limiter->GetOutstandingTask());

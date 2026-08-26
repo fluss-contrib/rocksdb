@@ -50,7 +50,6 @@ import java.util.List;
  * whole database may be deleted in a small amount of time.</p>
  */
 public class TtlDB extends RocksDB {
-
   /**
    * <p>Opens a TtlDB.</p>
    *

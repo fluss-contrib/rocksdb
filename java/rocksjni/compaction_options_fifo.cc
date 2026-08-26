@@ -17,8 +17,8 @@
  * Method:    newCompactionOptionsFIFO
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_CompactionOptionsFIFO_newCompactionOptionsFIFO(JNIEnv*,
-                                                                      jclass) {
+jlong Java_org_fluss_rocksdb_CompactionOptionsFIFO_newCompactionOptionsFIFO(
+    JNIEnv*, jclass) {
   const auto* opt = new ROCKSDB_NAMESPACE::CompactionOptionsFIFO();
   return GET_CPLUSPLUS_POINTER(opt);
 }
@@ -40,8 +40,8 @@ void Java_org_fluss_rocksdb_CompactionOptionsFIFO_setMaxTableFilesSize(
  * Method:    maxTableFilesSize
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_CompactionOptionsFIFO_maxTableFilesSize(JNIEnv*, jclass,
-                                                               jlong jhandle) {
+jlong Java_org_fluss_rocksdb_CompactionOptionsFIFO_maxTableFilesSize(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
   return static_cast<jlong>(opt->max_table_files_size);
@@ -64,8 +64,8 @@ void Java_org_fluss_rocksdb_CompactionOptionsFIFO_setAllowCompaction(
  * Method:    allowCompaction
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_CompactionOptionsFIFO_allowCompaction(JNIEnv*, jclass,
-                                                                jlong jhandle) {
+jboolean Java_org_fluss_rocksdb_CompactionOptionsFIFO_allowCompaction(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
   return static_cast<jboolean>(opt->allow_compaction);
@@ -76,7 +76,7 @@ jboolean Java_org_fluss_rocksdb_CompactionOptionsFIFO_allowCompaction(JNIEnv*, j
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsFIFO_disposeInternalJni(JNIEnv*, jclass,
-                                                               jlong jhandle) {
+void Java_org_fluss_rocksdb_CompactionOptionsFIFO_disposeInternalJni(
+    JNIEnv*, jclass, jlong jhandle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
 }

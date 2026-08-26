@@ -35,7 +35,7 @@ jlong Java_org_fluss_rocksdb_HyperClockCache_newHyperClockCache(
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_HyperClockCache_disposeInternalJni(JNIEnv*, jclass,
-                                                         jlong jhandle) {
+                                                               jlong jhandle) {
   auto* hyper_clock_cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::Cache>*>(jhandle);
   delete hyper_clock_cache;  // delete std::shared_ptr

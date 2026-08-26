@@ -7,6 +7,7 @@ package org.fluss.rocksdb;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.*;
+import org.fluss.rocksdb.util.Environment;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -14,7 +15,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.fluss.rocksdb.util.Environment;
 
 @RunWith(Parameterized.class)
 public class MultiGetManyKeysTest {

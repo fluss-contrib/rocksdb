@@ -5,16 +5,15 @@
 
 package org.fluss.rocksdb;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.test.RemoveEmptyValueCompactionFilterFactory;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.fluss.rocksdb.test.RemoveEmptyValueCompactionFilterFactory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class CompactionFilterFactoryTest {
 

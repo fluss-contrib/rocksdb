@@ -15,9 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.fluss.rocksdb.util.Environment;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.util.Environment;
 
 public class PerfContextTest {
   @ClassRule

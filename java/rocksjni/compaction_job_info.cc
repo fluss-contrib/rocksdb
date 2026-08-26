@@ -18,7 +18,8 @@
  * Method:    newCompactionJobInfo
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_CompactionJobInfo_newCompactionJobInfo(JNIEnv*, jclass) {
+jlong Java_org_fluss_rocksdb_CompactionJobInfo_newCompactionJobInfo(JNIEnv*,
+                                                                    jclass) {
   auto* compact_job_info = new ROCKSDB_NAMESPACE::CompactionJobInfo();
   return GET_CPLUSPLUS_POINTER(compact_job_info);
 }
@@ -28,8 +29,8 @@ jlong Java_org_fluss_rocksdb_CompactionJobInfo_newCompactionJobInfo(JNIEnv*, jcl
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_CompactionJobInfo_disposeInternalJni(JNIEnv*, jclass,
-                                                           jlong jhandle) {
+void Java_org_fluss_rocksdb_CompactionJobInfo_disposeInternalJni(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   delete compact_job_info;
@@ -40,9 +41,8 @@ void Java_org_fluss_rocksdb_CompactionJobInfo_disposeInternalJni(JNIEnv*, jclass
  * Method:    columnFamilyName
  * Signature: (J)[B
  */
-jbyteArray Java_org_fluss_rocksdb_CompactionJobInfo_columnFamilyName(JNIEnv* env,
-                                                               jclass,
-                                                               jlong jhandle) {
+jbyteArray Java_org_fluss_rocksdb_CompactionJobInfo_columnFamilyName(
+    JNIEnv* env, jclass, jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return ROCKSDB_NAMESPACE::JniUtil::copyBytes(env, compact_job_info->cf_name);
@@ -54,7 +54,7 @@ jbyteArray Java_org_fluss_rocksdb_CompactionJobInfo_columnFamilyName(JNIEnv* env
  * Signature: (J)Lorg/fluss/rocksdb/Status;
  */
 jobject Java_org_fluss_rocksdb_CompactionJobInfo_status(JNIEnv* env, jclass,
-                                                  jlong jhandle) {
+                                                        jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return ROCKSDB_NAMESPACE::StatusJni::construct(env, compact_job_info->status);
@@ -66,7 +66,7 @@ jobject Java_org_fluss_rocksdb_CompactionJobInfo_status(JNIEnv* env, jclass,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_CompactionJobInfo_threadId(JNIEnv*, jclass,
-                                                  jlong jhandle) {
+                                                        jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return static_cast<jlong>(compact_job_info->thread_id);
@@ -77,7 +77,8 @@ jlong Java_org_fluss_rocksdb_CompactionJobInfo_threadId(JNIEnv*, jclass,
  * Method:    jobId
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactionJobInfo_jobId(JNIEnv*, jclass, jlong jhandle) {
+jint Java_org_fluss_rocksdb_CompactionJobInfo_jobId(JNIEnv*, jclass,
+                                                    jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return static_cast<jint>(compact_job_info->job_id);
@@ -89,7 +90,7 @@ jint Java_org_fluss_rocksdb_CompactionJobInfo_jobId(JNIEnv*, jclass, jlong jhand
  * Signature: (J)I
  */
 jint Java_org_fluss_rocksdb_CompactionJobInfo_baseInputLevel(JNIEnv*, jclass,
-                                                       jlong jhandle) {
+                                                             jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return static_cast<jint>(compact_job_info->base_input_level);
@@ -101,7 +102,7 @@ jint Java_org_fluss_rocksdb_CompactionJobInfo_baseInputLevel(JNIEnv*, jclass,
  * Signature: (J)I
  */
 jint Java_org_fluss_rocksdb_CompactionJobInfo_outputLevel(JNIEnv*, jclass,
-                                                    jlong jhandle) {
+                                                          jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return static_cast<jint>(compact_job_info->output_level);
@@ -112,8 +113,8 @@ jint Java_org_fluss_rocksdb_CompactionJobInfo_outputLevel(JNIEnv*, jclass,
  * Method:    inputFiles
  * Signature: (J)[Ljava/lang/String;
  */
-jobjectArray Java_org_fluss_rocksdb_CompactionJobInfo_inputFiles(JNIEnv* env, jclass,
-                                                           jlong jhandle) {
+jobjectArray Java_org_fluss_rocksdb_CompactionJobInfo_inputFiles(
+    JNIEnv* env, jclass, jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return ROCKSDB_NAMESPACE::JniUtil::toJavaStrings(
@@ -125,8 +126,8 @@ jobjectArray Java_org_fluss_rocksdb_CompactionJobInfo_inputFiles(JNIEnv* env, jc
  * Method:    outputFiles
  * Signature: (J)[Ljava/lang/String;
  */
-jobjectArray Java_org_fluss_rocksdb_CompactionJobInfo_outputFiles(JNIEnv* env, jclass,
-                                                            jlong jhandle) {
+jobjectArray Java_org_fluss_rocksdb_CompactionJobInfo_outputFiles(
+    JNIEnv* env, jclass, jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return ROCKSDB_NAMESPACE::JniUtil::toJavaStrings(
@@ -138,8 +139,8 @@ jobjectArray Java_org_fluss_rocksdb_CompactionJobInfo_outputFiles(JNIEnv* env, j
  * Method:    tableProperties
  * Signature: (J)Ljava/util/Map;
  */
-jobject Java_org_fluss_rocksdb_CompactionJobInfo_tableProperties(JNIEnv* env, jclass,
-                                                           jlong jhandle) {
+jobject Java_org_fluss_rocksdb_CompactionJobInfo_tableProperties(
+    JNIEnv* env, jclass, jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   auto* map = &compact_job_info->table_properties;
@@ -196,7 +197,7 @@ jobject Java_org_fluss_rocksdb_CompactionJobInfo_tableProperties(JNIEnv* env, jc
  * Signature: (J)B
  */
 jbyte Java_org_fluss_rocksdb_CompactionJobInfo_compactionReason(JNIEnv*, jclass,
-                                                          jlong jhandle) {
+                                                                jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return ROCKSDB_NAMESPACE::CompactionReasonJni::toJavaCompactionReason(
@@ -209,7 +210,7 @@ jbyte Java_org_fluss_rocksdb_CompactionJobInfo_compactionReason(JNIEnv*, jclass,
  * Signature: (J)B
  */
 jbyte Java_org_fluss_rocksdb_CompactionJobInfo_compression(JNIEnv*, jclass,
-                                                     jlong jhandle) {
+                                                           jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   return ROCKSDB_NAMESPACE::CompressionTypeJni::toJavaCompressionType(
@@ -221,7 +222,8 @@ jbyte Java_org_fluss_rocksdb_CompactionJobInfo_compression(JNIEnv*, jclass,
  * Method:    stats
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_CompactionJobInfo_stats(JNIEnv*, jclass, jlong jhandle) {
+jlong Java_org_fluss_rocksdb_CompactionJobInfo_stats(JNIEnv*, jclass,
+                                                     jlong jhandle) {
   auto* compact_job_info =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionJobInfo*>(jhandle);
   auto* stats = new ROCKSDB_NAMESPACE::CompactionJobStats();

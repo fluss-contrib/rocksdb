@@ -8,9 +8,9 @@ package org.fluss.rocksdb;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Random;
+import org.fluss.rocksdb.util.BytewiseComparator;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.fluss.rocksdb.util.BytewiseComparator;
 
 public class OptimisticTransactionOptionsTest {
 

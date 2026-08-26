@@ -34,8 +34,8 @@ jlong Java_org_fluss_rocksdb_RestoreOptions_newRestoreOptions(
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_RestoreOptions_disposeInternalJni(JNIEnv* /*env*/,
-                                                        jclass /*jobj*/,
-                                                        jlong jhandle) {
+                                                              jclass /*jobj*/,
+                                                              jlong jhandle) {
   auto* ropt = reinterpret_cast<ROCKSDB_NAMESPACE::RestoreOptions*>(jhandle);
   assert(ropt);
   delete ropt;

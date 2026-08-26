@@ -14,11 +14,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.fluss.rocksdb.util.BytewiseComparator;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.util.BytewiseComparator;
 
 public class SstFileWriterTest {
   private static final String SST_FILE_NAME = "test.sst";

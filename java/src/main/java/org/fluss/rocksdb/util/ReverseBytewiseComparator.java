@@ -5,12 +5,11 @@
 
 package org.fluss.rocksdb.util;
 
+import java.nio.ByteBuffer;
 import org.fluss.rocksdb.AbstractComparator;
 import org.fluss.rocksdb.BuiltinComparator;
 import org.fluss.rocksdb.ComparatorOptions;
 import org.fluss.rocksdb.Slice;
-
-import java.nio.ByteBuffer;
 
 /**
  * This is a Java Native implementation of the C++

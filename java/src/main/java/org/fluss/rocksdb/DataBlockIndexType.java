@@ -5,7 +5,6 @@
 
 package org.fluss.rocksdb;
 
-
 /**
  * DataBlockIndexType used in conjunction with BlockBasedTable.
  */

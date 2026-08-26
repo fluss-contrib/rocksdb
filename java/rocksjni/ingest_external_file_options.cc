@@ -44,8 +44,8 @@ jlong Java_org_fluss_rocksdb_IngestExternalFileOptions_newIngestExternalFileOpti
  * Method:    moveFiles
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_IngestExternalFileOptions_moveFiles(JNIEnv*, jclass,
-                                                              jlong jhandle) {
+jboolean Java_org_fluss_rocksdb_IngestExternalFileOptions_moveFiles(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* options =
       reinterpret_cast<ROCKSDB_NAMESPACE::IngestExternalFileOptions*>(jhandle);
   return static_cast<jboolean>(options->move_files);
@@ -165,8 +165,8 @@ void Java_org_fluss_rocksdb_IngestExternalFileOptions_setIngestBehind(
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL
-Java_org_fluss_rocksdb_IngestExternalFileOptions_writeGlobalSeqno(JNIEnv*, jclass,
-                                                            jlong jhandle) {
+Java_org_fluss_rocksdb_IngestExternalFileOptions_writeGlobalSeqno(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* options =
       reinterpret_cast<ROCKSDB_NAMESPACE::IngestExternalFileOptions*>(jhandle);
   return options->write_global_seqno == JNI_TRUE;

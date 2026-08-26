@@ -1,7 +1,6 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 package org.fluss.rocksdb;
 
-
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;

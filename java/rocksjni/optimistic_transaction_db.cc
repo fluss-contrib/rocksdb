@@ -158,8 +158,8 @@ void Java_org_fluss_rocksdb_OptimisticTransactionDB_disposeInternalJni(
  * Method:    closeDatabase
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_OptimisticTransactionDB_closeDatabase(JNIEnv* env, jclass,
-                                                            jlong jhandle) {
+void Java_org_fluss_rocksdb_OptimisticTransactionDB_closeDatabase(
+    JNIEnv* env, jclass, jlong jhandle) {
   auto* optimistic_txn_db =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionDB*>(jhandle);
   assert(optimistic_txn_db != nullptr);
@@ -263,7 +263,7 @@ jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction_1withOld__
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_getBaseDB(JNIEnv*, jclass,
-                                                         jlong jhandle) {
+                                                               jlong jhandle) {
   auto* optimistic_txn_db =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionDB*>(jhandle);
   return GET_CPLUSPLUS_POINTER(optimistic_txn_db->GetBaseDB());

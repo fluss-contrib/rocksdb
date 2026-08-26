@@ -6,18 +6,17 @@
  */
 package org.fluss.rocksdb.jmh;
 
-import org.openjdk.jmh.annotations.*;
-import org.fluss.rocksdb.*;
-import org.fluss.rocksdb.util.BytewiseComparator;
-import org.fluss.rocksdb.util.FileUtils;
-import org.fluss.rocksdb.util.ReverseBytewiseComparator;
+import static org.fluss.rocksdb.util.KVUtils.ba;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.fluss.rocksdb.util.KVUtils.ba;
+import org.fluss.rocksdb.*;
+import org.fluss.rocksdb.util.BytewiseComparator;
+import org.fluss.rocksdb.util.FileUtils;
+import org.fluss.rocksdb.util.ReverseBytewiseComparator;
+import org.openjdk.jmh.annotations.*;
 
 @State(Scope.Benchmark)
 public class ComparatorBenchmarks {

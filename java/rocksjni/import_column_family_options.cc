@@ -39,8 +39,8 @@ void Java_org_fluss_rocksdb_ImportColumnFamilyOptions_setMoveFiles(
  * Method:    moveFiles
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_ImportColumnFamilyOptions_moveFiles(JNIEnv *, jobject,
-                                                              jlong jhandle) {
+jboolean Java_org_fluss_rocksdb_ImportColumnFamilyOptions_moveFiles(
+    JNIEnv *, jobject, jlong jhandle) {
   auto *options =
       reinterpret_cast<ROCKSDB_NAMESPACE::ImportColumnFamilyOptions *>(jhandle);
   return static_cast<jboolean>(options->move_files);
@@ -51,9 +51,8 @@ jboolean Java_org_fluss_rocksdb_ImportColumnFamilyOptions_moveFiles(JNIEnv *, jo
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_ImportColumnFamilyOptions_disposeInternal(JNIEnv *,
-                                                                jobject,
-                                                                jlong jhandle) {
+void Java_org_fluss_rocksdb_ImportColumnFamilyOptions_disposeInternal(
+    JNIEnv *, jobject, jlong jhandle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::ImportColumnFamilyOptions *>(
       jhandle);
 }

@@ -26,7 +26,9 @@ jobs:
 
       - name: Prepare format checker
         run: |
+          python -m pip install --disable-pip-version-check clang-format==12.0.1.2
           wget https://rocksdb-deps.s3.us-west-2.amazonaws.com/llvm/llvm-project/release/12.x/clang/tools/clang-format/clang-format-diff.py
+          clang-format --version
 
       - name: Check format
         env:

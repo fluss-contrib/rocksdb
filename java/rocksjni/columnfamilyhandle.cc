@@ -19,8 +19,8 @@
  * Signature: (J)[B
  */
 jbyteArray Java_org_fluss_rocksdb_ColumnFamilyHandle_getName(JNIEnv* env,
-                                                       jclass /*jobj*/,
-                                                       jlong jhandle) {
+                                                             jclass /*jobj*/,
+                                                             jlong jhandle) {
   auto* cfh = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jhandle);
   std::string cf_name = cfh->GetName();
   return ROCKSDB_NAMESPACE::JniUtil::copyBytes(env, cf_name);
@@ -31,8 +31,9 @@ jbyteArray Java_org_fluss_rocksdb_ColumnFamilyHandle_getName(JNIEnv* env,
  * Method:    getID
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_ColumnFamilyHandle_getID(JNIEnv* /*env*/, jclass /*jcls*/,
-                                               jlong jhandle) {
+jint Java_org_fluss_rocksdb_ColumnFamilyHandle_getID(JNIEnv* /*env*/,
+                                                     jclass /*jcls*/,
+                                                     jlong jhandle) {
   auto* cfh = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jhandle);
   const int32_t id = cfh->GetID();
   return static_cast<jint>(id);
@@ -44,8 +45,8 @@ jint Java_org_fluss_rocksdb_ColumnFamilyHandle_getID(JNIEnv* /*env*/, jclass /*j
  * Signature: (J)Lorg/fluss/rocksdb/ColumnFamilyDescriptor;
  */
 jobject Java_org_fluss_rocksdb_ColumnFamilyHandle_getDescriptor(JNIEnv* env,
-                                                          jclass /*jcls*/,
-                                                          jlong jhandle) {
+                                                                jclass /*jcls*/,
+                                                                jlong jhandle) {
   auto* cfh = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jhandle);
   ROCKSDB_NAMESPACE::ColumnFamilyDescriptor desc;
   ROCKSDB_NAMESPACE::Status s = cfh->GetDescriptor(&desc);
@@ -62,9 +63,8 @@ jobject Java_org_fluss_rocksdb_ColumnFamilyHandle_getDescriptor(JNIEnv* env,
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_ColumnFamilyHandle_disposeInternalJni(JNIEnv* /*env*/,
-                                                            jclass /*jobj*/,
-                                                            jlong jhandle) {
+void Java_org_fluss_rocksdb_ColumnFamilyHandle_disposeInternalJni(
+    JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
   auto* cfh = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jhandle);
   assert(cfh != nullptr);
   delete cfh;

@@ -4,16 +4,15 @@
 //  (found in the LICENSE.Apache file in the root directory).
 package org.fluss.rocksdb;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.util.Environment;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.fluss.rocksdb.util.Environment;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class NativeLibraryLoaderTest {
 

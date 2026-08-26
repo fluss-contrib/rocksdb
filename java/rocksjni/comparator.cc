@@ -39,8 +39,8 @@ jlong Java_org_fluss_rocksdb_AbstractComparator_createNewComparator(
  * Method:    usingDirectBuffers
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_AbstractComparator_usingDirectBuffers(JNIEnv*, jclass,
-                                                                jlong jhandle) {
+jboolean Java_org_fluss_rocksdb_AbstractComparator_usingDirectBuffers(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* c =
       reinterpret_cast<ROCKSDB_NAMESPACE::ComparatorJniCallback*>(jhandle);
   return static_cast<jboolean>(c->m_options->direct_buffer);

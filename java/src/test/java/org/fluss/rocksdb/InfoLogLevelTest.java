@@ -1,17 +1,16 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 package org.fluss.rocksdb;
 
+import static java.nio.file.Files.readAllBytes;
+import static java.nio.file.Paths.get;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
+import org.fluss.rocksdb.util.Environment;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.util.Environment;
-
-import java.io.IOException;
-
-import static java.nio.file.Files.readAllBytes;
-import static java.nio.file.Paths.get;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class InfoLogLevelTest {
 

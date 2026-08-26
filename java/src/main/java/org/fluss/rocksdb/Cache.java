@@ -5,7 +5,6 @@
 
 package org.fluss.rocksdb;
 
-
 public abstract class Cache extends RocksObject {
   protected Cache(final long nativeHandle) {
     super(nativeHandle);

@@ -19,13 +19,13 @@ import static org.fluss.rocksdb.util.CapturingWriteBatchHandler.Action.SINGLE_DE
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import org.fluss.rocksdb.util.CapturingWriteBatchHandler;
+import org.fluss.rocksdb.util.CapturingWriteBatchHandler.Event;
+import org.fluss.rocksdb.util.WriteBatchGetter;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.util.CapturingWriteBatchHandler;
-import org.fluss.rocksdb.util.CapturingWriteBatchHandler.Event;
-import org.fluss.rocksdb.util.WriteBatchGetter;
 
 /**
  * This class mimics the db/write_batch_test.cc

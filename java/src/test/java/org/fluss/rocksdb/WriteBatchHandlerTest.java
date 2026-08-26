@@ -5,17 +5,15 @@
 
 package org.fluss.rocksdb;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.fluss.rocksdb.util.CapturingWriteBatchHandler;
-import org.fluss.rocksdb.util.CapturingWriteBatchHandler.Event;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.fluss.rocksdb.util.CapturingWriteBatchHandler.Action.*;
 
+import java.util.Arrays;
+import java.util.List;
+import org.fluss.rocksdb.util.CapturingWriteBatchHandler;
+import org.fluss.rocksdb.util.CapturingWriteBatchHandler.Event;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 public class WriteBatchHandlerTest {
   @ClassRule

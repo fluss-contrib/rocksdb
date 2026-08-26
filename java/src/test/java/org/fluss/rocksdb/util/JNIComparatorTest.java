@@ -6,6 +6,13 @@
 
 package org.fluss.rocksdb.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.*;
+import java.util.Arrays;
+import org.fluss.rocksdb.*;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,14 +21,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-import org.fluss.rocksdb.*;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.*;
-import java.util.Arrays;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
 public class JNIComparatorTest {

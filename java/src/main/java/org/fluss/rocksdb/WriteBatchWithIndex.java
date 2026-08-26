@@ -16,8 +16,9 @@ import java.nio.ByteBuffer;
  * <p>
  * A user can call {@link org.fluss.rocksdb.WriteBatchWithIndex#newIterator()} to
  * create an iterator over the write batch or
- * {@link org.fluss.rocksdb.WriteBatchWithIndex#newIteratorWithBase(org.fluss.rocksdb.RocksIterator)}
- * to get an iterator for the database with Read-Your-Own-Writes like capability
+ * {@link
+ * org.fluss.rocksdb.WriteBatchWithIndex#newIteratorWithBase(org.fluss.rocksdb.RocksIterator)} to
+ * get an iterator for the database with Read-Your-Own-Writes like capability
  */
 public class WriteBatchWithIndex extends AbstractWriteBatch {
   /**

@@ -8,10 +8,10 @@ package org.fluss.rocksdb;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.fluss.rocksdb.Status.Code;
 import org.fluss.rocksdb.Status.SubCode;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class RocksDBExceptionTest {
   @BeforeClass

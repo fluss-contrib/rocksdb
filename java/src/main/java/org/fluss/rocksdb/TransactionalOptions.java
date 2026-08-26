@@ -5,7 +5,6 @@
 
 package org.fluss.rocksdb;
 
-
 interface TransactionalOptions<T extends TransactionalOptions<T>>
     extends AutoCloseable {
 

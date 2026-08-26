@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.openjdk.jmh.annotations.*;
 import org.fluss.rocksdb.*;
 import org.fluss.rocksdb.util.FileUtils;
+import org.openjdk.jmh.annotations.*;
 
 @State(Scope.Benchmark)
 public class PutBenchmarks {

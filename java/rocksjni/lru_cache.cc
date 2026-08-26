@@ -18,12 +18,10 @@
  * Method:    newLRUCache
  * Signature: (JIZD)J
  */
-jlong Java_org_fluss_rocksdb_LRUCache_newLRUCache(JNIEnv* /*env*/, jclass /*jcls*/,
-                                            jlong jcapacity,
-                                            jint jnum_shard_bits,
-                                            jboolean jstrict_capacity_limit,
-                                            jdouble jhigh_pri_pool_ratio,
-                                            jdouble jlow_pri_pool_ratio) {
+jlong Java_org_fluss_rocksdb_LRUCache_newLRUCache(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jcapacity, jint jnum_shard_bits,
+    jboolean jstrict_capacity_limit, jdouble jhigh_pri_pool_ratio,
+    jdouble jlow_pri_pool_ratio) {
   auto* sptr_lru_cache = new std::shared_ptr<ROCKSDB_NAMESPACE::Cache>(
       ROCKSDB_NAMESPACE::NewLRUCache(
           static_cast<size_t>(jcapacity), static_cast<int>(jnum_shard_bits),
@@ -41,8 +39,8 @@ jlong Java_org_fluss_rocksdb_LRUCache_newLRUCache(JNIEnv* /*env*/, jclass /*jcls
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_LRUCache_disposeInternalJni(JNIEnv* /*env*/,
-                                                  jclass /*jcls*/,
-                                                  jlong jhandle) {
+                                                        jclass /*jcls*/,
+                                                        jlong jhandle) {
   auto* sptr_lru_cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::Cache>*>(jhandle);
   delete sptr_lru_cache;  // delete std::shared_ptr

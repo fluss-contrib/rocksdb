@@ -34,8 +34,8 @@ jlong Java_org_fluss_rocksdb_ClockCache_newClockCache(
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_ClockCache_disposeInternalJni(JNIEnv* /*env*/,
-                                                    jclass /*jcls*/,
-                                                    jlong jhandle) {
+                                                          jclass /*jcls*/,
+                                                          jlong jhandle) {
   auto* sptr_clock_cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::Cache>*>(jhandle);
   delete sptr_clock_cache;  // delete std::shared_ptr

@@ -11,9 +11,9 @@ import static org.junit.Assert.*;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.fluss.rocksdb.test.RemoveEmptyValueCompactionFilterFactory;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.fluss.rocksdb.test.RemoveEmptyValueCompactionFilterFactory;
 
 public class OptionsTest {
 

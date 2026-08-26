@@ -20,7 +20,7 @@
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_ConfigOptions_disposeInternalJni(JNIEnv *, jclass,
-                                                       jlong jhandle) {
+                                                             jlong jhandle) {
   auto *co = reinterpret_cast<ROCKSDB_NAMESPACE::ConfigOptions *>(jhandle);
   assert(co != nullptr);
   delete co;
@@ -42,7 +42,7 @@ jlong Java_org_fluss_rocksdb_ConfigOptions_newConfigOptions(JNIEnv *, jclass) {
  * Signature: (JJ;)V
  */
 void Java_org_fluss_rocksdb_ConfigOptions_setEnv(JNIEnv *, jclass, jlong handle,
-                                           jlong rocksdb_env_handle) {
+                                                 jlong rocksdb_env_handle) {
   auto *cfg_opt = reinterpret_cast<ROCKSDB_NAMESPACE::ConfigOptions *>(handle);
   auto *rocksdb_env =
       reinterpret_cast<ROCKSDB_NAMESPACE::Env *>(rocksdb_env_handle);
@@ -55,7 +55,8 @@ void Java_org_fluss_rocksdb_ConfigOptions_setEnv(JNIEnv *, jclass, jlong handle,
  * Signature: (JLjava/lang/String;)V
  */
 void Java_org_fluss_rocksdb_ConfigOptions_setDelimiter(JNIEnv *env, jclass,
-                                                 jlong handle, jstring s) {
+                                                       jlong handle,
+                                                       jstring s) {
   auto *cfg_opt = reinterpret_cast<ROCKSDB_NAMESPACE::ConfigOptions *>(handle);
   const char *delim = env->GetStringUTFChars(s, nullptr);
   if (delim == nullptr) {
@@ -71,9 +72,10 @@ void Java_org_fluss_rocksdb_ConfigOptions_setDelimiter(JNIEnv *env, jclass,
  * Method:    setIgnoreUnknownOptions
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_ConfigOptions_setIgnoreUnknownOptions(JNIEnv *, jclass,
-                                                            jlong handle,
-                                                            jboolean b) {
+void Java_org_fluss_rocksdb_ConfigOptions_setIgnoreUnknownOptions(JNIEnv *,
+                                                                  jclass,
+                                                                  jlong handle,
+                                                                  jboolean b) {
   auto *cfg_opt = reinterpret_cast<ROCKSDB_NAMESPACE::ConfigOptions *>(handle);
   cfg_opt->ignore_unknown_options = static_cast<bool>(b);
 }
@@ -83,9 +85,10 @@ void Java_org_fluss_rocksdb_ConfigOptions_setIgnoreUnknownOptions(JNIEnv *, jcla
  * Method:    setInputStringsEscaped
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_ConfigOptions_setInputStringsEscaped(JNIEnv *, jclass,
-                                                           jlong handle,
-                                                           jboolean b) {
+void Java_org_fluss_rocksdb_ConfigOptions_setInputStringsEscaped(JNIEnv *,
+                                                                 jclass,
+                                                                 jlong handle,
+                                                                 jboolean b) {
   auto *cfg_opt = reinterpret_cast<ROCKSDB_NAMESPACE::ConfigOptions *>(handle);
   cfg_opt->input_strings_escaped = static_cast<bool>(b);
 }
@@ -96,7 +99,8 @@ void Java_org_fluss_rocksdb_ConfigOptions_setInputStringsEscaped(JNIEnv *, jclas
  * Signature: (JI)V
  */
 void Java_org_fluss_rocksdb_ConfigOptions_setSanityLevel(JNIEnv *, jclass,
-                                                   jlong handle, jbyte level) {
+                                                         jlong handle,
+                                                         jbyte level) {
   auto *cfg_opt = reinterpret_cast<ROCKSDB_NAMESPACE::ConfigOptions *>(handle);
   cfg_opt->sanity_level =
       ROCKSDB_NAMESPACE::SanityLevelJni::toCppSanityLevel(level);

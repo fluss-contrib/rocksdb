@@ -10,7 +10,8 @@
 #include "rocksdb/db.h"
 #include "rocksdb/perf_context.h"
 
-void Java_org_fluss_rocksdb_PerfContext_reset(JNIEnv*, jobject, jlong jpc_handle) {
+void Java_org_fluss_rocksdb_PerfContext_reset(JNIEnv*, jobject,
+                                              jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   perf_context->Reset();
@@ -21,8 +22,8 @@ void Java_org_fluss_rocksdb_PerfContext_reset(JNIEnv*, jobject, jlong jpc_handle
  * Method:    getUserKeyComparisonCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getUserKeyComparisonCount(JNIEnv*, jobject,
-                                                             jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getUserKeyComparisonCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->user_key_comparison_count;
@@ -33,8 +34,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getUserKeyComparisonCount(JNIEnv*, jobj
  * Method:    getBlockCacheHitCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheHitCount(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheHitCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->block_cache_hit_count;
@@ -46,7 +47,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheHitCount(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBlockReadCount(JNIEnv*, jobject,
-                                                     jlong jpc_handle) {
+                                                           jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->block_read_count;
@@ -93,8 +94,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheRealHandleCount(
  * Method:    getIndexBlockReadCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getIndexBlockReadCount(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getIndexBlockReadCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->index_block_read_count;
@@ -117,8 +118,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheFilterHitCount(
  * Method:    getFilterBlockReadCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getFilterBlockReadCount(JNIEnv*, jobject,
-                                                           jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getFilterBlockReadCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->filter_block_read_count;
@@ -142,7 +143,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getCompressionDictBlockReadCount(
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBlockReadByte(JNIEnv*, jobject,
-                                                    jlong jpc_handle) {
+                                                          jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->block_read_byte;
@@ -154,14 +155,14 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockReadByte(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBlockReadTime(JNIEnv*, jobject,
-                                                    jlong jpc_handle) {
+                                                          jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->block_read_time;
 }
 
-jlong Java_org_fluss_rocksdb_PerfContext_getBlockReadCpuTime(JNIEnv*, jobject,
-                                                       jlong jpc_handler) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBlockReadCpuTime(
+    JNIEnv*, jobject, jlong jpc_handler) {
   // reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf_handle);
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handler);
@@ -209,8 +210,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheCompressionDictReadByte(
  * Method:    getBlockCacheReadByte
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheReadByte(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheReadByte(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->block_cache_read_byte;
@@ -221,8 +222,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockCacheReadByte(JNIEnv*, jobject,
  * Method:    getSecondaryCacheHitCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getSecondaryCacheHitCount(JNIEnv*, jobject,
-                                                             jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getSecondaryCacheHitCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->secondary_cache_hit_count;
@@ -281,8 +282,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getCompressedSecCacheCompressedBytes(
  * Method:    getBlockChecksumTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBlockChecksumTime(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBlockChecksumTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->block_checksum_time;
@@ -293,8 +294,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockChecksumTime(JNIEnv*, jobject,
  * Method:    getBlockDecompressTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBlockDecompressTime(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBlockDecompressTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->block_decompress_time;
@@ -306,7 +307,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockDecompressTime(JNIEnv*, jobject
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getReadBytes(JNIEnv*, jobject,
-                                                jlong jpc_handle) {
+                                                      jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->get_read_bytes;
@@ -317,8 +318,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getReadBytes(JNIEnv*, jobject,
  * Method:    getMultigetReadBytes
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getMultigetReadBytes(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getMultigetReadBytes(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->multiget_read_bytes;
@@ -330,7 +331,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getMultigetReadBytes(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getIterReadBytes(JNIEnv*, jobject,
-                                                    jlong jpc_handle) {
+                                                          jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->iter_read_bytes;
@@ -341,8 +342,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getIterReadBytes(JNIEnv*, jobject,
  * Method:    getBlobCacheHitCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBlobCacheHitCount(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBlobCacheHitCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->blob_cache_hit_count;
@@ -354,7 +355,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlobCacheHitCount(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBlobReadCount(JNIEnv*, jobject,
-                                                    jlong jpc_handle) {
+                                                          jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->blob_read_count;
@@ -366,7 +367,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlobReadCount(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBlobReadByte(JNIEnv*, jobject,
-                                                   jlong jpc_handle) {
+                                                         jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->blob_read_byte;
@@ -378,7 +379,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlobReadByte(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBlobReadTime(JNIEnv*, jobject,
-                                                   jlong jpc_handle) {
+                                                         jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->blob_read_time;
@@ -390,7 +391,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlobReadTime(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBlobChecksumTime(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->blob_checksum_time;
@@ -401,8 +402,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlobChecksumTime(JNIEnv*, jobject,
  * Method:    getBlobDecompressTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBlobDecompressTime(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBlobDecompressTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->blob_decompress_time;
@@ -449,8 +450,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getInternalRecentSkippedCount(
  * Method:    getInternalMergeCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getInternalMergeCount(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getInternalMergeCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->internal_merge_count;
@@ -486,7 +487,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getInternalRangeDelReseekCount(
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getSnapshotTime(JNIEnv*, jobject,
-                                                   jlong jpc_handle) {
+                                                         jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->get_snapshot_time;
@@ -498,7 +499,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getSnapshotTime(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getFromMemtableTime(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->get_from_memtable_time;
@@ -509,8 +510,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getFromMemtableTime(JNIEnv*, jobject,
  * Method:    getFromMemtableCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getFromMemtableCount(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getFromMemtableCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->get_from_memtable_count;
@@ -522,7 +523,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getFromMemtableCount(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getPostProcessTime(JNIEnv*, jobject,
-                                                      jlong jpc_handle) {
+                                                            jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->get_post_process_time;
@@ -533,8 +534,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getPostProcessTime(JNIEnv*, jobject,
  * Method:    getFromOutputFilesTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getFromOutputFilesTime(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getFromOutputFilesTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->get_from_output_files_time;
@@ -545,8 +546,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getFromOutputFilesTime(JNIEnv*, jobject
  * Method:    getSeekOnMemtableTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getSeekOnMemtableTime(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getSeekOnMemtableTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->seek_on_memtable_time;
@@ -557,8 +558,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getSeekOnMemtableTime(JNIEnv*, jobject,
  * Method:    getSeekOnMemtableCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getSeekOnMemtableCount(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getSeekOnMemtableCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->seek_on_memtable_count;
@@ -569,8 +570,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getSeekOnMemtableCount(JNIEnv*, jobject
  * Method:    getNextOnMemtableCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getNextOnMemtableCount(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getNextOnMemtableCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->next_on_memtable_count;
@@ -581,8 +582,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getNextOnMemtableCount(JNIEnv*, jobject
  * Method:    getPrevOnMemtableCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getPrevOnMemtableCount(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getPrevOnMemtableCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->prev_on_memtable_count;
@@ -593,8 +594,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getPrevOnMemtableCount(JNIEnv*, jobject
  * Method:    getSeekChildSeekTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getSeekChildSeekTime(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getSeekChildSeekTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->seek_child_seek_time;
@@ -605,8 +606,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getSeekChildSeekTime(JNIEnv*, jobject,
  * Method:    getSeekChildSeekCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getSeekChildSeekCount(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getSeekChildSeekCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->seek_child_seek_count;
@@ -618,7 +619,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getSeekChildSeekCount(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getSeekMinHeapTime(JNIEnv*, jobject,
-                                                      jlong jpc_handle) {
+                                                            jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->seek_min_heap_time;
@@ -630,7 +631,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getSeekMinHeapTime(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getSeekMaxHeapTime(JNIEnv*, jobject,
-                                                      jlong jpc_handle) {
+                                                            jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->seek_max_heap_time;
@@ -641,8 +642,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getSeekMaxHeapTime(JNIEnv*, jobject,
  * Method:    getSeekInternalSeekTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getSeekInternalSeekTime(JNIEnv*, jobject,
-                                                           jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getSeekInternalSeekTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->seek_internal_seek_time;
@@ -653,8 +654,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getSeekInternalSeekTime(JNIEnv*, jobjec
  * Method:    getFindNextUserEntryTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getFindNextUserEntryTime(JNIEnv*, jobject,
-                                                            jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getFindNextUserEntryTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->find_next_user_entry_time;
@@ -666,7 +667,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getFindNextUserEntryTime(JNIEnv*, jobje
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getWriteWalTime(JNIEnv*, jobject,
-                                                   jlong jpc_handle) {
+                                                         jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->write_wal_time;
@@ -677,8 +678,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getWriteWalTime(JNIEnv*, jobject,
  * Method:    getWriteMemtableTime
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getWriteMemtableTime(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getWriteMemtableTime(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->write_memtable_time;
@@ -690,7 +691,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getWriteMemtableTime(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getWriteDelayTime(JNIEnv*, jobject,
-                                                     jlong jpc_handle) {
+                                                           jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->write_delay_time;
@@ -725,8 +726,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getWritePreAndPostProcessTime(
  * Method:    getWriteThreadWaitNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getWriteThreadWaitNanos(JNIEnv*, jobject,
-                                                           jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getWriteThreadWaitNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->write_thread_wait_nanos;
@@ -738,7 +739,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getWriteThreadWaitNanos(JNIEnv*, jobjec
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getDbMutexLockNanos(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->db_mutex_lock_nanos;
@@ -749,8 +750,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getDbMutexLockNanos(JNIEnv*, jobject,
  * Method:    getDbConditionWaitNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getDbConditionWaitNanos(JNIEnv*, jobject,
-                                                           jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getDbConditionWaitNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->db_condition_wait_nanos;
@@ -761,8 +762,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getDbConditionWaitNanos(JNIEnv*, jobjec
  * Method:    getMergeOperatorTimeNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getMergeOperatorTimeNanos(JNIEnv*, jobject,
-                                                             jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getMergeOperatorTimeNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->merge_operator_time_nanos;
@@ -773,8 +774,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getMergeOperatorTimeNanos(JNIEnv*, jobj
  * Method:    getReadIndexBlockNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getReadIndexBlockNanos(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getReadIndexBlockNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->read_index_block_nanos;
@@ -785,8 +786,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getReadIndexBlockNanos(JNIEnv*, jobject
  * Method:    getReadFilterBlockNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getReadFilterBlockNanos(JNIEnv*, jobject,
-                                                           jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getReadFilterBlockNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->read_filter_block_nanos;
@@ -797,8 +798,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getReadFilterBlockNanos(JNIEnv*, jobjec
  * Method:    getNewTableBlockIterNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getNewTableBlockIterNanos(JNIEnv*, jobject,
-                                                             jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getNewTableBlockIterNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->new_table_block_iter_nanos;
@@ -809,8 +810,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getNewTableBlockIterNanos(JNIEnv*, jobj
  * Method:    getNewTableIteratorNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getNewTableIteratorNanos(JNIEnv*, jobject,
-                                                            jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getNewTableIteratorNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->new_table_iterator_nanos;
@@ -822,7 +823,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getNewTableIteratorNanos(JNIEnv*, jobje
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBlockSeekNanos(JNIEnv*, jobject,
-                                                     jlong jpc_handle) {
+                                                           jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->block_seek_nanos;
@@ -834,7 +835,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBlockSeekNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getFindTableNanos(JNIEnv*, jobject,
-                                                     jlong jpc_handle) {
+                                                           jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->find_table_nanos;
@@ -845,8 +846,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getFindTableNanos(JNIEnv*, jobject,
  * Method:    getBloomMemtableHitCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBloomMemtableHitCount(JNIEnv*, jobject,
-                                                            jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBloomMemtableHitCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->bloom_memtable_hit_count;
@@ -857,8 +858,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBloomMemtableHitCount(JNIEnv*, jobje
  * Method:    getBloomMemtableMissCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBloomMemtableMissCount(JNIEnv*, jobject,
-                                                             jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBloomMemtableMissCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->bloom_memtable_miss_count;
@@ -870,7 +871,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBloomMemtableMissCount(JNIEnv*, jobj
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getBloomSstHitCount(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->bloom_sst_hit_count;
@@ -881,8 +882,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBloomSstHitCount(JNIEnv*, jobject,
  * Method:    getBloomSstMissCount
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getBloomSstMissCount(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getBloomSstMissCount(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->bloom_sst_miss_count;
@@ -894,7 +895,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getBloomSstMissCount(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getKeyLockWaitTime(JNIEnv*, jobject,
-                                                      jlong jpc_handle) {
+                                                            jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->key_lock_wait_time;
@@ -906,7 +907,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getKeyLockWaitTime(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getKeyLockWaitCount(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->key_lock_wait_count;
@@ -977,8 +978,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvNewRandomRwFileNanos(
  * Method:    getEnvNewDirectoryNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvNewDirectoryNanos(JNIEnv*, jobject,
-                                                           jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvNewDirectoryNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_new_directory_nanos;
@@ -989,8 +990,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvNewDirectoryNanos(JNIEnv*, jobjec
  * Method:    getEnvFileExistsNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvFileExistsNanos(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvFileExistsNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_file_exists_nanos;
@@ -1001,8 +1002,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvFileExistsNanos(JNIEnv*, jobject,
  * Method:    getEnvGetChildrenNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvGetChildrenNanos(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvGetChildrenNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_get_children_nanos;
@@ -1025,8 +1026,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvGetChildrenFileAttributesNanos(
  * Method:    getEnvDeleteFileNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvDeleteFileNanos(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvDeleteFileNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_delete_file_nanos;
@@ -1037,8 +1038,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvDeleteFileNanos(JNIEnv*, jobject,
  * Method:    getEnvCreateDirNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvCreateDirNanos(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvCreateDirNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_create_dir_nanos;
@@ -1061,8 +1062,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvCreateDirIfMissingNanos(
  * Method:    getEnvDeleteDirNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvDeleteDirNanos(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvDeleteDirNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_delete_dir_nanos;
@@ -1073,8 +1074,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvDeleteDirNanos(JNIEnv*, jobject,
  * Method:    getEnvGetFileSizeNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvGetFileSizeNanos(JNIEnv*, jobject,
-                                                          jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvGetFileSizeNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_get_file_size_nanos;
@@ -1097,8 +1098,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvGetFileModificationTimeNanos(
  * Method:    getEnvRenameFileNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvRenameFileNanos(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvRenameFileNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_rename_file_nanos;
@@ -1110,7 +1111,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvRenameFileNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getEnvLinkFileNanos(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_link_file_nanos;
@@ -1122,7 +1123,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvLinkFileNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getEnvLockFileNanos(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_lock_file_nanos;
@@ -1133,8 +1134,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvLockFileNanos(JNIEnv*, jobject,
  * Method:    getEnvUnlockFileNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvUnlockFileNanos(JNIEnv*, jobject,
-                                                         jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvUnlockFileNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_unlock_file_nanos;
@@ -1145,8 +1146,8 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvUnlockFileNanos(JNIEnv*, jobject,
  * Method:    getEnvNewLoggerNanos
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_PerfContext_getEnvNewLoggerNanos(JNIEnv*, jobject,
-                                                        jlong jpc_handle) {
+jlong Java_org_fluss_rocksdb_PerfContext_getEnvNewLoggerNanos(
+    JNIEnv*, jobject, jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->env_new_logger_nanos;
@@ -1158,7 +1159,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEnvNewLoggerNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getGetCpuNanos(JNIEnv*, jobject,
-                                                  jlong jpc_handle) {
+                                                        jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->get_cpu_nanos;
@@ -1170,7 +1171,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getGetCpuNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getIterNextCpuNanos(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->iter_next_cpu_nanos;
@@ -1182,7 +1183,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getIterNextCpuNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getIterPrevCpuNanos(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->iter_prev_cpu_nanos;
@@ -1194,7 +1195,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getIterPrevCpuNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getIterSeekCpuNanos(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->iter_seek_cpu_nanos;
@@ -1206,7 +1207,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getIterSeekCpuNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getEncryptDataNanos(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->encrypt_data_nanos;
@@ -1218,7 +1219,7 @@ jlong Java_org_fluss_rocksdb_PerfContext_getEncryptDataNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getDecryptDataNanos(JNIEnv*, jobject,
-                                                       jlong jpc_handle) {
+                                                             jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->decrypt_data_nanos;
@@ -1230,15 +1231,14 @@ jlong Java_org_fluss_rocksdb_PerfContext_getDecryptDataNanos(JNIEnv*, jobject,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_PerfContext_getNumberAsyncSeek(JNIEnv*, jobject,
-                                                      jlong jpc_handle) {
+                                                            jlong jpc_handle) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
   return perf_context->number_async_seek;
 }
 
-jstring Java_org_fluss_rocksdb_PerfContext_toString(JNIEnv* env, jobject,
-                                              jlong jpc_handle,
-                                              jboolean exclude_zero_counters) {
+jstring Java_org_fluss_rocksdb_PerfContext_toString(
+    JNIEnv* env, jobject, jlong jpc_handle, jboolean exclude_zero_counters) {
   ROCKSDB_NAMESPACE::PerfContext* perf_context =
       reinterpret_cast<ROCKSDB_NAMESPACE::PerfContext*>(jpc_handle);
 

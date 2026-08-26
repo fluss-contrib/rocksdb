@@ -1504,7 +1504,7 @@ public class Transaction extends RocksObject {
     put(nativeHandle_, key, 0, key.length, value, 0, value.length);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #put(ColumnFamilyHandle, byte[], byte[])} but allows
    * you to specify the key and value in several parts that will be
@@ -1945,7 +1945,7 @@ public class Transaction extends RocksObject {
     delete(nativeHandle_, key, key.length);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #delete(ColumnFamilyHandle, byte[])} but allows
    * you to specify the key in several parts that will be
@@ -1990,7 +1990,7 @@ public class Transaction extends RocksObject {
         columnFamilyHandle.nativeHandle_, false);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #delete(byte[])} but allows
    * you to specify key the in several parts that will be
@@ -2097,7 +2097,7 @@ public class Transaction extends RocksObject {
     singleDelete(nativeHandle_, key, key.length);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #singleDelete(ColumnFamilyHandle, byte[])} but allows
    * you to specify the key in several parts that will be
@@ -2143,7 +2143,7 @@ public class Transaction extends RocksObject {
         columnFamilyHandle.nativeHandle_, false);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #singleDelete(byte[])} but allows
    * you to specify the key in several parts that will be
@@ -2212,7 +2212,7 @@ public class Transaction extends RocksObject {
     putUntracked(nativeHandle_, key, key.length, value, value.length);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #putUntracked(ColumnFamilyHandle, byte[], byte[])} but
    * allows you to specify the key and value in several parts that will be
@@ -2233,7 +2233,7 @@ public class Transaction extends RocksObject {
         valueParts.length, columnFamilyHandle.nativeHandle_);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #putUntracked(byte[], byte[])} but
    * allows you to specify the key and value in several parts that will be
@@ -2414,7 +2414,7 @@ public class Transaction extends RocksObject {
     deleteUntracked(nativeHandle_, key, key.length);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #deleteUntracked(ColumnFamilyHandle, byte[])} but allows
    * you to specify the key in several parts that will be
@@ -2433,7 +2433,7 @@ public class Transaction extends RocksObject {
         columnFamilyHandle.nativeHandle_);
   }
 
-  //TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
+  // TODO(AR) refactor if we implement org.fluss.rocksdb.SliceParts in future
   /**
    * Similar to {@link #deleteUntracked(byte[])} but allows
    * you to specify the key in several parts that will be

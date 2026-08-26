@@ -19,9 +19,8 @@
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_AbstractCompactionFilter_disposeInternal(JNIEnv* /*env*/,
-                                                               jobject /*jobj*/,
-                                                               jlong handle) {
+void Java_org_fluss_rocksdb_AbstractCompactionFilter_disposeInternal(
+    JNIEnv* /*env*/, jobject /*jobj*/, jlong handle) {
   auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::CompactionFilter*>(handle);
   assert(cf != nullptr);
   delete cf;

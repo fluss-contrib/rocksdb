@@ -52,7 +52,7 @@ jlong Java_org_fluss_rocksdb_PersistentCache_newPersistentCache(
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_PersistentCache_disposeInternalJni(JNIEnv*, jclass,
-                                                         jlong jhandle) {
+                                                               jlong jhandle) {
   auto* cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::PersistentCache>*>(
           jhandle);

@@ -10,11 +10,11 @@ import static org.junit.Assert.assertArrayEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import org.fluss.rocksdb.util.BytewiseComparator;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.util.BytewiseComparator;
 
 /**
  * This test confirms that the following issues were in fact resolved

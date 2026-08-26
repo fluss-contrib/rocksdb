@@ -31,8 +31,8 @@
  * Signature: (J)[B
  */
 jbyteArray Java_org_fluss_rocksdb_WriteBatchTest_getContents(JNIEnv* env,
-                                                       jclass /*jclazz*/,
-                                                       jlong jwb_handle) {
+                                                             jclass /*jclazz*/,
+                                                             jlong jwb_handle) {
   auto* b = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle);
   assert(b != nullptr);
 
@@ -172,9 +172,8 @@ void Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_setSequence(
  * Method:    sequence
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_sequence(JNIEnv* /*env*/,
-                                                             jclass /*jclazz*/,
-                                                             jlong jwb_handle) {
+jlong Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_sequence(
+    JNIEnv* /*env*/, jclass /*jclazz*/, jlong jwb_handle) {
   auto* wb = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle);
   assert(wb != nullptr);
 
@@ -187,10 +186,9 @@ jlong Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_sequence(JNIEnv* /*env
  * Method:    append
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_append(JNIEnv* /*env*/,
-                                                          jclass /*jclazz*/,
-                                                          jlong jwb_handle_1,
-                                                          jlong jwb_handle_2) {
+void Java_org_fluss_rocksdb_WriteBatchTestInternalHelper_append(
+    JNIEnv* /*env*/, jclass /*jclazz*/, jlong jwb_handle_1,
+    jlong jwb_handle_2) {
   auto* wb1 = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle_1);
   assert(wb1 != nullptr);
   auto* wb2 = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle_2);

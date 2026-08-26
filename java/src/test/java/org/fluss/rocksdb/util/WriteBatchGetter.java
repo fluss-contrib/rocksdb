@@ -1,10 +1,9 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 package org.fluss.rocksdb.util;
 
+import java.util.Arrays;
 import org.fluss.rocksdb.RocksDBException;
 import org.fluss.rocksdb.WriteBatch;
-
-import java.util.Arrays;
 
 public class WriteBatchGetter extends WriteBatch.Handler {
 

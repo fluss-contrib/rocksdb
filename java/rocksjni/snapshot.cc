@@ -18,9 +18,8 @@
  * Method:    getSequenceNumber
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_Snapshot_getSequenceNumber(JNIEnv* /*env*/,
-                                                  jclass /*jcls*/,
-                                                  jlong jsnapshot_handle) {
+jlong Java_org_fluss_rocksdb_Snapshot_getSequenceNumber(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jsnapshot_handle) {
   auto* snapshot =
       reinterpret_cast<ROCKSDB_NAMESPACE::Snapshot*>(jsnapshot_handle);
   return snapshot->GetSequenceNumber();

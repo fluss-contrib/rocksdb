@@ -11,9 +11,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import org.fluss.rocksdb.test.RemoveEmptyValueCompactionFilterFactory;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.fluss.rocksdb.test.RemoveEmptyValueCompactionFilterFactory;
 
 public class ColumnFamilyOptionsTest {
 

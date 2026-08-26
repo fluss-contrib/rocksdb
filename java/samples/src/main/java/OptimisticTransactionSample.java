@@ -3,9 +3,9 @@
 //  COPYING file in the root directory) and Apache 2.0 License
 //  (found in the LICENSE.Apache file in the root directory).
 
-import org.fluss.rocksdb.*;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
+
+import org.fluss.rocksdb.*;
 
 /**
  * Demonstrates using Transactions on an OptimisticTransactionDB with

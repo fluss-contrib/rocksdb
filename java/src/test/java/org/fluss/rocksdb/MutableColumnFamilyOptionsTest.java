@@ -4,12 +4,11 @@
 //  (found in the LICENSE.Apache file in the root directory).
 package org.fluss.rocksdb;
 
-import org.junit.Test;
-import org.fluss.rocksdb.MutableColumnFamilyOptions.MutableColumnFamilyOptionsBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.NoSuchElementException;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.fluss.rocksdb.MutableColumnFamilyOptions.MutableColumnFamilyOptionsBuilder;
+import org.junit.Test;
 
 public class MutableColumnFamilyOptionsTest {
 

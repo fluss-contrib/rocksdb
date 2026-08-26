@@ -37,8 +37,8 @@ jlong Java_org_fluss_rocksdb_RateLimiter_newRateLimiterHandle(
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_RateLimiter_disposeInternalJni(JNIEnv* /*env*/,
-                                                     jclass /*jcls*/,
-                                                     jlong jhandle) {
+                                                           jclass /*jcls*/,
+                                                           jlong jhandle) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
           jhandle);
@@ -50,10 +50,8 @@ void Java_org_fluss_rocksdb_RateLimiter_disposeInternalJni(JNIEnv* /*env*/,
  * Method:    setBytesPerSecond
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_RateLimiter_setBytesPerSecond(JNIEnv* /*env*/,
-                                                    jclass /*jcls*/,
-                                                    jlong handle,
-                                                    jlong jbytes_per_second) {
+void Java_org_fluss_rocksdb_RateLimiter_setBytesPerSecond(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle, jlong jbytes_per_second) {
   reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(handle)
       ->get()
       ->SetBytesPerSecond(jbytes_per_second);
@@ -65,8 +63,8 @@ void Java_org_fluss_rocksdb_RateLimiter_setBytesPerSecond(JNIEnv* /*env*/,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_RateLimiter_getBytesPerSecond(JNIEnv* /*env*/,
-                                                     jclass /*jcls*/,
-                                                     jlong handle) {
+                                                           jclass /*jcls*/,
+                                                           jlong handle) {
   return reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
              handle)
       ->get()
@@ -78,8 +76,9 @@ jlong Java_org_fluss_rocksdb_RateLimiter_getBytesPerSecond(JNIEnv* /*env*/,
  * Method:    request
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_RateLimiter_request(JNIEnv* /*env*/, jclass /*jcls*/,
-                                          jlong handle, jlong jbytes) {
+void Java_org_fluss_rocksdb_RateLimiter_request(JNIEnv* /*env*/,
+                                                jclass /*jcls*/, jlong handle,
+                                                jlong jbytes) {
   reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(handle)
       ->get()
       ->Request(jbytes, ROCKSDB_NAMESPACE::Env::IO_TOTAL);
@@ -91,8 +90,8 @@ void Java_org_fluss_rocksdb_RateLimiter_request(JNIEnv* /*env*/, jclass /*jcls*/
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_RateLimiter_getSingleBurstBytes(JNIEnv* /*env*/,
-                                                       jclass /*jcls*/,
-                                                       jlong handle) {
+                                                             jclass /*jcls*/,
+                                                             jlong handle) {
   return reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
              handle)
       ->get()
@@ -105,8 +104,8 @@ jlong Java_org_fluss_rocksdb_RateLimiter_getSingleBurstBytes(JNIEnv* /*env*/,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_RateLimiter_getTotalBytesThrough(JNIEnv* /*env*/,
-                                                        jclass /*jcls*/,
-                                                        jlong handle) {
+                                                              jclass /*jcls*/,
+                                                              jlong handle) {
   return reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
              handle)
       ->get()
@@ -119,8 +118,8 @@ jlong Java_org_fluss_rocksdb_RateLimiter_getTotalBytesThrough(JNIEnv* /*env*/,
  * Signature: (J)J
  */
 jlong Java_org_fluss_rocksdb_RateLimiter_getTotalRequests(JNIEnv* /*env*/,
-                                                    jclass /*jcls*/,
-                                                    jlong handle) {
+                                                          jclass /*jcls*/,
+                                                          jlong handle) {
   return reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
              handle)
       ->get()

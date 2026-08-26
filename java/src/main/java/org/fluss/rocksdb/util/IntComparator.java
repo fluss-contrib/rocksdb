@@ -5,10 +5,9 @@
 
 package org.fluss.rocksdb.util;
 
+import java.nio.ByteBuffer;
 import org.fluss.rocksdb.AbstractComparator;
 import org.fluss.rocksdb.ComparatorOptions;
-
-import java.nio.ByteBuffer;
 
 /**
  * This is a Java implementation of a Comparator for Java int

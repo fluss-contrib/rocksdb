@@ -143,8 +143,8 @@ jstring Java_org_fluss_rocksdb_OptionsUtil_getLatestOptionsFileName(
  * Method:    readTableFormatConfig
  * Signature: (J)Lorg/fluss/rocksdb/TableFormatConfig;
  */
-jobject Java_org_fluss_rocksdb_OptionsUtil_readTableFormatConfig(JNIEnv* env, jclass,
-                                                           jlong jcf_options) {
+jobject Java_org_fluss_rocksdb_OptionsUtil_readTableFormatConfig(
+    JNIEnv* env, jclass, jlong jcf_options) {
   if (jcf_options == 0) {
     env->ThrowNew(
         ROCKSDB_NAMESPACE::IllegalArgumentExceptionJni::getJClass(env),

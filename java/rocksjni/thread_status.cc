@@ -43,8 +43,8 @@ jstring Java_org_fluss_rocksdb_ThreadStatus_getOperationName(
  * Method:    microsToStringNative
  * Signature: (J)Ljava/lang/String;
  */
-jstring Java_org_fluss_rocksdb_ThreadStatus_microsToStringNative(JNIEnv* env, jclass,
-                                                           jlong jmicros) {
+jstring Java_org_fluss_rocksdb_ThreadStatus_microsToStringNative(
+    JNIEnv* env, jclass, jlong jmicros) {
   auto str = ROCKSDB_NAMESPACE::ThreadStatus::MicrosToString(
       static_cast<uint64_t>(jmicros));
   return ROCKSDB_NAMESPACE::JniUtil::toJavaString(env, &str, true);
@@ -117,8 +117,8 @@ jobject Java_org_fluss_rocksdb_ThreadStatus_interpretOperationProperties(
  * Method:    getStateName
  * Signature: (B)Ljava/lang/String;
  */
-jstring Java_org_fluss_rocksdb_ThreadStatus_getStateName(JNIEnv* env, jclass,
-                                                   jbyte jstate_type_value) {
+jstring Java_org_fluss_rocksdb_ThreadStatus_getStateName(
+    JNIEnv* env, jclass, jbyte jstate_type_value) {
   auto name = ROCKSDB_NAMESPACE::ThreadStatus::GetStateName(
       ROCKSDB_NAMESPACE::StateTypeJni::toCppStateType(jstate_type_value));
   return ROCKSDB_NAMESPACE::JniUtil::toJavaString(env, &name, true);

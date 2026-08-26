@@ -15,8 +15,8 @@
  * Method:    raiseException
  * Signature: ()V
  */
-void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseException(JNIEnv* env,
-                                                          jobject /*jobj*/) {
+void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseException(
+    JNIEnv* env, jobject /*jobj*/) {
   ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(env,
                                                    std::string("test message"));
 }

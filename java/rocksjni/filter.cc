@@ -23,9 +23,8 @@
  * Method:    createBloomFilter
  * Signature: (DZ)J
  */
-jlong Java_org_fluss_rocksdb_BloomFilter_createNewBloomFilter(JNIEnv* /*env*/,
-                                                        jclass /*jcls*/,
-                                                        jdouble bits_per_key) {
+jlong Java_org_fluss_rocksdb_BloomFilter_createNewBloomFilter(
+    JNIEnv* /*env*/, jclass /*jcls*/, jdouble bits_per_key) {
   auto* sptr_filter =
       new std::shared_ptr<const ROCKSDB_NAMESPACE::FilterPolicy>(
           ROCKSDB_NAMESPACE::NewBloomFilterPolicy(bits_per_key));
@@ -38,8 +37,8 @@ jlong Java_org_fluss_rocksdb_BloomFilter_createNewBloomFilter(JNIEnv* /*env*/,
  * Signature: (J)V
  */
 void Java_org_fluss_rocksdb_Filter_disposeInternalJni(JNIEnv* /*env*/,
-                                                jclass /*jcls*/,
-                                                jlong jhandle) {
+                                                      jclass /*jcls*/,
+                                                      jlong jhandle) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<const ROCKSDB_NAMESPACE::FilterPolicy>*>(
           jhandle);

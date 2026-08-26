@@ -1,13 +1,12 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 package org.fluss.rocksdb.util;
 
-import org.fluss.rocksdb.RocksDBException;
-import org.fluss.rocksdb.WriteBatch;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import org.fluss.rocksdb.RocksDBException;
+import org.fluss.rocksdb.WriteBatch;
 
 /**
  * A simple WriteBatch Handler which adds a record

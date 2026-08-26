@@ -36,9 +36,8 @@ jlong Java_org_fluss_rocksdb_WriteBufferManager_newWriteBufferManager(
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_WriteBufferManager_disposeInternalJni(JNIEnv* /*env*/,
-                                                            jclass /*jcls*/,
-                                                            jlong jhandle) {
+void Java_org_fluss_rocksdb_WriteBufferManager_disposeInternalJni(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* write_buffer_manager =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::WriteBufferManager>*>(
           jhandle);

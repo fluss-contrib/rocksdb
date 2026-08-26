@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.fluss.rocksdb.*;
+import org.fluss.rocksdb.util.FileUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.fluss.rocksdb.*;
-import org.fluss.rocksdb.util.FileUtils;
 
 @State(Scope.Thread)
 public class MultiGetBenchmarks {

@@ -5,12 +5,12 @@
 
 package org.fluss.rocksdb.util;
 
-import org.junit.ClassRule;
-import org.junit.Test;
 import org.fluss.rocksdb.DBOptions;
 import org.fluss.rocksdb.InfoLogLevel;
 import org.fluss.rocksdb.Options;
 import org.fluss.rocksdb.RocksNativeLibraryResource;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 public class StdErrLoggerTest {
   @ClassRule

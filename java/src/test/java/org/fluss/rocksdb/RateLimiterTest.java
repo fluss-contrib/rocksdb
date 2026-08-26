@@ -4,11 +4,11 @@
 //  (found in the LICENSE.Apache file in the root directory).
 package org.fluss.rocksdb;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.fluss.rocksdb.RateLimiter.*;
+
+import org.junit.ClassRule;
+import org.junit.Test;
 
 public class RateLimiterTest {
 

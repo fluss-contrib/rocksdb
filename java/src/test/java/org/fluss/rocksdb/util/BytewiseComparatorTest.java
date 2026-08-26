@@ -5,20 +5,19 @@
 
 package org.fluss.rocksdb.util;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.fluss.rocksdb.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.fluss.rocksdb.util.ByteUtil.bytes;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.*;
 import java.util.*;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.*;
-import static org.fluss.rocksdb.util.ByteUtil.bytes;
+import org.fluss.rocksdb.*;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * This is a direct port of various C++
