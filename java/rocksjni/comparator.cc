@@ -13,18 +13,18 @@
 #include <functional>
 #include <string>
 
-#include "include/org_rocksdb_AbstractComparator.h"
-#include "include/org_rocksdb_NativeComparatorWrapper.h"
+#include "include/org_fluss_rocksdb_AbstractComparator.h"
+#include "include/org_fluss_rocksdb_NativeComparatorWrapper.h"
 #include "rocksjni/comparatorjnicallback.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_AbstractComparator
+ * Class:     org_fluss_rocksdb_AbstractComparator
  * Method:    createNewComparator
  * Signature: (J)J
  */
-jlong Java_org_rocksdb_AbstractComparator_createNewComparator(
+jlong Java_org_fluss_rocksdb_AbstractComparator_createNewComparator(
     JNIEnv* env, jobject jcomparator, jlong copt_handle) {
   auto* copt =
       reinterpret_cast<ROCKSDB_NAMESPACE::ComparatorJniCallbackOptions*>(
@@ -35,23 +35,23 @@ jlong Java_org_rocksdb_AbstractComparator_createNewComparator(
 }
 
 /*
- * Class:     org_rocksdb_AbstractComparator
+ * Class:     org_fluss_rocksdb_AbstractComparator
  * Method:    usingDirectBuffers
  * Signature: (J)Z
  */
-jboolean Java_org_rocksdb_AbstractComparator_usingDirectBuffers(JNIEnv*, jclass,
-                                                                jlong jhandle) {
+jboolean Java_org_fluss_rocksdb_AbstractComparator_usingDirectBuffers(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* c =
       reinterpret_cast<ROCKSDB_NAMESPACE::ComparatorJniCallback*>(jhandle);
   return static_cast<jboolean>(c->m_options->direct_buffer);
 }
 
 /*
- * Class:     org_rocksdb_NativeComparatorWrapper
+ * Class:     org_fluss_rocksdb_NativeComparatorWrapper
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_NativeComparatorWrapper_disposeInternal(
+void Java_org_fluss_rocksdb_NativeComparatorWrapper_disposeInternal(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jcomparator_handle) {
   auto* comparator =
       reinterpret_cast<ROCKSDB_NAMESPACE::Comparator*>(jcomparator_handle);

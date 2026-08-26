@@ -12,15 +12,15 @@
 #include <unordered_set>
 #include <vector>
 
-#include "include/org_rocksdb_MemoryUtil.h"
+#include "include/org_fluss_rocksdb_MemoryUtil.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_MemoryUtil
+ * Class:     org_fluss_rocksdb_MemoryUtil
  * Method:    getApproximateMemoryUsageByType
  * Signature: ([J[J)Ljava/util/Map;
  */
-jobject Java_org_rocksdb_MemoryUtil_getApproximateMemoryUsageByType(
+jobject Java_org_fluss_rocksdb_MemoryUtil_getApproximateMemoryUsageByType(
     JNIEnv* env, jclass, jlongArray jdb_handles, jlongArray jcache_handles) {
   jboolean has_exception = JNI_FALSE;
   std::vector<ROCKSDB_NAMESPACE::DB*> dbs =

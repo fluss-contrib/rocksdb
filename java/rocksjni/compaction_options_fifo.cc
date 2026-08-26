@@ -8,27 +8,27 @@
 
 #include <jni.h>
 
-#include "include/org_rocksdb_CompactionOptionsFIFO.h"
+#include "include/org_fluss_rocksdb_CompactionOptionsFIFO.h"
 #include "rocksdb/advanced_options.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    newCompactionOptionsFIFO
  * Signature: ()J
  */
-jlong Java_org_rocksdb_CompactionOptionsFIFO_newCompactionOptionsFIFO(JNIEnv*,
+jlong Java_org_fluss_rocksdb_CompactionOptionsFIFO_newCompactionOptionsFIFO(JNIEnv*,
                                                                       jclass) {
   const auto* opt = new ROCKSDB_NAMESPACE::CompactionOptionsFIFO();
   return GET_CPLUSPLUS_POINTER(opt);
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    setMaxTableFilesSize
  * Signature: (JJ)V
  */
-void Java_org_rocksdb_CompactionOptionsFIFO_setMaxTableFilesSize(
+void Java_org_fluss_rocksdb_CompactionOptionsFIFO_setMaxTableFilesSize(
     JNIEnv*, jclass, jlong jhandle, jlong jmax_table_files_size) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
@@ -36,11 +36,11 @@ void Java_org_rocksdb_CompactionOptionsFIFO_setMaxTableFilesSize(
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    maxTableFilesSize
  * Signature: (J)J
  */
-jlong Java_org_rocksdb_CompactionOptionsFIFO_maxTableFilesSize(JNIEnv*, jclass,
+jlong Java_org_fluss_rocksdb_CompactionOptionsFIFO_maxTableFilesSize(JNIEnv*, jclass,
                                                                jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
@@ -48,11 +48,11 @@ jlong Java_org_rocksdb_CompactionOptionsFIFO_maxTableFilesSize(JNIEnv*, jclass,
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    setAllowCompaction
  * Signature: (JZ)V
  */
-void Java_org_rocksdb_CompactionOptionsFIFO_setAllowCompaction(
+void Java_org_fluss_rocksdb_CompactionOptionsFIFO_setAllowCompaction(
     JNIEnv*, jclass, jlong jhandle, jboolean allow_compaction) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
@@ -60,11 +60,11 @@ void Java_org_rocksdb_CompactionOptionsFIFO_setAllowCompaction(
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    allowCompaction
  * Signature: (J)Z
  */
-jboolean Java_org_rocksdb_CompactionOptionsFIFO_allowCompaction(JNIEnv*, jclass,
+jboolean Java_org_fluss_rocksdb_CompactionOptionsFIFO_allowCompaction(JNIEnv*, jclass,
                                                                 jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
@@ -72,11 +72,11 @@ jboolean Java_org_rocksdb_CompactionOptionsFIFO_allowCompaction(JNIEnv*, jclass,
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    setMaxDataFilesSize
  * Signature: (JJ)V
  */
-void Java_org_rocksdb_CompactionOptionsFIFO_setMaxDataFilesSize(
+void Java_org_fluss_rocksdb_CompactionOptionsFIFO_setMaxDataFilesSize(
     JNIEnv*, jclass, jlong jhandle, jlong jmax_data_files_size) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
@@ -84,11 +84,11 @@ void Java_org_rocksdb_CompactionOptionsFIFO_setMaxDataFilesSize(
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    maxDataFilesSize
  * Signature: (J)J
  */
-jlong Java_org_rocksdb_CompactionOptionsFIFO_maxDataFilesSize(JNIEnv*, jclass,
+jlong Java_org_fluss_rocksdb_CompactionOptionsFIFO_maxDataFilesSize(JNIEnv*, jclass,
                                                               jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
@@ -96,11 +96,11 @@ jlong Java_org_rocksdb_CompactionOptionsFIFO_maxDataFilesSize(JNIEnv*, jclass,
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    setUseKvRatioCompaction
  * Signature: (JZ)V
  */
-void Java_org_rocksdb_CompactionOptionsFIFO_setUseKvRatioCompaction(
+void Java_org_fluss_rocksdb_CompactionOptionsFIFO_setUseKvRatioCompaction(
     JNIEnv*, jclass, jlong jhandle, jboolean use_kv_ratio_compaction) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
@@ -108,11 +108,11 @@ void Java_org_rocksdb_CompactionOptionsFIFO_setUseKvRatioCompaction(
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    useKvRatioCompaction
  * Signature: (J)Z
  */
-jboolean Java_org_rocksdb_CompactionOptionsFIFO_useKvRatioCompaction(
+jboolean Java_org_fluss_rocksdb_CompactionOptionsFIFO_useKvRatioCompaction(
     JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
@@ -120,11 +120,11 @@ jboolean Java_org_rocksdb_CompactionOptionsFIFO_useKvRatioCompaction(
 }
 
 /*
- * Class:     org_rocksdb_CompactionOptionsFIFO
+ * Class:     org_fluss_rocksdb_CompactionOptionsFIFO
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_CompactionOptionsFIFO_disposeInternalJni(JNIEnv*, jclass,
+void Java_org_fluss_rocksdb_CompactionOptionsFIFO_disposeInternalJni(JNIEnv*, jclass,
                                                                jlong jhandle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsFIFO*>(jhandle);
 }

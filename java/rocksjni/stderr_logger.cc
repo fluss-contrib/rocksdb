@@ -9,19 +9,17 @@
 
 #include <memory>
 
-#include "include/org_rocksdb_util_StdErrLogger.h"
+#include "include/org_fluss_rocksdb_util_StdErrLogger.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_rocksdb_util_StdErrLogger
+ * Class:     org_fluss_rocksdb_util_StdErrLogger
  * Method:    newStdErrLogger
  * Signature: (BLjava/lang/String;)J
  */
-jlong Java_org_rocksdb_util_StdErrLogger_newStdErrLogger(JNIEnv* env,
-                                                         jclass /*jcls*/,
-                                                         jbyte jlog_level,
-                                                         jstring jlog_prefix) {
+jlong Java_org_fluss_rocksdb_util_StdErrLogger_newStdErrLogger(
+    JNIEnv* env, jclass /*jcls*/, jbyte jlog_level, jstring jlog_prefix) {
   auto log_level = static_cast<ROCKSDB_NAMESPACE::InfoLogLevel>(jlog_level);
   std::shared_ptr<ROCKSDB_NAMESPACE::StderrLogger>* sptr_logger = nullptr;
   if (jlog_prefix == nullptr) {
@@ -41,14 +39,12 @@ jlong Java_org_rocksdb_util_StdErrLogger_newStdErrLogger(JNIEnv* env,
 }
 
 /*
- * Class:     org_rocksdb_util_StdErrLogger
+ * Class:     org_fluss_rocksdb_util_StdErrLogger
  * Method:    setInfoLogLevel
  * Signature: (JB)V
  */
-void Java_org_rocksdb_util_StdErrLogger_setInfoLogLevel(JNIEnv* /*env*/,
-                                                        jclass /*jcls*/,
-                                                        jlong jhandle,
-                                                        jbyte jlog_level) {
+void Java_org_fluss_rocksdb_util_StdErrLogger_setInfoLogLevel(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jbyte jlog_level) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::StderrLogger>*>(
           jhandle);
@@ -57,13 +53,13 @@ void Java_org_rocksdb_util_StdErrLogger_setInfoLogLevel(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_util_StdErrLogger
+ * Class:     org_fluss_rocksdb_util_StdErrLogger
  * Method:    infoLogLevel
  * Signature: (J)B
  */
-jbyte Java_org_rocksdb_util_StdErrLogger_infoLogLevel(JNIEnv* /*env*/,
-                                                      jclass /*jcls*/,
-                                                      jlong jhandle) {
+jbyte Java_org_fluss_rocksdb_util_StdErrLogger_infoLogLevel(JNIEnv* /*env*/,
+                                                            jclass /*jcls*/,
+                                                            jlong jhandle) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::StderrLogger>*>(
           jhandle);
@@ -71,13 +67,13 @@ jbyte Java_org_rocksdb_util_StdErrLogger_infoLogLevel(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_rocksdb_util_StdErrLogger
+ * Class:     org_fluss_rocksdb_util_StdErrLogger
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_util_StdErrLogger_disposeInternal(JNIEnv* /*env*/,
-                                                        jobject /*jobj*/,
-                                                        jlong jhandle) {
+void Java_org_fluss_rocksdb_util_StdErrLogger_disposeInternal(JNIEnv* /*env*/,
+                                                              jobject /*jobj*/,
+                                                              jlong jhandle) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::StderrLogger>*>(
           jhandle);
