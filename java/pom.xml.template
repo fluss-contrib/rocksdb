@@ -29,7 +29,7 @@
     <scm>
         <connection>scm:git:https://github.com/fluss-contrib/rocksdb.git</connection>
         <developerConnection>scm:git:https://github.com/fluss-contrib/rocksdb.git</developerConnection>
-        <url>scm:git:https://github.com/fluss-contrib/rocksdb.git</url>
+        <url>https://github.com/fluss-contrib/rocksdb.git</url>
     </scm>
 
     <organization>
