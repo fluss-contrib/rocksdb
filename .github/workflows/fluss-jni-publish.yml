@@ -1,0 +1,942 @@
+name: Fluss JNI Publish
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/fluss-jni-publish.yml'
+      - 'java/pom.xml.template'
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*-fluss-*'
+
+permissions:
+  contents: read
+  deployments: read
+
+concurrency:
+  group: fluss-jni-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare publication
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      mode: ${{ steps.prepare.outputs.mode }}
+      version: ${{ steps.prepare.outputs.version }}
+      should-build: ${{ steps.prepare.outputs.should-build }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Select mode and validate version
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          source_rocksdb_version=$(awk '
+            /#define ROCKSDB_MAJOR/ { major = $3 }
+            /#define ROCKSDB_MINOR/ { minor = $3 }
+            /#define ROCKSDB_PATCH/ { patch = $3 }
+            END { print major "." minor "." patch }
+          ' include/rocksdb/version.h)
+
+          mode=
+          version=
+          should_build=true
+          case "$EVENT_NAME" in
+            pull_request)
+              mode=preflight
+              version="$source_rocksdb_version-fluss-SNAPSHOT"
+              ;;
+            schedule)
+              mode=snapshot
+              version="$source_rocksdb_version-fluss-SNAPSHOT"
+
+              deployments=$(gh api --method GET \
+                "repos/$GITHUB_REPOSITORY/deployments" \
+                -f environment=maven-snapshots \
+                -F per_page=100)
+              latest_successful_sha=
+              while IFS= read -r deployment_id; do
+                latest_state=$(gh api --method GET \
+                  "repos/$GITHUB_REPOSITORY/deployments/$deployment_id/statuses" \
+                  -F per_page=1 \
+                  --jq '.[0].state // ""')
+                if [[ "$latest_state" == success ]]; then
+                  latest_successful_sha=$(gh api \
+                    "repos/$GITHUB_REPOSITORY/deployments/$deployment_id" \
+                    --jq '.sha')
+                  break
+                fi
+              done < <(jq -r '.[].id' <<<"$deployments")
+
+              if [[ -n "$latest_successful_sha" && "$latest_successful_sha" == "$GITHUB_SHA" ]]; then
+                should_build=false
+                echo "Snapshot already published for $GITHUB_SHA"
+              fi
+              ;;
+            workflow_dispatch)
+              if [[ "$GITHUB_REF" != refs/heads/fluss-main ]]; then
+                echo "Manual Snapshot publication must run from fluss-main" >&2
+                exit 1
+              fi
+              mode=snapshot
+              version="$source_rocksdb_version-fluss-SNAPSHOT"
+              ;;
+            push)
+              if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-fluss-[1-9][0-9]*(-rc[1-9][0-9]*)?$ ]]; then
+                echo "Invalid Fluss release tag: $RELEASE_TAG" >&2
+                exit 1
+              fi
+
+              tagged_rocksdb_version=${RELEASE_TAG#v}
+              tagged_rocksdb_version=${tagged_rocksdb_version%%-fluss-*}
+              if [[ "$tagged_rocksdb_version" != "$source_rocksdb_version" ]]; then
+                echo "Tag RocksDB version $tagged_rocksdb_version does not match source version $source_rocksdb_version" >&2
+                exit 1
+              fi
+
+              git fetch --no-tags origin \
+                '+refs/heads/fluss-main:refs/remotes/origin/fluss-main'
+              tag_commit=$(git rev-parse "$RELEASE_TAG^{commit}")
+              if ! git merge-base --is-ancestor \
+                "$tag_commit" refs/remotes/origin/fluss-main; then
+                echo "Release tag target is not contained in origin/fluss-main" >&2
+                exit 1
+              fi
+
+              mode=release
+              version=${RELEASE_TAG#v}
+              ;;
+            *)
+              echo "Unsupported event: $EVENT_NAME" >&2
+              exit 1
+              ;;
+          esac
+
+          {
+            printf 'mode=%s\n' "$mode"
+            printf 'version=%s\n' "$version"
+            printf 'should-build=%s\n' "$should_build"
+          } >> "$GITHUB_OUTPUT"
+
+  linux:
+    name: Build ${{ matrix.platform }}
+    needs: prepare
+    if: needs.prepare.outputs.should-build == 'true'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x86_64
+            runner: ubuntu-24.04
+            docker_platform: linux/amd64
+            image: evolvedbinary/rocksjava:centos7_x64-be
+            expected_library: libflussrocksdbjni-linux64.so
+            expected_architecture: 'x86-64'
+          - platform: linux-arm64
+            runner: ubuntu-24.04-arm
+            docker_platform: linux/arm64
+            image: evolvedbinary/rocksjava:centos7_arm64v8-be
+            expected_library: libflussrocksdbjni-linux-aarch64.so
+            expected_architecture: 'aarch64'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: liberica
+          java-version: '8'
+
+      - name: Build portable JNI artifact
+        env:
+          DOCKER_PLATFORM: ${{ matrix.docker_platform }}
+          IMAGE: ${{ matrix.image }}
+        run: |
+          mkdir -p artifacts
+          docker run --rm \
+            --platform "$DOCKER_PLATFORM" \
+            --volume "$GITHUB_WORKSPACE:/rocksdb-host:ro" \
+            --volume "$GITHUB_WORKSPACE/artifacts:/rocksdb-java-target" \
+            --env J=4 \
+            "$IMAGE" \
+            bash /rocksdb-host/java/crossbuild/docker-build-linux.sh
+
+      - name: Verify Linux compatibility
+        env:
+          EXPECTED_LIBRARY: ${{ matrix.expected_library }}
+          EXPECTED_ARCHITECTURE: ${{ matrix.expected_architecture }}
+        run: |
+          set -euo pipefail
+          library="artifacts/$EXPECTED_LIBRARY"
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-linux*.jar' -print -quit)
+          test -f "$library"
+          test -n "$jar_file"
+
+          file "$library" | grep -qi "$EXPECTED_ARCHITECTURE"
+          max_glibc=$(readelf --version-info "$library" \
+            | grep -o 'GLIBC_[0-9.]*' \
+            | sort -Vu \
+            | tail -1)
+          test "$(printf '%s\n' "$max_glibc" GLIBC_2.17 | sort -V | tail -1)" = GLIBC_2.17
+
+          if readelf -d "$library" \
+            | grep NEEDED \
+            | grep -Eq 'lib(stdc\+\+|gcc_s|z|bz2|snappy|lz4|zstd|jemalloc)'; then
+            echo "Unexpected non-system shared-library dependency" >&2
+            readelf -d "$library" | grep NEEDED >&2
+            exit 1
+          fi
+
+          jar tf "$jar_file" | grep -qx 'org/fluss/rocksdb/RocksDB.class'
+          jar tf "$jar_file" | grep -qx "$EXPECTED_LIBRARY"
+          if jar tf "$jar_file" | grep -q '^org/rocksdb/'; then
+            echo "Upstream Java package found in JNI artifact" >&2
+            exit 1
+          fi
+
+      - name: Test JNI artifact
+        env:
+          EXPECTED_LIBRARY: ${{ matrix.expected_library }}
+        run: |
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-linux*.jar' -print -quit)
+          test -n "$jar_file"
+          mkdir -p java/target
+          cp "artifacts/$EXPECTED_LIBRARY" java/target/
+          cp "$jar_file" java/target/
+          make -C java sample test
+
+      - name: Smoke-test packaged JAR
+        run: |
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-linux*.jar' -print -quit)
+          mkdir -p smoke-classes
+          javac -cp "$jar_file" -d smoke-classes java/samples/src/main/java/RocksDBSample.java
+          java -cp "$jar_file:smoke-classes" RocksDBSample "$RUNNER_TEMP/fluss-rocksdb-smoke"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fluss-jni-${{ matrix.platform }}
+          path: artifacts/
+          if-no-files-found: error
+
+  macos:
+    name: Build ${{ matrix.platform }}
+    needs: prepare
+    if: needs.prepare.outputs.should-build == 'true'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
+    env:
+      ROCKSDB_DISABLE_JEMALLOC: '1'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-x86_64
+            runner: ${{ 'macos-15-intel' }}
+            architecture: x86_64
+            expected_library: libflussrocksdbjni-osx-x86_64.jnilib
+            expected_architecture: 'x86_64'
+            maximum_macos_version: '10.14'
+          - platform: macos-arm64
+            runner: macos-15
+            architecture: arm64
+            expected_library: libflussrocksdbjni-osx-arm64.jnilib
+            expected_architecture: 'arm64'
+            maximum_macos_version: '11.0'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: liberica
+          java-version: '8'
+
+      - uses: maxim-lobanov/setup-xcode@v1.6.0
+        with:
+          xcode-version: 16.4.0
+
+      - name: Set up macOS environment
+        run: |
+          {
+            echo 'GTEST_THROW_ON_FAILURE=0'
+            printf 'GTEST_OUTPUT="xml:%s/test-results/"\n' "$RUNNER_TEMP"
+            echo 'SKIP_FORMAT_BUCK_CHECKS=1'
+            echo 'GTEST_COLOR=1'
+            echo 'CTEST_OUTPUT_ON_FAILURE=1'
+            echo 'CTEST_TEST_TIMEOUT=300'
+            echo 'ZLIB_DOWNLOAD_BASE=https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/zlib'
+            echo 'BZIP2_DOWNLOAD_BASE=https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/bzip2'
+            echo 'SNAPPY_DOWNLOAD_BASE=https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/snappy'
+            echo 'LZ4_DOWNLOAD_BASE=https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/lz4'
+            echo 'ZSTD_DOWNLOAD_BASE=https://rocksdb-deps.s3.us-west-2.amazonaws.com/pkgs/zstd'
+          } >> "$GITHUB_ENV"
+
+      - name: Increase max open files
+        run: |
+          sudo sysctl -w kern.maxfiles=1048576
+          sudo sysctl -w kern.maxfilesperproc=1048576
+          sudo launchctl limit maxfiles 1048576
+
+      - name: Install gflags on macOS
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install gflags
+
+      - name: Build portable JNI artifact
+        env:
+          ARCHITECTURE: ${{ matrix.architecture }}
+        run: |
+          PORTABLE=1 DISABLE_WARNING_AS_ERROR=1 \
+            make V=1 J=3 -j3 "rocksdbjavastaticosx_arch_$ARCHITECTURE"
+          make rocksdbjava_jar
+
+      - name: Collect and verify macOS artifact
+        env:
+          EXPECTED_LIBRARY: ${{ matrix.expected_library }}
+          EXPECTED_ARCHITECTURE: ${{ matrix.expected_architecture }}
+          MAXIMUM_MACOS_VERSION: ${{ matrix.maximum_macos_version }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          cp "java/target/$EXPECTED_LIBRARY" artifacts/
+          cp java/target/rocksdbjni-*-osx.jar artifacts/
+
+          library="artifacts/$EXPECTED_LIBRARY"
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-osx.jar' -print -quit)
+          file "$library" | grep -qi "$EXPECTED_ARCHITECTURE"
+          test -n "$jar_file"
+
+          minimum_macos_version=$(otool -l "$library" \
+            | awk '$1 == "minos" { print $2; exit }')
+          python3 - "$minimum_macos_version" "$MAXIMUM_MACOS_VERSION" <<'PY'
+          import sys
+
+          def version(value):
+              return tuple(int(part) for part in value.split('.'))
+
+          if version(sys.argv[1]) > version(sys.argv[2]):
+              raise SystemExit(
+                  f"minimum macOS version {sys.argv[1]} exceeds {sys.argv[2]}")
+          PY
+
+          if otool -L "$library" | tail -n +2 | grep -Eq '/(opt/homebrew|usr/local)/'; then
+            echo "Unexpected Homebrew shared-library dependency" >&2
+            otool -L "$library" >&2
+            exit 1
+          fi
+
+          jar tf "$jar_file" | grep -qx 'org/fluss/rocksdb/RocksDB.class'
+          jar tf "$jar_file" | grep -qx "$EXPECTED_LIBRARY"
+          if jar tf "$jar_file" | grep -q '^org/rocksdb/'; then
+            echo "Upstream Java package found in JNI artifact" >&2
+            exit 1
+          fi
+
+      - name: Test JNI artifact
+        run: make -C java sample test
+
+      - name: Smoke-test packaged JAR
+        run: |
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-osx.jar' -print -quit)
+          mkdir -p smoke-classes
+          javac -cp "$jar_file" -d smoke-classes java/samples/src/main/java/RocksDBSample.java
+          java -cp "$jar_file:smoke-classes" RocksDBSample "$RUNNER_TEMP/fluss-rocksdb-smoke"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fluss-jni-${{ matrix.platform }}
+          path: artifacts/
+          if-no-files-found: error
+
+  package:
+    name: Package Maven component
+    needs: [prepare, linux, macos]
+    if: needs.prepare.outputs.should-build == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: fluss-jni-*
+          path: artifacts
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: liberica
+          java-version: '8'
+
+      - name: Assemble and verify Maven component
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          base_jar=$(find artifacts/fluss-jni-linux-x86_64 -name 'rocksdbjni-*-linux*.jar' -print -quit)
+          test -n "$base_jar"
+          mkdir -p dist
+          fat_jar="dist/fluss-rocksdbjni-$VERSION.jar"
+          cp "$base_jar" "$fat_jar"
+
+          for library_name in \
+            libflussrocksdbjni-linux64.so \
+            libflussrocksdbjni-linux-aarch64.so \
+            libflussrocksdbjni-osx-x86_64.jnilib \
+            libflussrocksdbjni-osx-arm64.jnilib; do
+            mapfile -t matches < <(find artifacts -type f -name "$library_name")
+            test "${#matches[@]}" -eq 1
+            jar uf "$fat_jar" -C "$(dirname "${matches[0]}")" "$library_name"
+          done
+
+          printf '%s\n' \
+            libflussrocksdbjni-linux64.so \
+            libflussrocksdbjni-linux-aarch64.so \
+            libflussrocksdbjni-osx-x86_64.jnilib \
+            libflussrocksdbjni-osx-arm64.jnilib \
+            | sort > expected-libraries.txt
+          jar tf "$fat_jar" \
+            | grep -E '^libflussrocksdbjni-.*\.(so|jnilib)$' \
+            | sort > actual-libraries.txt
+          diff -u expected-libraries.txt actual-libraries.txt
+
+          jar tf "$fat_jar" | grep -qx 'org/fluss/rocksdb/RocksDB.class'
+          if jar tf "$fat_jar" | grep -q '^org/rocksdb/'; then
+            echo "Upstream Java package found in fat JAR" >&2
+            exit 1
+          fi
+          javap -verbose -classpath "$fat_jar" org.fluss.rocksdb.RocksDB \
+            | grep -q 'major version: 52'
+
+          make -C java javadocs
+          make \
+            ROCKSDB_JAVA_VERSION="$VERSION" \
+            rocksdbjavageneratepom \
+            rocksdbjava_javadocs_jar \
+            rocksdbjava_sources_jar
+          cp java/pom.xml "dist/fluss-rocksdbjni-$VERSION.pom"
+          cp "java/target/rocksdbjni-$VERSION-sources.jar" \
+            "dist/fluss-rocksdbjni-$VERSION-sources.jar"
+          cp "java/target/rocksdbjni-$VERSION-javadoc.jar" \
+            "dist/fluss-rocksdbjni-$VERSION-javadoc.jar"
+
+          python3 - "dist/fluss-rocksdbjni-$VERSION.pom" "$VERSION" <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+
+          root = ET.parse(sys.argv[1]).getroot()
+          namespace = {"m": "http://maven.apache.org/POM/4.0.0"}
+          assert root.findtext("m:groupId", namespaces=namespace) == "io.github.fluss-contrib"
+          assert root.findtext("m:artifactId", namespaces=namespace) == "fluss-rocksdbjni"
+          assert root.findtext("m:version", namespaces=namespace) == sys.argv[2]
+          PY
+
+          printf '%s\n' \
+            "fluss-rocksdbjni-$VERSION.jar" \
+            "fluss-rocksdbjni-$VERSION-sources.jar" \
+            "fluss-rocksdbjni-$VERSION-javadoc.jar" \
+            "fluss-rocksdbjni-$VERSION.pom" \
+            | sort > expected-files.txt
+          find dist -maxdepth 1 -type f -printf '%f\n' | sort > actual-files.txt
+          diff -u expected-files.txt actual-files.txt
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fluss-jni-component
+          path: dist/
+          if-no-files-found: error
+
+  preflight:
+    name: Validate local publication bundle
+    needs: [prepare, package]
+    if: needs.prepare.outputs.mode == 'preflight'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: fluss-jni-component
+          path: component
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: liberica
+          java-version: '8'
+
+      - name: Generate ephemeral signing key
+        run: |
+          set -euo pipefail
+          export GNUPGHOME="$RUNNER_TEMP/fluss-preflight-gnupg"
+          mkdir -p "$GNUPGHOME"
+          chmod 700 "$GNUPGHOME"
+          printf 'GNUPGHOME=%s\n' "$GNUPGHOME" >> "$GITHUB_ENV"
+          gpg --batch --passphrase '' --quick-generate-key \
+            'Fluss JNI Preflight <dev@fluss.apache.org>' rsa2048 sign 0
+
+      - name: Sign and validate local repository
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          artifact="fluss-rocksdbjni-$VERSION"
+          mkdir -p preflight-repository
+          mvn --batch-mode --no-transfer-progress \
+            org.apache.maven.plugins:maven-gpg-plugin:3.2.8:sign-and-deploy-file \
+            -Dgpg.signer=gpg \
+            -Dgpg.useagent=false \
+            -Dgpg.bestPractices=true \
+            -Dgpg.homedir="$GNUPGHOME" \
+            -Dgpg.passphrase= \
+            -Dfile="component/$artifact.jar" \
+            -Dsources="component/$artifact-sources.jar" \
+            -Djavadoc="component/$artifact-javadoc.jar" \
+            -DpomFile="component/$artifact.pom" \
+            -DgeneratePom=false \
+            -DrepositoryId=preflight-local \
+            -Durl="file://$GITHUB_WORKSPACE/preflight-repository"
+
+          find preflight-repository -type f \
+            \( -name 'maven-metadata*' -o -name '_remote.repositories' -o -name '*.lastUpdated' \) \
+            -delete
+          component_directory="preflight-repository/io/github/fluss-contrib/fluss-rocksdbjni/$VERSION"
+          test -d "$component_directory"
+
+          for suffix in .jar -sources.jar -javadoc.jar .pom; do
+            file="$component_directory/$artifact$suffix"
+            test -f "$file"
+            test -f "$file.asc"
+            gpg --batch --verify "$file.asc" "$file"
+          done
+          test "$(find "$component_directory" -maxdepth 1 -type f -name '*.asc' | wc -l)" -eq 4
+
+          find "$component_directory" -maxdepth 1 -type f \
+            ! -name '*.md5' ! -name '*.sha1' ! -name '*.sha256' ! -name '*.sha512' \
+            -print0 \
+            | while IFS= read -r -d '' file; do
+                md5sum "$file" | awk '{print $1}' > "$file.md5"
+                sha1sum "$file" | awk '{print $1}' > "$file.sha1"
+                sha256sum "$file" | awk '{print $1}' > "$file.sha256"
+                sha512sum "$file" | awk '{print $1}' > "$file.sha512"
+              done
+          test "$(find "$component_directory" -maxdepth 1 -type f -name '*.md5' | wc -l)" -eq 8
+          for file in "$component_directory"/*.jar "$component_directory"/*.pom "$component_directory"/*.asc; do
+            test "$(cat "$file.md5")" = "$(md5sum "$file" | awk '{print $1}')"
+            test "$(cat "$file.sha1")" = "$(sha1sum "$file" | awk '{print $1}')"
+            test "$(cat "$file.sha256")" = "$(sha256sum "$file" | awk '{print $1}')"
+            test "$(cat "$file.sha512")" = "$(sha512sum "$file" | awk '{print $1}')"
+          done
+
+          mkdir -p preflight-bundle
+          (cd preflight-repository && zip -q -r ../preflight-bundle/fluss-jni-preflight.zip io)
+          unzip -t preflight-bundle/fluss-jni-preflight.zip
+
+      - name: Remove ephemeral signing key
+        if: always()
+        run: |
+          gpgconf --kill gpg-agent || true
+          if [[ "${GNUPGHOME:-}" == "$RUNNER_TEMP/fluss-preflight-gnupg" ]]; then
+            find "$GNUPGHOME" -mindepth 1 -delete
+            rmdir "$GNUPGHOME"
+          fi
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fluss-jni-preflight
+          path: preflight-bundle/fluss-jni-preflight.zip
+          if-no-files-found: error
+
+  publish-snapshot:
+    name: Publish Snapshot
+    needs: [prepare, package]
+    if: needs.prepare.outputs.mode == 'snapshot' && needs.prepare.outputs.should-build == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: maven-snapshots
+    env:
+      CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+      CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+      MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+      MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: fluss-jni-component
+          path: component
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: liberica
+          java-version: '8'
+
+      - name: Prepare publication credentials
+        run: |
+          set -euo pipefail
+          printf '::add-mask::%s\n' "$CENTRAL_USERNAME"
+          printf '::add-mask::%s\n' "$CENTRAL_TOKEN"
+          printf '::add-mask::%s\n' "$MAVEN_GPG_PASSPHRASE"
+
+          export GNUPGHOME="$RUNNER_TEMP/fluss-snapshot-gnupg"
+          mkdir -p "$GNUPGHOME"
+          chmod 700 "$GNUPGHOME"
+          printf '%s' "$MAVEN_GPG_KEY" | gpg --batch --import
+          printf 'GNUPGHOME=%s\n' "$GNUPGHOME" >> "$GITHUB_ENV"
+
+          settings_file="$RUNNER_TEMP/fluss-snapshot-settings.xml"
+          cat > "$settings_file" <<'XML'
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+            <servers>
+              <server>
+                <id>central-portal-snapshots</id>
+                <username>${env.CENTRAL_USERNAME}</username>
+                <password>${env.CENTRAL_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          XML
+          chmod 600 "$settings_file"
+          printf 'MAVEN_SETTINGS=%s\n' "$settings_file" >> "$GITHUB_ENV"
+
+      - name: Sign and publish Snapshot
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          artifact="fluss-rocksdbjni-$VERSION"
+          mvn --batch-mode --no-transfer-progress \
+            --settings "$MAVEN_SETTINGS" \
+            org.apache.maven.plugins:maven-gpg-plugin:3.2.8:sign-and-deploy-file \
+            -Dgpg.signer=gpg \
+            -Dgpg.useagent=false \
+            -Dgpg.bestPractices=true \
+            -Dgpg.homedir="$GNUPGHOME" \
+            -Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE" \
+            -Dfile="component/$artifact.jar" \
+            -Dsources="component/$artifact-sources.jar" \
+            -Djavadoc="component/$artifact-javadoc.jar" \
+            -DpomFile="component/$artifact.pom" \
+            -DgeneratePom=false \
+            -DrepositoryId=central-portal-snapshots \
+            -Durl=https://central.sonatype.com/repository/maven-snapshots/
+
+      - name: Remove publication credentials
+        if: always()
+        run: |
+          gpgconf --kill gpg-agent || true
+          if [[ "${GNUPGHOME:-}" == "$RUNNER_TEMP/fluss-snapshot-gnupg" ]]; then
+            find "$GNUPGHOME" -mindepth 1 -delete
+            rmdir "$GNUPGHOME"
+          fi
+          if [[ "${MAVEN_SETTINGS:-}" == "$RUNNER_TEMP/fluss-snapshot-settings.xml" ]]; then
+            rm -f "$MAVEN_SETTINGS"
+          fi
+
+  draft-release:
+    name: Create draft GitHub Release
+    needs: [prepare, package]
+    if: needs.prepare.outputs.mode == 'release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: fluss-jni-component
+          path: component
+
+      - name: Create or verify draft Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if release_json=$(gh api \
+            "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" 2>/dev/null); then
+            if [[ "$(jq -r '.draft' <<<"$release_json")" == true ]]; then
+              gh release upload "$RELEASE_TAG" component/* --clobber
+            else
+              mkdir -p published-assets
+              for component_file in component/*; do
+                filename=$(basename "$component_file")
+                gh release download "$RELEASE_TAG" \
+                  --pattern "$filename" \
+                  --dir published-assets
+                cmp "$component_file" "published-assets/$filename"
+              done
+            fi
+          else
+            gh release create "$RELEASE_TAG" component/* \
+              --draft \
+              --verify-tag \
+              --title "$RELEASE_TAG" \
+              --generate-notes
+          fi
+
+  publish-central:
+    name: Publish Maven Central release
+    needs: [prepare, package, draft-release]
+    if: needs.prepare.outputs.mode == 'release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    environment: maven-central
+    permissions:
+      contents: write
+    env:
+      CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+      CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+      MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+      MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: fluss-jni-component
+          path: component
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: liberica
+          java-version: '8'
+
+      - name: Sign and stage Central bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          printf '::add-mask::%s\n' "$CENTRAL_USERNAME"
+          printf '::add-mask::%s\n' "$CENTRAL_TOKEN"
+          printf '::add-mask::%s\n' "$MAVEN_GPG_PASSPHRASE"
+
+          export GNUPGHOME="$RUNNER_TEMP/fluss-central-gnupg"
+          mkdir -p "$GNUPGHOME"
+          chmod 700 "$GNUPGHOME"
+          printf '%s' "$MAVEN_GPG_KEY" | gpg --batch --import
+          printf 'GNUPGHOME=%s\n' "$GNUPGHOME" >> "$GITHUB_ENV"
+
+          artifact="fluss-rocksdbjni-$VERSION"
+          mkdir -p central-repository
+          mvn --batch-mode --no-transfer-progress \
+            org.apache.maven.plugins:maven-gpg-plugin:3.2.8:sign-and-deploy-file \
+            -Dgpg.signer=gpg \
+            -Dgpg.useagent=false \
+            -Dgpg.bestPractices=true \
+            -Dgpg.homedir="$GNUPGHOME" \
+            -Dgpg.passphrase="$MAVEN_GPG_PASSPHRASE" \
+            -Dfile="component/$artifact.jar" \
+            -Dsources="component/$artifact-sources.jar" \
+            -Djavadoc="component/$artifact-javadoc.jar" \
+            -DpomFile="component/$artifact.pom" \
+            -DgeneratePom=false \
+            -DrepositoryId=central-release-local \
+            -Durl="file://$GITHUB_WORKSPACE/central-repository"
+
+          find central-repository -type f \
+            \( -name 'maven-metadata*' -o -name '_remote.repositories' -o -name '*.lastUpdated' \) \
+            -delete
+          component_directory="central-repository/io/github/fluss-contrib/fluss-rocksdbjni/$VERSION"
+          test -d "$component_directory"
+          test "$(find "$component_directory" -maxdepth 1 -type f -name '*.asc' | wc -l)" -eq 4
+          for suffix in .jar -sources.jar -javadoc.jar .pom; do
+            gpg --batch --verify \
+              "$component_directory/$artifact$suffix.asc" \
+              "$component_directory/$artifact$suffix"
+          done
+
+          find "$component_directory" -maxdepth 1 -type f \
+            ! -name '*.md5' ! -name '*.sha1' ! -name '*.sha256' ! -name '*.sha512' \
+            -print0 \
+            | while IFS= read -r -d '' file; do
+                md5sum "$file" | awk '{print $1}' > "$file.md5"
+                sha1sum "$file" | awk '{print $1}' > "$file.sha1"
+                sha256sum "$file" | awk '{print $1}' > "$file.sha256"
+                sha512sum "$file" | awk '{print $1}' > "$file.sha512"
+              done
+
+          mkdir -p central-bundle
+          (cd central-repository && zip -q -r ../central-bundle/central-bundle.zip io)
+          unzip -t central-bundle/central-bundle.zip
+
+          if [[ "$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" --jq '.draft')" == true ]]; then
+            gh release upload "$RELEASE_TAG" "$component_directory"/* --clobber
+          fi
+
+      - name: Check immutable Central component
+        id: central-existence
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          artifact="fluss-rocksdbjni-$VERSION"
+          base_url="https://repo1.maven.org/maven2/io/github/fluss-contrib/fluss-rocksdbjni/$VERSION"
+          present=0
+          absent=0
+          for suffix in .jar -sources.jar -javadoc.jar .pom; do
+            filename="$artifact$suffix"
+            status=$(curl --silent --show-error --location \
+              --head --output /dev/null --write-out '%{http_code}' \
+              "$base_url/$filename")
+            case "$status" in
+              200) present=$((present + 1)) ;;
+              404) absent=$((absent + 1)) ;;
+              *)
+                echo "Unexpected Central response $status for $filename" >&2
+                exit 1
+                ;;
+            esac
+          done
+
+          if [[ "$absent" -eq 4 ]]; then
+            echo 'publish-required=true' >> "$GITHUB_OUTPUT"
+          elif [[ "$present" -eq 4 ]]; then
+            mkdir -p published-component
+            for suffix in .jar -sources.jar -javadoc.jar .pom; do
+              filename="$artifact$suffix"
+              curl --silent --show-error --fail --location \
+                --output "published-component/$filename" \
+                "$base_url/$filename"
+              expected_sha=$(sha256sum "component/$filename" | awk '{print $1}')
+              published_sha=$(sha256sum "published-component/$filename" | awk '{print $1}')
+              if [[ "$expected_sha" != "$published_sha" ]]; then
+                echo "Published Central payload differs: $filename" >&2
+                exit 1
+              fi
+            done
+            echo 'publish-required=false' >> "$GITHUB_OUTPUT"
+            echo "Identical Maven component is already published"
+          else
+            echo "Central component is only partially present" >&2
+            exit 1
+          fi
+
+      - name: Upload, validate, and publish Central deployment
+        if: steps.central-existence.outputs.publish-required == 'true'
+        env:
+          DEPLOYMENT_NAME: fluss-rocksdbjni-${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          authorization=$(printf '%s:%s' "$CENTRAL_USERNAME" "$CENTRAL_TOKEN" | base64 -w0)
+          deployment_id=$(curl --silent --show-error --fail-with-body \
+            --request POST \
+            --header "Authorization: Bearer $authorization" \
+            --form bundle=@central-bundle/central-bundle.zip \
+            "https://central.sonatype.com/api/v1/publisher/upload?name=$DEPLOYMENT_NAME&publishingType=USER_MANAGED")
+          test -n "$deployment_id"
+
+          for _ in $(seq 1 120); do
+            status=$(curl --silent --show-error --fail-with-body \
+              --request POST \
+              --header "Authorization: Bearer $authorization" \
+              "https://central.sonatype.com/api/v1/publisher/status?id=$deployment_id")
+            state=$(jq -r '.deploymentState' <<<"$status")
+            case "$state" in
+              VALIDATED)
+                break
+                ;;
+              FAILED)
+                jq '{deploymentId, deploymentState, errors}' <<<"$status"
+                curl --silent --show-error --fail-with-body \
+                  --request DELETE \
+                  --header "Authorization: Bearer $authorization" \
+                  "https://central.sonatype.com/api/v1/publisher/deployment/$deployment_id"
+                echo "Central deployment failed validation and was dropped" >&2
+                exit 1
+                ;;
+              PENDING|VALIDATING)
+                sleep 15
+                ;;
+              *)
+                echo "Unexpected pre-publication Central state: $state" >&2
+                exit 1
+                ;;
+            esac
+          done
+          if [[ "$state" != VALIDATED ]]; then
+            echo "Timed out waiting for Central validation: $deployment_id" >&2
+            exit 1
+          fi
+
+          curl --silent --show-error --fail-with-body \
+            --request POST \
+            --header "Authorization: Bearer $authorization" \
+            "https://central.sonatype.com/api/v1/publisher/deployment/$deployment_id"
+
+          for _ in $(seq 1 120); do
+            status=$(curl --silent --show-error --fail-with-body \
+              --request POST \
+              --header "Authorization: Bearer $authorization" \
+              "https://central.sonatype.com/api/v1/publisher/status?id=$deployment_id")
+            state=$(jq -r '.deploymentState' <<<"$status")
+            case "$state" in
+              PUBLISHED)
+                echo "Central deployment published: $deployment_id"
+                exit 0
+                ;;
+              PENDING|VALIDATING|VALIDATED|PUBLISHING)
+                sleep 15
+                ;;
+              FAILED)
+                jq '{deploymentId, deploymentState, errors}' <<<"$status"
+                echo "Central deployment failed after publication was requested" >&2
+                exit 1
+                ;;
+              *)
+                echo "Unexpected publication Central state: $state" >&2
+                exit 1
+                ;;
+            esac
+          done
+
+          echo "Timed out waiting for Central publication: $deployment_id" >&2
+          exit 1
+
+      - name: Remove publication credentials
+        if: always()
+        run: |
+          gpgconf --kill gpg-agent || true
+          if [[ "${GNUPGHOME:-}" == "$RUNNER_TEMP/fluss-central-gnupg" ]]; then
+            find "$GNUPGHOME" -mindepth 1 -delete
+            rmdir "$GNUPGHOME"
+          fi
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: [prepare, publish-central]
+    if: needs.prepare.outputs.mode == 'release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Publish the draft after Central
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          release_json=$(gh api \
+            "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG")
+          release_id=$(jq -r '.id' <<<"$release_json")
+          if [[ "$RELEASE_TAG" =~ -rc[1-9][0-9]*$ ]]; then
+            prerelease=true
+          else
+            prerelease=false
+          fi
+
+          if [[ "$(jq -r '.draft' <<<"$release_json")" == true ]]; then
+            gh api --method PATCH \
+              "repos/$GITHUB_REPOSITORY/releases/$release_id" \
+              -F draft=false \
+              -F prerelease="$prerelease" >/dev/null
+          elif [[ "$(jq -r '.prerelease' <<<"$release_json")" != "$prerelease" ]]; then
+            echo "Published GitHub Release has incorrect prerelease state" >&2
+            exit 1
+          fi
