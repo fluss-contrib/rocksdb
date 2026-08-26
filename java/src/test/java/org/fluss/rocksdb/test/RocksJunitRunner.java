@@ -4,8 +4,6 @@
 //  (found in the LICENSE.Apache file in the root directory).
 package org.fluss.rocksdb.test;
 
-import static org.fluss.rocksdb.test.RocksJunitRunner.RocksJunitListener.Status.*;
-
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -86,7 +84,7 @@ public class RocksJunitRunner {
         currentClassName = description.getClassName();
       }
       currentMethodName = description.getMethodName();
-      currentStatus = OK;
+      currentStatus = Status.OK;
       currentTestsCount++;
     }
 
@@ -116,23 +114,23 @@ public class RocksJunitRunner {
     public void testFailure(final Failure failure) {
       if (failure.getException() != null
           && failure.getException() instanceof AssertionError) {
-        currentStatus = FAILURE;
+        currentStatus = Status.FAILURE;
         currentTestsFailureCount++;
       } else {
-        currentStatus = ERROR;
+        currentStatus = Status.ERROR;
         currentTestsErrorCount++;
       }
     }
 
     @Override
     public void testIgnored(final Description description) {
-      currentStatus = IGNORED;
+      currentStatus = Status.IGNORED;
       currentTestsIgnoredCount++;
     }
 
     @Override
     public void testFinished(final Description description) {
-      if(currentStatus == OK) {
+      if (currentStatus == Status.OK) {
         writer.format("\t%s OK%n",currentMethodName);
       } else {
         writer.format("  [%s] %s%n", currentStatus.name(), currentMethodName);
