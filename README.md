@@ -1,29 +1,70 @@
-## RocksDB: A Persistent Key-Value Store for Flash and RAM Storage
+# RocksDB Fork for Apache Fluss
 
-[![CircleCI Status](https://circleci.com/gh/facebook/rocksdb.svg?style=svg)](https://circleci.com/gh/facebook/rocksdb)
+> [!IMPORTANT]
+> This repository is a community-maintained RocksDB fork for use with
+> [Apache Fluss](https://fluss.apache.org/). It is not an official repository,
+> release, or distribution of the Apache Software Foundation or the Apache
+> Fluss project, nor is it an official distribution of the upstream RocksDB
+> project. No endorsement by these projects or their governing organizations
+> is implied.
+>
+> Apache, Apache Fluss, and Fluss are trademarks or registered trademarks of
+> [The Apache Software Foundation](https://www.apache.org/) in the United States
+> and/or other countries. All other marks mentioned may be trademarks or
+> registered trademarks of their respective owners.
 
-RocksDB is developed and maintained by Facebook Database Engineering Team.
-It is built on earlier work on [LevelDB](https://github.com/google/leveldb) by Sanjay Ghemawat (sanjay@google.com)
-and Jeff Dean (jeff@google.com)
+[![Fluss PR](https://github.com/fluss-contrib/rocksdb/actions/workflows/fluss-pr.yml/badge.svg?event=pull_request)](https://github.com/fluss-contrib/rocksdb/actions/workflows/fluss-pr.yml?query=event%3Apull_request)
 
-This code is a library that forms the core building block for a fast
-key-value server, especially suited for storing data on flash drives.
-It has a Log-Structured-Merge-Database (LSM) design with flexible tradeoffs
-between Write-Amplification-Factor (WAF), Read-Amplification-Factor (RAF)
-and Space-Amplification-Factor (SAF). It has multi-threaded compactions,
-making it especially suitable for storing multiple terabytes of data in a
-single database.
+## About this fork
 
-Start with example usage here: https://github.com/facebook/rocksdb/tree/main/examples
+This repository is maintained by the `fluss-contrib` community as a
+release-based fork of [RocksDB](https://github.com/facebook/rocksdb). It
+provides a reviewable home for the RocksDB Java and native changes needed by
+the Apache Fluss ecosystem while preserving traceability to the authoritative
+upstream source.
 
-See the [github wiki](https://github.com/facebook/rocksdb/wiki) for more explanation.
+Each maintained line starts from an immutable upstream RocksDB release tag.
+Fluss-specific changes are reviewed and maintained as a clean, linear series
+on top of that baseline.
 
-The public interface is in `include/`.  Callers should not include or
-rely on the details of any other header files in this package.  Those
-internal APIs may be changed without warning.
+## Repository workflow
 
-Questions and discussions are welcome on the [RocksDB Developers Public](https://www.facebook.com/groups/rocksdb.dev/) Facebook group and [email list](https://groups.google.com/g/rocksdb) on Google Groups.
+| Branch | Purpose |
+| --- | --- |
+| `main` | Mirrors `facebook/rocksdb/main` without Fluss-specific commits. |
+| `fluss-main` | Default Fluss development branch and the only source of Snapshot publications. |
+| `fluss-release-X.Y` | Release line based on an upstream RocksDB tag; the only source of RC and final releases. |
+
+Changes to this fork are driven by a GitHub issue and submitted through a pull
+request. Ordinary pull requests are squash-merged, and `fluss-main` maintains a
+linear history.
+
+Read the repository policies before contributing:
+
+- [Branch management](docs/fluss/branch-management.md) describes branch roles,
+  pull-request integration, release branches, and upstream upgrades.
+- [Versioning and releases](docs/fluss/versioning-and-releases.md) describes
+  artifact versions, supported platforms, and Snapshot, RC, and final
+  publication.
+
+## Upstream RocksDB
+
+RocksDB is a persistent key-value store based on a Log-Structured Merge (LSM)
+design. It supports flexible tradeoffs among write, read, and space
+amplification and uses multithreaded compaction for large data sets.
+
+For general RocksDB documentation, examples, and upstream development, see:
+
+- [upstream RocksDB repository](https://github.com/facebook/rocksdb);
+- [RocksDB examples](https://github.com/facebook/rocksdb/tree/main/examples);
+  and
+- [RocksDB wiki](https://github.com/facebook/rocksdb/wiki).
+
+Report issues caused by Fluss-specific changes in this repository. General
+RocksDB issues should be reported to the upstream RocksDB project.
 
 ## License
 
-RocksDB is dual-licensed under both the GPLv2 (found in the COPYING file in the root directory) and Apache 2.0 License (found in the LICENSE.Apache file in the root directory).  You may select, at your option, one of the above-listed licenses.
+RocksDB is dual-licensed under both the GPLv2 (found in the `COPYING` file in
+the root directory) and Apache License 2.0 (found in the `LICENSE.Apache` file
+in the root directory). You may select, at your option, one of these licenses.
