@@ -215,6 +215,7 @@ jobs:
           test -n "$jar_file"
 
           file "$library" | grep -qi "$EXPECTED_ARCHITECTURE"
+          build_tools/check-fluss-jni-exports.sh "$library"
           max_glibc=$(readelf --version-info "$library" \
             | grep -o 'GLIBC_[0-9.]*' \
             | sort -Vu \
@@ -344,6 +345,7 @@ jobs:
           jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-osx.jar' -print -quit)
           file "$library" | grep -qi "$EXPECTED_ARCHITECTURE"
           test -n "$jar_file"
+          build_tools/check-fluss-jni-exports.sh "$library"
 
           minimum_macos_version=$(otool -l "$library" \
             | awk '$1 == "minos" { print $2; exit }')
