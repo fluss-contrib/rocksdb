@@ -4,21 +4,22 @@
 //  (found in the LICENSE.Apache file in the root directory).
 //
 // This file implements the "bridge" between Java and C++ for
-// JNI Callbacks from C++ to sub-classes or org.rocksdb.RocksCallbackObject
+// JNI Callbacks from C++ to sub-classes or
+// org.fluss.rocksdb.RocksCallbackObject
 
 #include <jni.h>
 
-#include "include/org_rocksdb_RocksCallbackObject.h"
+#include "include/org_fluss_rocksdb_RocksCallbackObject.h"
 #include "jnicallback.h"
 
 /*
- * Class:     org_rocksdb_RocksCallbackObject
+ * Class:     org_fluss_rocksdb_RocksCallbackObject
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_RocksCallbackObject_disposeInternal(JNIEnv* /*env*/,
-                                                          jclass /*jcls*/,
-                                                          jlong handle) {
+void Java_org_fluss_rocksdb_RocksCallbackObject_disposeInternal(JNIEnv* /*env*/,
+                                                                jclass /*jcls*/,
+                                                                jlong handle) {
   // TODO(AR) is deleting from the super class JniCallback OK, or must we delete
   // the subclass? Example hierarchies:
   //   1) Comparator -> BaseComparatorJniCallback + JniCallback ->

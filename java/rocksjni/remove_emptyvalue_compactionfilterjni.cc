@@ -5,16 +5,16 @@
 
 #include <jni.h>
 
-#include "include/org_rocksdb_RemoveEmptyValueCompactionFilter.h"
+#include "include/org_fluss_rocksdb_RemoveEmptyValueCompactionFilter.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "utilities/compaction_filters/remove_emptyvalue_compactionfilter.h"
 
 /*
- * Class:     org_rocksdb_RemoveEmptyValueCompactionFilter
+ * Class:     org_fluss_rocksdb_RemoveEmptyValueCompactionFilter
  * Method:    createNewRemoveEmptyValueCompactionFilter0
  * Signature: ()J
  */
-jlong Java_org_rocksdb_RemoveEmptyValueCompactionFilter_createNewRemoveEmptyValueCompactionFilter0(
+jlong Java_org_fluss_rocksdb_RemoveEmptyValueCompactionFilter_createNewRemoveEmptyValueCompactionFilter0(
     JNIEnv* /*env*/, jclass /*jcls*/) {
   auto* compaction_filter =
       new ROCKSDB_NAMESPACE::RemoveEmptyValueCompactionFilter();

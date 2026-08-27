@@ -1,0 +1,115 @@
+name: Fluss PR
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fluss-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  source-checks:
+    name: Source checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Prepare format checker
+        run: |
+          python -m pip install --disable-pip-version-check clang-format==12.0.1.2
+          wget https://rocksdb-deps.s3.us-west-2.amazonaws.com/llvm/llvm-project/release/12.x/clang/tools/clang-format/clang-format-diff.py
+          clang-format --version
+
+      - name: Check format
+        env:
+          FORMAT_UPSTREAM: origin/${{ github.base_ref }}
+          VERBOSE_CHECK: '1'
+        run: |
+          git fetch --no-tags origin \
+            "${GITHUB_BASE_REF}:refs/remotes/origin/${GITHUB_BASE_REF}"
+          make check-format
+
+      - name: Compare buckify output
+        run: make check-buck-targets
+
+      - name: Check sources
+        run: make check-sources
+
+  test-linux-x86-64:
+    name: Test Linux x86_64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: liberica
+          java-version: '8'
+
+      - name: Build portable JNI artifact
+        run: |
+          mkdir -p artifacts
+          docker run --rm \
+            --platform linux/amd64 \
+            --volume "$GITHUB_WORKSPACE:/rocksdb-host:ro" \
+            --volume "$GITHUB_WORKSPACE/artifacts:/rocksdb-java-target" \
+            --env J=4 \
+            evolvedbinary/rocksjava:centos7_x64-be \
+            bash /rocksdb-host/java/crossbuild/docker-build-linux.sh
+
+      - name: Verify Linux compatibility
+        run: |
+          set -euo pipefail
+          library=artifacts/libflussrocksdbjni-linux64.so
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-linux*.jar' -print -quit)
+          test -f "$library"
+          test -n "$jar_file"
+
+          file "$library" | grep -qi 'x86-64'
+          max_glibc=$(readelf --version-info "$library" \
+            | grep -o 'GLIBC_[0-9.]*' \
+            | sort -Vu \
+            | tail -1)
+          test "$(printf '%s\n' "$max_glibc" GLIBC_2.17 | sort -V | tail -1)" = GLIBC_2.17
+
+          if readelf -d "$library" \
+            | grep NEEDED \
+            | grep -Eq 'lib(stdc\+\+|gcc_s|z|bz2|snappy|lz4|zstd|jemalloc)'; then
+            echo "Unexpected non-system shared-library dependency" >&2
+            readelf -d "$library" | grep NEEDED >&2
+            exit 1
+          fi
+
+          jar tf "$jar_file" | grep -qx 'org/fluss/rocksdb/RocksDB.class'
+          jar tf "$jar_file" | grep -qx 'libflussrocksdbjni-linux64.so'
+          if jar tf "$jar_file" | grep -q '^org/rocksdb/'; then
+            echo "Upstream Java package found in JNI artifact" >&2
+            exit 1
+          fi
+
+      - name: Test JNI artifact
+        run: |
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-linux*.jar' -print -quit)
+          test -n "$jar_file"
+          mkdir -p java/target
+          cp artifacts/libflussrocksdbjni-linux64.so java/target/
+          cp "$jar_file" java/target/
+          make -C java sample test
+
+      - name: Smoke-test packaged JAR
+        run: |
+          jar_file=$(find artifacts -maxdepth 1 -name 'rocksdbjni-*-linux*.jar' -print -quit)
+          mkdir -p smoke-classes
+          javac -cp "$jar_file" -d smoke-classes java/samples/src/main/java/RocksDBSample.java
+          java -cp "$jar_file:smoke-classes" RocksDBSample "$RUNNER_TEMP/fluss-rocksdb-smoke"

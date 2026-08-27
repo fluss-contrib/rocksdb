@@ -1,103 +1,103 @@
 NATIVE_JAVA_CLASSES = \
-	org.rocksdb.AbstractCompactionFilter\
-	org.rocksdb.AbstractCompactionFilterFactory\
-	org.rocksdb.AbstractComparator\
-	org.rocksdb.AbstractEventListener\
-	org.rocksdb.AbstractSlice\
-	org.rocksdb.AbstractTableFilter\
-	org.rocksdb.AbstractTraceWriter\
-	org.rocksdb.AbstractTransactionNotifier\
-	org.rocksdb.AbstractWalFilter\
-	org.rocksdb.BackupEngine\
-	org.rocksdb.BackupEngineOptions\
-	org.rocksdb.BlockBasedTableConfig\
-	org.rocksdb.BloomFilter\
-	org.rocksdb.Checkpoint\
-	org.rocksdb.ClockCache\
-	org.rocksdb.Cache\
-	org.rocksdb.CassandraCompactionFilter\
-	org.rocksdb.CassandraValueMergeOperator\
-	org.rocksdb.ColumnFamilyHandle\
-	org.rocksdb.ColumnFamilyOptions\
-	org.rocksdb.CompactionJobInfo\
-	org.rocksdb.CompactionJobStats\
-	org.rocksdb.CompactionOptions\
-	org.rocksdb.CompactionOptionsFIFO\
-	org.rocksdb.CompactionOptionsUniversal\
-	org.rocksdb.CompactRangeOptions\
-	org.rocksdb.ComparatorOptions\
-	org.rocksdb.CompressionOptions\
-	org.rocksdb.ConfigOptions\
-	org.rocksdb.DBOptions\
-	org.rocksdb.DirectSlice\
-	org.rocksdb.Env\
-	org.rocksdb.EnvOptions\
-	org.rocksdb.FlushOptions\
-	org.rocksdb.Filter\
-	org.rocksdb.IngestExternalFileOptions\
-	org.rocksdb.HashLinkedListMemTableConfig\
-	org.rocksdb.HashSkipListMemTableConfig\
-	org.rocksdb.ConcurrentTaskLimiter\
-	org.rocksdb.ConcurrentTaskLimiterImpl\
-	org.rocksdb.KeyMayExist\
-	org.rocksdb.Logger\
-	org.rocksdb.LRUCache\
-	org.rocksdb.MemoryUsageType\
-	org.rocksdb.MemoryUtil\
-	org.rocksdb.MergeOperator\
-	org.rocksdb.NativeComparatorWrapper\
-	org.rocksdb.OptimisticTransactionDB\
-	org.rocksdb.OptimisticTransactionOptions\
-	org.rocksdb.Options\
-	org.rocksdb.OptionsUtil\
-	org.rocksdb.PersistentCache\
-	org.rocksdb.PerfContext\
-	org.rocksdb.PerfLevel\
-	org.rocksdb.PlainTableConfig\
-	org.rocksdb.RateLimiter\
-	org.rocksdb.ReadOptions\
-	org.rocksdb.RemoveEmptyValueCompactionFilter\
-	org.rocksdb.RestoreOptions\
-	org.rocksdb.RocksCallbackObject\
-	org.rocksdb.RocksDB\
-	org.rocksdb.RocksEnv\
-	org.rocksdb.RocksIterator\
-	org.rocksdb.RocksMemEnv\
-	org.rocksdb.SkipListMemTableConfig\
-	org.rocksdb.Slice\
-	org.rocksdb.SstFileManager\
-	org.rocksdb.SstFileWriter\
-	org.rocksdb.SstFileReader\
-	org.rocksdb.SstFileReaderIterator\
-	org.rocksdb.SstPartitionerFactory\
-	org.rocksdb.SstPartitionerFixedPrefixFactory\
-	org.rocksdb.Statistics\
-	org.rocksdb.ThreadStatus\
-	org.rocksdb.TimedEnv\
-	org.rocksdb.Transaction\
-	org.rocksdb.TransactionDB\
-	org.rocksdb.TransactionDBOptions\
-	org.rocksdb.TransactionOptions\
-	org.rocksdb.TransactionLogIterator\
-	org.rocksdb.TtlDB\
-	org.rocksdb.VectorMemTableConfig\
-	org.rocksdb.Snapshot\
-	org.rocksdb.StringAppendOperator\
-	org.rocksdb.UInt64AddOperator\
-	org.rocksdb.WriteBatch\
-	org.rocksdb.WriteBatch.Handler\
-	org.rocksdb.WriteOptions\
-	org.rocksdb.WriteBatchWithIndex\
-	org.rocksdb.WriteBufferManager\
-	org.rocksdb.WBWIRocksIterator\
-	org.rocksdb.util.StdErrLogger
+	org.fluss.rocksdb.AbstractCompactionFilter\
+	org.fluss.rocksdb.AbstractCompactionFilterFactory\
+	org.fluss.rocksdb.AbstractComparator\
+	org.fluss.rocksdb.AbstractEventListener\
+	org.fluss.rocksdb.AbstractSlice\
+	org.fluss.rocksdb.AbstractTableFilter\
+	org.fluss.rocksdb.AbstractTraceWriter\
+	org.fluss.rocksdb.AbstractTransactionNotifier\
+	org.fluss.rocksdb.AbstractWalFilter\
+	org.fluss.rocksdb.BackupEngine\
+	org.fluss.rocksdb.BackupEngineOptions\
+	org.fluss.rocksdb.BlockBasedTableConfig\
+	org.fluss.rocksdb.BloomFilter\
+	org.fluss.rocksdb.Checkpoint\
+	org.fluss.rocksdb.ClockCache\
+	org.fluss.rocksdb.Cache\
+	org.fluss.rocksdb.CassandraCompactionFilter\
+	org.fluss.rocksdb.CassandraValueMergeOperator\
+	org.fluss.rocksdb.ColumnFamilyHandle\
+	org.fluss.rocksdb.ColumnFamilyOptions\
+	org.fluss.rocksdb.CompactionJobInfo\
+	org.fluss.rocksdb.CompactionJobStats\
+	org.fluss.rocksdb.CompactionOptions\
+	org.fluss.rocksdb.CompactionOptionsFIFO\
+	org.fluss.rocksdb.CompactionOptionsUniversal\
+	org.fluss.rocksdb.CompactRangeOptions\
+	org.fluss.rocksdb.ComparatorOptions\
+	org.fluss.rocksdb.CompressionOptions\
+	org.fluss.rocksdb.ConfigOptions\
+	org.fluss.rocksdb.DBOptions\
+	org.fluss.rocksdb.DirectSlice\
+	org.fluss.rocksdb.Env\
+	org.fluss.rocksdb.EnvOptions\
+	org.fluss.rocksdb.FlushOptions\
+	org.fluss.rocksdb.Filter\
+	org.fluss.rocksdb.IngestExternalFileOptions\
+	org.fluss.rocksdb.HashLinkedListMemTableConfig\
+	org.fluss.rocksdb.HashSkipListMemTableConfig\
+	org.fluss.rocksdb.ConcurrentTaskLimiter\
+	org.fluss.rocksdb.ConcurrentTaskLimiterImpl\
+	org.fluss.rocksdb.KeyMayExist\
+	org.fluss.rocksdb.Logger\
+	org.fluss.rocksdb.LRUCache\
+	org.fluss.rocksdb.MemoryUsageType\
+	org.fluss.rocksdb.MemoryUtil\
+	org.fluss.rocksdb.MergeOperator\
+	org.fluss.rocksdb.NativeComparatorWrapper\
+	org.fluss.rocksdb.OptimisticTransactionDB\
+	org.fluss.rocksdb.OptimisticTransactionOptions\
+	org.fluss.rocksdb.Options\
+	org.fluss.rocksdb.OptionsUtil\
+	org.fluss.rocksdb.PersistentCache\
+	org.fluss.rocksdb.PerfContext\
+	org.fluss.rocksdb.PerfLevel\
+	org.fluss.rocksdb.PlainTableConfig\
+	org.fluss.rocksdb.RateLimiter\
+	org.fluss.rocksdb.ReadOptions\
+	org.fluss.rocksdb.RemoveEmptyValueCompactionFilter\
+	org.fluss.rocksdb.RestoreOptions\
+	org.fluss.rocksdb.RocksCallbackObject\
+	org.fluss.rocksdb.RocksDB\
+	org.fluss.rocksdb.RocksEnv\
+	org.fluss.rocksdb.RocksIterator\
+	org.fluss.rocksdb.RocksMemEnv\
+	org.fluss.rocksdb.SkipListMemTableConfig\
+	org.fluss.rocksdb.Slice\
+	org.fluss.rocksdb.SstFileManager\
+	org.fluss.rocksdb.SstFileWriter\
+	org.fluss.rocksdb.SstFileReader\
+	org.fluss.rocksdb.SstFileReaderIterator\
+	org.fluss.rocksdb.SstPartitionerFactory\
+	org.fluss.rocksdb.SstPartitionerFixedPrefixFactory\
+	org.fluss.rocksdb.Statistics\
+	org.fluss.rocksdb.ThreadStatus\
+	org.fluss.rocksdb.TimedEnv\
+	org.fluss.rocksdb.Transaction\
+	org.fluss.rocksdb.TransactionDB\
+	org.fluss.rocksdb.TransactionDBOptions\
+	org.fluss.rocksdb.TransactionOptions\
+	org.fluss.rocksdb.TransactionLogIterator\
+	org.fluss.rocksdb.TtlDB\
+	org.fluss.rocksdb.VectorMemTableConfig\
+	org.fluss.rocksdb.Snapshot\
+	org.fluss.rocksdb.StringAppendOperator\
+	org.fluss.rocksdb.UInt64AddOperator\
+	org.fluss.rocksdb.WriteBatch\
+	org.fluss.rocksdb.WriteBatch.Handler\
+	org.fluss.rocksdb.WriteOptions\
+	org.fluss.rocksdb.WriteBatchWithIndex\
+	org.fluss.rocksdb.WriteBufferManager\
+	org.fluss.rocksdb.WBWIRocksIterator\
+	org.fluss.rocksdb.util.StdErrLogger
 
 NATIVE_JAVA_TEST_CLASSES = \
-    org.rocksdb.RocksDBExceptionTest\
-    org.rocksdb.test.TestableEventListener\
-    org.rocksdb.NativeComparatorWrapperTest.NativeStringComparatorWrapper\
-    org.rocksdb.WriteBatchTest\
-    org.rocksdb.WriteBatchTestInternalHelper
+    org.fluss.rocksdb.RocksDBExceptionTest\
+    org.fluss.rocksdb.test.TestableEventListener\
+    org.fluss.rocksdb.NativeComparatorWrapperTest.NativeStringComparatorWrapper\
+    org.fluss.rocksdb.WriteBatchTest\
+    org.fluss.rocksdb.WriteBatchTestInternalHelper
 
 ROCKSDB_MAJOR = $(shell grep -E "ROCKSDB_MAJOR.[0-9]" ../include/rocksdb/version.h | cut -d ' ' -f 3)
 ROCKSDB_MINOR = $(shell grep -E "ROCKSDB_MINOR.[0-9]" ../include/rocksdb/version.h | cut -d ' ' -f 3)
@@ -108,107 +108,107 @@ ARCH := $(shell getconf LONG_BIT)
 SHA256_CMD ?= sha256sum
 
 JAVA_TESTS = \
-	org.rocksdb.BackupEngineOptionsTest\
-	org.rocksdb.BackupEngineTest\
-	org.rocksdb.BlobOptionsTest\
-	org.rocksdb.BlockBasedTableConfigTest\
-	org.rocksdb.BuiltinComparatorTest\
-	org.rocksdb.ByteBufferUnsupportedOperationTest\
-	org.rocksdb.BytewiseComparatorRegressionTest\
-	org.rocksdb.util.BytewiseComparatorTest\
-	org.rocksdb.util.BytewiseComparatorIntTest\
-	org.rocksdb.CheckPointTest\
-	org.rocksdb.ClockCacheTest\
-	org.rocksdb.ColumnFamilyOptionsTest\
-	org.rocksdb.ColumnFamilyTest\
-	org.rocksdb.CompactionFilterFactoryTest\
-	org.rocksdb.CompactionJobInfoTest\
-	org.rocksdb.CompactionJobStatsTest\
-	org.rocksdb.CompactionOptionsTest\
-	org.rocksdb.CompactionOptionsFIFOTest\
-	org.rocksdb.CompactionOptionsUniversalTest\
-	org.rocksdb.CompactionPriorityTest\
-	org.rocksdb.CompactionStopStyleTest\
-	org.rocksdb.ComparatorOptionsTest\
-	org.rocksdb.CompressionOptionsTest\
-	org.rocksdb.CompressionTypesTest\
-	org.rocksdb.DBOptionsTest\
-	org.rocksdb.DirectSliceTest\
-	org.rocksdb.util.EnvironmentTest\
-	org.rocksdb.EnvOptionsTest\
-	org.rocksdb.EventListenerTest\
-	org.rocksdb.IngestExternalFileOptionsTest\
-	org.rocksdb.util.IntComparatorTest\
-	org.rocksdb.util.JNIComparatorTest\
-	org.rocksdb.FilterTest\
-	org.rocksdb.FlushTest\
-	org.rocksdb.ImportColumnFamilyTest\
-	org.rocksdb.InfoLogLevelTest\
-	org.rocksdb.KeyExistsTest \
-	org.rocksdb.KeyMayExistTest\
-	org.rocksdb.ConcurrentTaskLimiterTest\
-	org.rocksdb.LoggerTest\
-	org.rocksdb.LRUCacheTest\
-	org.rocksdb.MemoryUtilTest\
-	org.rocksdb.MemTableTest\
-	org.rocksdb.MergeCFVariantsTest\
-	org.rocksdb.MergeTest\
-	org.rocksdb.MergeVariantsTest\
-	org.rocksdb.MultiColumnRegressionTest \
-	org.rocksdb.MultiGetManyKeysTest\
-	org.rocksdb.MultiGetTest\
-	org.rocksdb.MixedOptionsTest\
-	org.rocksdb.MutableColumnFamilyOptionsTest\
-	org.rocksdb.MutableDBOptionsTest\
-	org.rocksdb.MutableOptionsGetSetTest \
-	org.rocksdb.NativeComparatorWrapperTest\
-	org.rocksdb.NativeLibraryLoaderTest\
-	org.rocksdb.OptimisticTransactionTest\
-	org.rocksdb.OptimisticTransactionDBTest\
-	org.rocksdb.OptimisticTransactionOptionsTest\
-	org.rocksdb.OptionsUtilTest\
-	org.rocksdb.OptionsTest\
-	org.rocksdb.PerfLevelTest \
-	org.rocksdb.PerfContextTest \
-	org.rocksdb.PutCFVariantsTest\
-	org.rocksdb.PutVariantsTest\
-	org.rocksdb.PlainTableConfigTest\
-	org.rocksdb.RateLimiterTest\
-	org.rocksdb.ReadOnlyTest\
-	org.rocksdb.ReadOptionsTest\
-	org.rocksdb.util.ReverseBytewiseComparatorIntTest\
-	org.rocksdb.RocksDBTest\
-	org.rocksdb.RocksDBExceptionTest\
-	org.rocksdb.DefaultEnvTest\
-	org.rocksdb.RocksIteratorTest\
-	org.rocksdb.RocksMemEnvTest\
-	org.rocksdb.util.SizeUnitTest\
-	org.rocksdb.SecondaryDBTest\
-	org.rocksdb.SliceTest\
-	org.rocksdb.SnapshotTest\
-	org.rocksdb.SstFileManagerTest\
-	org.rocksdb.SstFileWriterTest\
-	org.rocksdb.SstFileReaderTest\
-	org.rocksdb.SstPartitionerTest\
-	org.rocksdb.TableFilterTest\
-	org.rocksdb.TimedEnvTest\
-	org.rocksdb.TransactionTest\
-	org.rocksdb.TransactionDBTest\
-	org.rocksdb.TransactionOptionsTest\
-	org.rocksdb.TransactionDBOptionsTest\
-	org.rocksdb.TransactionLogIteratorTest\
-	org.rocksdb.TtlDBTest\
-	org.rocksdb.StatisticsTest\
-	org.rocksdb.StatisticsCollectorTest\
-	org.rocksdb.VerifyChecksumsTest\
-	org.rocksdb.WalFilterTest\
-	org.rocksdb.WALRecoveryModeTest\
-	org.rocksdb.WriteBatchHandlerTest\
-	org.rocksdb.WriteBatchTest\
-	org.rocksdb.WriteBatchThreadedTest\
-	org.rocksdb.WriteOptionsTest\
-	org.rocksdb.WriteBatchWithIndexTest\
-	org.rocksdb.util.StdErrLoggerTest
+	org.fluss.rocksdb.BackupEngineOptionsTest\
+	org.fluss.rocksdb.BackupEngineTest\
+	org.fluss.rocksdb.BlobOptionsTest\
+	org.fluss.rocksdb.BlockBasedTableConfigTest\
+	org.fluss.rocksdb.BuiltinComparatorTest\
+	org.fluss.rocksdb.ByteBufferUnsupportedOperationTest\
+	org.fluss.rocksdb.BytewiseComparatorRegressionTest\
+	org.fluss.rocksdb.util.BytewiseComparatorTest\
+	org.fluss.rocksdb.util.BytewiseComparatorIntTest\
+	org.fluss.rocksdb.CheckPointTest\
+	org.fluss.rocksdb.ClockCacheTest\
+	org.fluss.rocksdb.ColumnFamilyOptionsTest\
+	org.fluss.rocksdb.ColumnFamilyTest\
+	org.fluss.rocksdb.CompactionFilterFactoryTest\
+	org.fluss.rocksdb.CompactionJobInfoTest\
+	org.fluss.rocksdb.CompactionJobStatsTest\
+	org.fluss.rocksdb.CompactionOptionsTest\
+	org.fluss.rocksdb.CompactionOptionsFIFOTest\
+	org.fluss.rocksdb.CompactionOptionsUniversalTest\
+	org.fluss.rocksdb.CompactionPriorityTest\
+	org.fluss.rocksdb.CompactionStopStyleTest\
+	org.fluss.rocksdb.ComparatorOptionsTest\
+	org.fluss.rocksdb.CompressionOptionsTest\
+	org.fluss.rocksdb.CompressionTypesTest\
+	org.fluss.rocksdb.DBOptionsTest\
+	org.fluss.rocksdb.DirectSliceTest\
+	org.fluss.rocksdb.util.EnvironmentTest\
+	org.fluss.rocksdb.EnvOptionsTest\
+	org.fluss.rocksdb.EventListenerTest\
+	org.fluss.rocksdb.IngestExternalFileOptionsTest\
+	org.fluss.rocksdb.util.IntComparatorTest\
+	org.fluss.rocksdb.util.JNIComparatorTest\
+	org.fluss.rocksdb.FilterTest\
+	org.fluss.rocksdb.FlushTest\
+	org.fluss.rocksdb.ImportColumnFamilyTest\
+	org.fluss.rocksdb.InfoLogLevelTest\
+	org.fluss.rocksdb.KeyExistsTest \
+	org.fluss.rocksdb.KeyMayExistTest\
+	org.fluss.rocksdb.ConcurrentTaskLimiterTest\
+	org.fluss.rocksdb.LoggerTest\
+	org.fluss.rocksdb.LRUCacheTest\
+	org.fluss.rocksdb.MemoryUtilTest\
+	org.fluss.rocksdb.MemTableTest\
+	org.fluss.rocksdb.MergeCFVariantsTest\
+	org.fluss.rocksdb.MergeTest\
+	org.fluss.rocksdb.MergeVariantsTest\
+	org.fluss.rocksdb.MultiColumnRegressionTest \
+	org.fluss.rocksdb.MultiGetManyKeysTest\
+	org.fluss.rocksdb.MultiGetTest\
+	org.fluss.rocksdb.MixedOptionsTest\
+	org.fluss.rocksdb.MutableColumnFamilyOptionsTest\
+	org.fluss.rocksdb.MutableDBOptionsTest\
+	org.fluss.rocksdb.MutableOptionsGetSetTest \
+	org.fluss.rocksdb.NativeComparatorWrapperTest\
+	org.fluss.rocksdb.NativeLibraryLoaderTest\
+	org.fluss.rocksdb.OptimisticTransactionTest\
+	org.fluss.rocksdb.OptimisticTransactionDBTest\
+	org.fluss.rocksdb.OptimisticTransactionOptionsTest\
+	org.fluss.rocksdb.OptionsUtilTest\
+	org.fluss.rocksdb.OptionsTest\
+	org.fluss.rocksdb.PerfLevelTest \
+	org.fluss.rocksdb.PerfContextTest \
+	org.fluss.rocksdb.PutCFVariantsTest\
+	org.fluss.rocksdb.PutVariantsTest\
+	org.fluss.rocksdb.PlainTableConfigTest\
+	org.fluss.rocksdb.RateLimiterTest\
+	org.fluss.rocksdb.ReadOnlyTest\
+	org.fluss.rocksdb.ReadOptionsTest\
+	org.fluss.rocksdb.util.ReverseBytewiseComparatorIntTest\
+	org.fluss.rocksdb.RocksDBTest\
+	org.fluss.rocksdb.RocksDBExceptionTest\
+	org.fluss.rocksdb.DefaultEnvTest\
+	org.fluss.rocksdb.RocksIteratorTest\
+	org.fluss.rocksdb.RocksMemEnvTest\
+	org.fluss.rocksdb.util.SizeUnitTest\
+	org.fluss.rocksdb.SecondaryDBTest\
+	org.fluss.rocksdb.SliceTest\
+	org.fluss.rocksdb.SnapshotTest\
+	org.fluss.rocksdb.SstFileManagerTest\
+	org.fluss.rocksdb.SstFileWriterTest\
+	org.fluss.rocksdb.SstFileReaderTest\
+	org.fluss.rocksdb.SstPartitionerTest\
+	org.fluss.rocksdb.TableFilterTest\
+	org.fluss.rocksdb.TimedEnvTest\
+	org.fluss.rocksdb.TransactionTest\
+	org.fluss.rocksdb.TransactionDBTest\
+	org.fluss.rocksdb.TransactionOptionsTest\
+	org.fluss.rocksdb.TransactionDBOptionsTest\
+	org.fluss.rocksdb.TransactionLogIteratorTest\
+	org.fluss.rocksdb.TtlDBTest\
+	org.fluss.rocksdb.StatisticsTest\
+	org.fluss.rocksdb.StatisticsCollectorTest\
+	org.fluss.rocksdb.VerifyChecksumsTest\
+	org.fluss.rocksdb.WalFilterTest\
+	org.fluss.rocksdb.WALRecoveryModeTest\
+	org.fluss.rocksdb.WriteBatchHandlerTest\
+	org.fluss.rocksdb.WriteBatchTest\
+	org.fluss.rocksdb.WriteBatchThreadedTest\
+	org.fluss.rocksdb.WriteOptionsTest\
+	org.fluss.rocksdb.WriteBatchWithIndexTest\
+	org.fluss.rocksdb.util.StdErrLoggerTest
 
 MAIN_SRC = src/main/java
 TEST_SRC = src/test/java
@@ -300,11 +300,11 @@ include $(ROCKSDB_PLUGIN_MKS)
 
 # Add paths to Java sources in plugins
 ROCKSDB_PLUGIN_JAVA_ROOTS = $(foreach plugin, $(ROCKSDB_PLUGINS), $(PLUGIN_PATH)/$(plugin)/java)
-PLUGIN_SOURCES = $(foreach root, $(ROCKSDB_PLUGIN_JAVA_ROOTS), $(foreach pkg, org/rocksdb/util org/rocksdb, $(root)/$(MAIN_SRC)/$(pkg)/*.java))
-CORE_SOURCES = $(foreach pkg, org/rocksdb/util org/rocksdb, $(MAIN_SRC)/$(pkg)/*.java)
+PLUGIN_SOURCES = $(foreach root, $(ROCKSDB_PLUGIN_JAVA_ROOTS), $(foreach pkg, org/fluss/rocksdb/util org/fluss/rocksdb, $(root)/$(MAIN_SRC)/$(pkg)/*.java))
+CORE_SOURCES = $(foreach pkg, org/fluss/rocksdb/util org/fluss/rocksdb, $(MAIN_SRC)/$(pkg)/*.java)
 SOURCES = $(wildcard $(CORE_SOURCES) $(PLUGIN_SOURCES))
-PLUGIN_TEST_SOURCES = $(foreach root, $(ROCKSDB_PLUGIN_JAVA_ROOTS), $(foreach pkg, org/rocksdb/test org/rocksdb/util org/rocksdb, $(root)/$(TEST_SRC)/$(pkg)/*.java))
-CORE_TEST_SOURCES = $(foreach pkg, org/rocksdb/test org/rocksdb/util org/rocksdb, $(TEST_SRC)/$(pkg)/*.java)
+PLUGIN_TEST_SOURCES = $(foreach root, $(ROCKSDB_PLUGIN_JAVA_ROOTS), $(foreach pkg, org/fluss/rocksdb/test org/fluss/rocksdb/util org/fluss/rocksdb, $(root)/$(TEST_SRC)/$(pkg)/*.java))
+CORE_TEST_SOURCES = $(foreach pkg, org/fluss/rocksdb/test org/fluss/rocksdb/util org/fluss/rocksdb, $(TEST_SRC)/$(pkg)/*.java)
 TEST_SOURCES = $(wildcard $(CORE_TEST_SOURCES) $(PLUGIN_TEST_SOURCES))
 
 # Configure the plugin tests and java classes
@@ -454,15 +454,15 @@ test: java java_test
 	$(MAKE) run_test
 
 run_test:
-	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.rocksdb.test.RocksJunitRunner $(ALL_JAVA_TESTS)
-	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.rocksdb.test.RocksJunitRunner org.rocksdb.StatisticsTest
+	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.fluss.rocksdb.test.RocksJunitRunner $(ALL_JAVA_TESTS)
+	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.fluss.rocksdb.test.RocksJunitRunner org.fluss.rocksdb.StatisticsTest
 
 run_plugin_test:
-	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.rocksdb.test.RocksJunitRunner $(ROCKSDB_PLUGIN_JAVA_TESTS)
+	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.fluss.rocksdb.test.RocksJunitRunner $(ROCKSDB_PLUGIN_JAVA_TESTS)
 
 db_bench: java
 	$(AM_V_GEN)mkdir -p $(BENCHMARK_MAIN_CLASSES)
-	$(AM_V_at)$(JAVAC_CMD) $(JAVAC_ARGS) -cp $(MAIN_CLASSES) -d $(BENCHMARK_MAIN_CLASSES) $(BENCHMARK_MAIN_SRC)/org/rocksdb/benchmark/*.java
+	$(AM_V_at)$(JAVAC_CMD) $(JAVAC_ARGS) -cp $(MAIN_CLASSES) -d $(BENCHMARK_MAIN_CLASSES) $(BENCHMARK_MAIN_SRC)/org/fluss/rocksdb/benchmark/*.java
 
 pmd:
 	$(MAVEN_CMD) pmd:pmd pmd:cpd pmd:check

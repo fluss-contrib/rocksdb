@@ -4,22 +4,22 @@
 //  (found in the LICENSE.Apache file in the root directory).
 //
 // This file implements the "bridge" between Java and C++ for
-// org.rocksdb.AbstractTableFilter.
+// org.fluss.rocksdb.AbstractTableFilter.
 
 #include <jni.h>
 
 #include <memory>
 
-#include "include/org_rocksdb_AbstractTableFilter.h"
+#include "include/org_fluss_rocksdb_AbstractTableFilter.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/table_filter_jnicallback.h"
 
 /*
- * Class:     org_rocksdb_AbstractTableFilter
+ * Class:     org_fluss_rocksdb_AbstractTableFilter
  * Method:    createNewTableFilter
  * Signature: ()J
  */
-jlong Java_org_rocksdb_AbstractTableFilter_createNewTableFilter(
+jlong Java_org_fluss_rocksdb_AbstractTableFilter_createNewTableFilter(
     JNIEnv* env, jobject jtable_filter) {
   auto* table_filter_jnicallback =
       new ROCKSDB_NAMESPACE::TableFilterJniCallback(env, jtable_filter);

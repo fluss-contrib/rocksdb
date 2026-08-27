@@ -280,11 +280,11 @@ class OutOfMemoryErrorJni : public JavaException<OutOfMemoryErrorJni> {
   }
 };
 
-// The portal class for org.rocksdb.Status.Code
+// The portal class for org.fluss.rocksdb.Status.Code
 class CodeJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.Status.Code
+   * Get the Java Class org.fluss.rocksdb.Status.Code
    *
    * @param env A pointer to the Java environment
    *
@@ -293,7 +293,7 @@ class CodeJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/Status$Code");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/Status$Code");
   }
 
   /**
@@ -317,11 +317,11 @@ class CodeJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.Status.SubCode
+// The portal class for org.fluss.rocksdb.Status.SubCode
 class SubCodeJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.Status.SubCode
+   * Get the Java Class org.fluss.rocksdb.Status.SubCode
    *
    * @param env A pointer to the Java environment
    *
@@ -330,7 +330,7 @@ class SubCodeJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/Status$SubCode");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/Status$SubCode");
   }
 
   /**
@@ -380,12 +380,12 @@ class SubCodeJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.Status
+// The portal class for org.fluss.rocksdb.Status
 class StatusJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::Status*, StatusJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.Status
+   * Get the Java Class org.fluss.rocksdb.Status
    *
    * @param env A pointer to the Java environment
    *
@@ -394,7 +394,7 @@ class StatusJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/Status");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/Status");
   }
 
   /**
@@ -412,8 +412,8 @@ class StatusJni
       return nullptr;
     }
 
-    static jmethodID mid =
-        env->GetMethodID(jclazz, "getCode", "()Lorg/rocksdb/Status$Code;");
+    static jmethodID mid = env->GetMethodID(
+        jclazz, "getCode", "()Lorg/fluss/rocksdb/Status$Code;");
     assert(mid != nullptr);
     return mid;
   }
@@ -433,8 +433,8 @@ class StatusJni
       return nullptr;
     }
 
-    static jmethodID mid = env->GetMethodID(jclazz, "getSubCode",
-                                            "()Lorg/rocksdb/Status$SubCode;");
+    static jmethodID mid = env->GetMethodID(
+        jclazz, "getSubCode", "()Lorg/fluss/rocksdb/Status$SubCode;");
     assert(mid != nullptr);
     return mid;
   }
@@ -461,13 +461,13 @@ class StatusJni
   }
 
   /**
-   * Create a new Java org.rocksdb.Status object with the same properties as
-   * the provided C++ ROCKSDB_NAMESPACE::Status object
+   * Create a new Java org.fluss.rocksdb.Status object with the same properties
+   * as the provided C++ ROCKSDB_NAMESPACE::Status object
    *
    * @param env A pointer to the Java environment
    * @param status The ROCKSDB_NAMESPACE::Status object
    *
-   * @return A reference to a Java org.rocksdb.Status object, or nullptr
+   * @return A reference to a Java org.fluss.rocksdb.Status object, or nullptr
    *     if an an exception occurs
    */
   static jobject construct(JNIEnv* env, const Status& status) {
@@ -519,7 +519,7 @@ class StatusJni
     return construct(env, *status);
   }
 
-  // Returns the equivalent org.rocksdb.Status.Code for the provided
+  // Returns the equivalent org.fluss.rocksdb.Status.Code for the provided
   // C++ ROCKSDB_NAMESPACE::Status::Code enum
   static jbyte toJavaStatusCode(const ROCKSDB_NAMESPACE::Status::Code& code) {
     switch (code) {
@@ -558,7 +558,7 @@ class StatusJni
     }
   }
 
-  // Returns the equivalent org.rocksdb.Status.SubCode for the provided
+  // Returns the equivalent org.fluss.rocksdb.Status.SubCode for the provided
   // C++ ROCKSDB_NAMESPACE::Status::SubCode enum
   static jbyte toJavaStatusSubCode(
       const ROCKSDB_NAMESPACE::Status::SubCode& subCode) {
@@ -695,7 +695,7 @@ class StatusJni
   }
 
   // Returns the equivalent ROCKSDB_NAMESPACE::Status for the Java
-  // org.rocksdb.Status
+  // org.fluss.rocksdb.Status
   static std::unique_ptr<ROCKSDB_NAMESPACE::Status> toCppStatus(
       JNIEnv* env, const jobject jstatus) {
     jmethodID mid_code = getCodeMethod(env);
@@ -790,11 +790,11 @@ class StatusJni
   }
 };
 
-// The portal class for org.rocksdb.RocksDBException
+// The portal class for org.fluss.rocksdb.RocksDBException
 class RocksDBExceptionJni : public JavaException<RocksDBExceptionJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.RocksDBException
+   * Get the Java Class org.fluss.rocksdb.RocksDBException
    *
    * @param env A pointer to the Java environment
    *
@@ -803,7 +803,7 @@ class RocksDBExceptionJni : public JavaException<RocksDBExceptionJni> {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaException::getJClass(env, "org/rocksdb/RocksDBException");
+    return JavaException::getJClass(env, "org/fluss/rocksdb/RocksDBException");
   }
 
   /**
@@ -857,9 +857,9 @@ class RocksDBExceptionJni : public JavaException<RocksDBExceptionJni> {
       return env->ExceptionCheck();
     }
 
-    // get the constructor of org.rocksdb.RocksDBException
+    // get the constructor of org.fluss.rocksdb.RocksDBException
     jmethodID mid =
-        env->GetMethodID(jclazz, "<init>", "(Lorg/rocksdb/Status;)V");
+        env->GetMethodID(jclazz, "<init>", "(Lorg/fluss/rocksdb/Status;)V");
     if (mid == nullptr) {
       // exception thrown: NoSuchMethodException or OutOfMemoryError
       std::cerr
@@ -948,9 +948,9 @@ class RocksDBExceptionJni : public JavaException<RocksDBExceptionJni> {
       return env->ExceptionCheck();
     }
 
-    // get the constructor of org.rocksdb.RocksDBException
+    // get the constructor of org.fluss.rocksdb.RocksDBException
     jmethodID mid = env->GetMethodID(
-        jclazz, "<init>", "(Ljava/lang/String;Lorg/rocksdb/Status;)V");
+        jclazz, "<init>", "(Ljava/lang/String;Lorg/fluss/rocksdb/Status;)V");
     if (mid == nullptr) {
       // exception thrown: NoSuchMethodException or OutOfMemoryError
       std::cerr
@@ -1048,7 +1048,7 @@ class RocksDBExceptionJni : public JavaException<RocksDBExceptionJni> {
     }
 
     static jmethodID mid =
-        env->GetMethodID(jclazz, "getStatus", "()Lorg/rocksdb/Status;");
+        env->GetMethodID(jclazz, "getStatus", "()Lorg/fluss/rocksdb/Status;");
     assert(mid != nullptr);
     return mid;
   }
@@ -2854,12 +2854,12 @@ class HashMapJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.RocksDB
+// The portal class for org.fluss.rocksdb.RocksDB
 class RocksDBJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::DB*, RocksDBJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.RocksDB
+   * Get the Java Class org.fluss.rocksdb.RocksDB
    *
    * @param env A pointer to the Java environment
    *
@@ -2868,16 +2868,16 @@ class RocksDBJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/RocksDB");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/RocksDB");
   }
 };
 
-// The portal class for org.rocksdb.Options
+// The portal class for org.fluss.rocksdb.Options
 class OptionsJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::Options*, OptionsJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.Options
+   * Get the Java Class org.fluss.rocksdb.Options
    *
    * @param env A pointer to the Java environment
    *
@@ -2886,16 +2886,16 @@ class OptionsJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/Options");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/Options");
   }
 };
 
-// The portal class for org.rocksdb.DBOptions
+// The portal class for org.fluss.rocksdb.DBOptions
 class DBOptionsJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::DBOptions*, DBOptionsJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.DBOptions
+   * Get the Java Class org.fluss.rocksdb.DBOptions
    *
    * @param env A pointer to the Java environment
    *
@@ -2904,17 +2904,17 @@ class DBOptionsJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/DBOptions");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/DBOptions");
   }
 };
 
-// The portal class for org.rocksdb.ColumnFamilyOptions
+// The portal class for org.fluss.rocksdb.ColumnFamilyOptions
 class ColumnFamilyOptionsJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::ColumnFamilyOptions*,
                                 ColumnFamilyOptionsJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.ColumnFamilyOptions
+   * Get the Java Class org.fluss.rocksdb.ColumnFamilyOptions
    *
    * @param env A pointer to the Java environment
    *
@@ -2923,20 +2923,20 @@ class ColumnFamilyOptionsJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env,
-                                         "org/rocksdb/ColumnFamilyOptions");
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/ColumnFamilyOptions");
   }
 
   /**
-   * Create a new Java org.rocksdb.ColumnFamilyOptions object with the same
-   * properties as the provided C++ ROCKSDB_NAMESPACE::ColumnFamilyOptions
+   * Create a new Java org.fluss.rocksdb.ColumnFamilyOptions object with the
+   * same properties as the provided C++ ROCKSDB_NAMESPACE::ColumnFamilyOptions
    * object
    *
    * @param env A pointer to the Java environment
    * @param cfoptions A pointer to ROCKSDB_NAMESPACE::ColumnFamilyOptions object
    *
-   * @return A reference to a Java org.rocksdb.ColumnFamilyOptions object, or
-   * nullptr if an an exception occurs
+   * @return A reference to a Java org.fluss.rocksdb.ColumnFamilyOptions object,
+   * or nullptr if an an exception occurs
    */
   static jobject construct(JNIEnv* env, const ColumnFamilyOptions* cfoptions) {
     auto* cfo = new ROCKSDB_NAMESPACE::ColumnFamilyOptions(*cfoptions);
@@ -2961,13 +2961,13 @@ class ColumnFamilyOptionsJni
   }
 };
 
-// The portal class for org.rocksdb.WriteOptions
+// The portal class for org.fluss.rocksdb.WriteOptions
 class WriteOptionsJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::WriteOptions*,
                                 WriteOptionsJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.WriteOptions
+   * Get the Java Class org.fluss.rocksdb.WriteOptions
    *
    * @param env A pointer to the Java environment
    *
@@ -2976,17 +2976,17 @@ class WriteOptionsJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/WriteOptions");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/WriteOptions");
   }
 };
 
-// The portal class for org.rocksdb.ReadOptions
+// The portal class for org.fluss.rocksdb.ReadOptions
 class ReadOptionsJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::ReadOptions*,
                                 ReadOptionsJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.ReadOptions
+   * Get the Java Class org.fluss.rocksdb.ReadOptions
    *
    * @param env A pointer to the Java environment
    *
@@ -2995,16 +2995,16 @@ class ReadOptionsJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/ReadOptions");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/ReadOptions");
   }
 };
 
-// The portal class for org.rocksdb.WriteBatch
+// The portal class for org.fluss.rocksdb.WriteBatch
 class WriteBatchJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::WriteBatch*, WriteBatchJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.WriteBatch
+   * Get the Java Class org.fluss.rocksdb.WriteBatch
    *
    * @param env A pointer to the Java environment
    *
@@ -3013,16 +3013,16 @@ class WriteBatchJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/WriteBatch");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/WriteBatch");
   }
 
   /**
-   * Create a new Java org.rocksdb.WriteBatch object
+   * Create a new Java org.fluss.rocksdb.WriteBatch object
    *
    * @param env A pointer to the Java environment
    * @param wb A pointer to ROCKSDB_NAMESPACE::WriteBatch object
    *
-   * @return A reference to a Java org.rocksdb.WriteBatch object, or
+   * @return A reference to a Java org.fluss.rocksdb.WriteBatch object, or
    * nullptr if an an exception occurs
    */
   static jobject construct(JNIEnv* env, const WriteBatch* wb) {
@@ -3047,14 +3047,14 @@ class WriteBatchJni
   }
 };
 
-// The portal class for org.rocksdb.WriteBatch.Handler
+// The portal class for org.fluss.rocksdb.WriteBatch.Handler
 class WriteBatchHandlerJni
     : public RocksDBNativeClass<
           const ROCKSDB_NAMESPACE::WriteBatchHandlerJniCallback*,
           WriteBatchHandlerJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.WriteBatch.Handler
+   * Get the Java Class org.fluss.rocksdb.WriteBatch.Handler
    *
    * @param env A pointer to the Java environment
    *
@@ -3063,7 +3063,8 @@ class WriteBatchHandlerJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/WriteBatch$Handler");
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/WriteBatch$Handler");
   }
 
   /**
@@ -3451,7 +3452,7 @@ class WriteBatchHandlerJni
 class WriteBatchSavePointJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.WriteBatch.SavePoint
+   * Get the Java Class org.fluss.rocksdb.WriteBatch.SavePoint
    *
    * @param env A pointer to the Java environment
    *
@@ -3460,7 +3461,7 @@ class WriteBatchSavePointJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/WriteBatch$SavePoint");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/WriteBatch$SavePoint");
   }
 
   /**
@@ -3484,14 +3485,14 @@ class WriteBatchSavePointJni : public JavaClass {
   }
 
   /**
-   * Create a new Java org.rocksdb.WriteBatch.SavePoint object
+   * Create a new Java org.fluss.rocksdb.WriteBatch.SavePoint object
    *
    * @param env A pointer to the Java environment
    * @param savePoint A pointer to ROCKSDB_NAMESPACE::WriteBatch::SavePoint
    * object
    *
-   * @return A reference to a Java org.rocksdb.WriteBatch.SavePoint object, or
-   * nullptr if an an exception occurs
+   * @return A reference to a Java org.fluss.rocksdb.WriteBatch.SavePoint
+   * object, or nullptr if an an exception occurs
    */
   static jobject construct(JNIEnv* env, const SavePoint& save_point) {
     jclass jclazz = getJClass(env);
@@ -3518,13 +3519,13 @@ class WriteBatchSavePointJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.WriteBatchWithIndex
+// The portal class for org.fluss.rocksdb.WriteBatchWithIndex
 class WriteBatchWithIndexJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::WriteBatchWithIndex*,
                                 WriteBatchWithIndexJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.WriteBatchWithIndex
+   * Get the Java Class org.fluss.rocksdb.WriteBatchWithIndex
    *
    * @param env A pointer to the Java environment
    *
@@ -3533,16 +3534,16 @@ class WriteBatchWithIndexJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env,
-                                         "org/rocksdb/WriteBatchWithIndex");
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/WriteBatchWithIndex");
   }
 };
 
-// The portal class for org.rocksdb.HistogramData
+// The portal class for org.fluss.rocksdb.HistogramData
 class HistogramDataJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.HistogramData
+   * Get the Java Class org.fluss.rocksdb.HistogramData
    *
    * @param env A pointer to the Java environment
    *
@@ -3551,7 +3552,7 @@ class HistogramDataJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/HistogramData");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/HistogramData");
   }
 
   /**
@@ -3575,13 +3576,51 @@ class HistogramDataJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.BackupEngineOptions
+// The portal class for org.fluss.rocksdb.BackupEngineOptions
 class BackupEngineOptionsJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::BackupEngineOptions*,
                                 BackupEngineOptionsJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.BackupEngineOptions
+   * Get the Java Class org.fluss.rocksdb.BackupEngineOptions
+   *
+   * @param env A pointer to the Java environment
+   *
+   * @return The Java Class or nullptr if one of the
+   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
+   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
+   */
+  static jclass getJClass(JNIEnv* env) {
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/BackupEngineOptions");
+  }
+};
+
+// The portal class for org.fluss.rocksdb.BackupEngine
+class BackupEngineJni
+    : public RocksDBNativeClass<ROCKSDB_NAMESPACE::BackupEngine*,
+                                BackupEngineJni> {
+ public:
+  /**
+   * Get the Java Class org.fluss.rocksdb.BackupEngine
+   *
+   * @param env A pointer to the Java environment
+   *
+   * @return The Java Class or nullptr if one of the
+   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
+   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
+   */
+  static jclass getJClass(JNIEnv* env) {
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/BackupEngine");
+  }
+};
+
+// The portal class for org.fluss.rocksdb.RocksIterator
+class IteratorJni
+    : public RocksDBNativeClass<ROCKSDB_NAMESPACE::Iterator*, IteratorJni> {
+ public:
+  /**
+   * Get the Java Class org.fluss.rocksdb.RocksIterator
    *
    * @param env A pointer to the Java environment
    *
@@ -3591,48 +3630,11 @@ class BackupEngineOptionsJni
    */
   static jclass getJClass(JNIEnv* env) {
     return RocksDBNativeClass::getJClass(env,
-                                         "org/rocksdb/BackupEngineOptions");
+                                         "org/fluss/rocksdb/RocksIterator");
   }
 };
 
-// The portal class for org.rocksdb.BackupEngine
-class BackupEngineJni
-    : public RocksDBNativeClass<ROCKSDB_NAMESPACE::BackupEngine*,
-                                BackupEngineJni> {
- public:
-  /**
-   * Get the Java Class org.rocksdb.BackupEngine
-   *
-   * @param env A pointer to the Java environment
-   *
-   * @return The Java Class or nullptr if one of the
-   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
-   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
-   */
-  static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/BackupEngine");
-  }
-};
-
-// The portal class for org.rocksdb.RocksIterator
-class IteratorJni
-    : public RocksDBNativeClass<ROCKSDB_NAMESPACE::Iterator*, IteratorJni> {
- public:
-  /**
-   * Get the Java Class org.rocksdb.RocksIterator
-   *
-   * @param env A pointer to the Java environment
-   *
-   * @return The Java Class or nullptr if one of the
-   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
-   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
-   */
-  static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/RocksIterator");
-  }
-};
-
-// The portal class for org.rocksdb.FilterPolicy
+// The portal class for org.fluss.rocksdb.FilterPolicy
 
 enum FilterPolicyTypeJni {
   kUnknownFilterPolicy = 0x00,
@@ -3645,7 +3647,7 @@ class FilterPolicyJni
  private:
  public:
   /**
-   * Get the Java Class org.rocksdb.FilterPolicy
+   * Get the Java Class org.fluss.rocksdb.FilterPolicy
    *
    * @param env A pointer to the Java environment
    *
@@ -3654,7 +3656,7 @@ class FilterPolicyJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/FilterPolicy");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/FilterPolicy");
   }
 
   static jbyte toJavaIndexType(const FilterPolicyTypeJni& filter_policy_type) {
@@ -3670,7 +3672,7 @@ class FilterPolicyJni
   }
 };
 
-// The portal class for org.rocksdb.ColumnFamilyHandle
+// The portal class for org.fluss.rocksdb.ColumnFamilyHandle
 class ColumnFamilyHandleJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::ColumnFamilyHandle*,
                                 ColumnFamilyHandleJni> {
@@ -3689,66 +3691,7 @@ class ColumnFamilyHandleJni
   }
 
   /**
-   * Get the Java Class org.rocksdb.ColumnFamilyHandle
-   *
-   * @param env A pointer to the Java environment
-   *
-   * @return The Java Class or nullptr if one of the
-   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
-   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
-   */
-  static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/ColumnFamilyHandle");
-  }
-};
-
-// The portal class for org.rocksdb.FlushOptions
-class FlushOptionsJni
-    : public RocksDBNativeClass<ROCKSDB_NAMESPACE::FlushOptions*,
-                                FlushOptionsJni> {
- public:
-  /**
-   * Get the Java Class org.rocksdb.FlushOptions
-   *
-   * @param env A pointer to the Java environment
-   *
-   * @return The Java Class or nullptr if one of the
-   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
-   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
-   */
-  static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/FlushOptions");
-  }
-};
-
-// The portal class for org.rocksdb.ComparatorOptions
-class ComparatorOptionsJni
-    : public RocksDBNativeClass<
-          ROCKSDB_NAMESPACE::ComparatorJniCallbackOptions*,
-          ComparatorOptionsJni> {
- public:
-  /**
-   * Get the Java Class org.rocksdb.ComparatorOptions
-   *
-   * @param env A pointer to the Java environment
-   *
-   * @return The Java Class or nullptr if one of the
-   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
-   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
-   */
-  static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/ComparatorOptions");
-  }
-};
-
-// The portal class for org.rocksdb.AbstractCompactionFilterFactory
-class AbstractCompactionFilterFactoryJni
-    : public RocksDBNativeClass<
-          const ROCKSDB_NAMESPACE::CompactionFilterFactoryJniCallback*,
-          AbstractCompactionFilterFactoryJni> {
- public:
-  /**
-   * Get the Java Class org.rocksdb.AbstractCompactionFilterFactory
+   * Get the Java Class org.fluss.rocksdb.ColumnFamilyHandle
    *
    * @param env A pointer to the Java environment
    *
@@ -3758,7 +3701,68 @@ class AbstractCompactionFilterFactoryJni
    */
   static jclass getJClass(JNIEnv* env) {
     return RocksDBNativeClass::getJClass(
-        env, "org/rocksdb/AbstractCompactionFilterFactory");
+        env, "org/fluss/rocksdb/ColumnFamilyHandle");
+  }
+};
+
+// The portal class for org.fluss.rocksdb.FlushOptions
+class FlushOptionsJni
+    : public RocksDBNativeClass<ROCKSDB_NAMESPACE::FlushOptions*,
+                                FlushOptionsJni> {
+ public:
+  /**
+   * Get the Java Class org.fluss.rocksdb.FlushOptions
+   *
+   * @param env A pointer to the Java environment
+   *
+   * @return The Java Class or nullptr if one of the
+   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
+   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
+   */
+  static jclass getJClass(JNIEnv* env) {
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/FlushOptions");
+  }
+};
+
+// The portal class for org.fluss.rocksdb.ComparatorOptions
+class ComparatorOptionsJni
+    : public RocksDBNativeClass<
+          ROCKSDB_NAMESPACE::ComparatorJniCallbackOptions*,
+          ComparatorOptionsJni> {
+ public:
+  /**
+   * Get the Java Class org.fluss.rocksdb.ComparatorOptions
+   *
+   * @param env A pointer to the Java environment
+   *
+   * @return The Java Class or nullptr if one of the
+   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
+   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
+   */
+  static jclass getJClass(JNIEnv* env) {
+    return RocksDBNativeClass::getJClass(env,
+                                         "org/fluss/rocksdb/ComparatorOptions");
+  }
+};
+
+// The portal class for org.fluss.rocksdb.AbstractCompactionFilterFactory
+class AbstractCompactionFilterFactoryJni
+    : public RocksDBNativeClass<
+          const ROCKSDB_NAMESPACE::CompactionFilterFactoryJniCallback*,
+          AbstractCompactionFilterFactoryJni> {
+ public:
+  /**
+   * Get the Java Class org.fluss.rocksdb.AbstractCompactionFilterFactory
+   *
+   * @param env A pointer to the Java environment
+   *
+   * @return The Java Class or nullptr if one of the
+   *     ClassFormatError, ClassCircularityError, NoClassDefFoundError,
+   *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
+   */
+  static jclass getJClass(JNIEnv* env) {
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/AbstractCompactionFilterFactory");
   }
 
   /**
@@ -3804,7 +3808,7 @@ class AbstractCompactionFilterFactoryJni
   }
 };
 
-// The portal class for org.rocksdb.AbstractTransactionNotifier
+// The portal class for org.fluss.rocksdb.AbstractTransactionNotifier
 class AbstractTransactionNotifierJni
     : public RocksDBNativeClass<
           const ROCKSDB_NAMESPACE::TransactionNotifierJniCallback*,
@@ -3812,11 +3816,11 @@ class AbstractTransactionNotifierJni
  public:
   static jclass getJClass(JNIEnv* env) {
     return RocksDBNativeClass::getJClass(
-        env, "org/rocksdb/AbstractTransactionNotifier");
+        env, "org/fluss/rocksdb/AbstractTransactionNotifier");
   }
 
   // Get the java method `snapshotCreated`
-  // of org.rocksdb.AbstractTransactionNotifier.
+  // of org.fluss.rocksdb.AbstractTransactionNotifier.
   static jmethodID getSnapshotCreatedMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     if (jclazz == nullptr) {
@@ -3830,11 +3834,11 @@ class AbstractTransactionNotifierJni
   }
 };
 
-// The portal class for org.rocksdb.AbstractComparatorJniBridge
+// The portal class for org.fluss.rocksdb.AbstractComparatorJniBridge
 class AbstractComparatorJniBridge : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.AbstractComparatorJniBridge
+   * Get the Java Class org.fluss.rocksdb.AbstractComparatorJniBridge
    *
    * @param env A pointer to the Java environment
    *
@@ -3843,7 +3847,8 @@ class AbstractComparatorJniBridge : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/AbstractComparatorJniBridge");
+    return JavaClass::getJClass(
+        env, "org/fluss/rocksdb/AbstractComparatorJniBridge");
   }
 
   /**
@@ -3856,10 +3861,10 @@ class AbstractComparatorJniBridge : public JavaClass {
    *     be retrieved
    */
   static jmethodID getCompareInternalMethodId(JNIEnv* env, jclass jclazz) {
-    static jmethodID mid =
-        env->GetStaticMethodID(jclazz, "compareInternal",
-                               "(Lorg/rocksdb/AbstractComparator;Ljava/nio/"
-                               "ByteBuffer;ILjava/nio/ByteBuffer;I)I");
+    static jmethodID mid = env->GetStaticMethodID(
+        jclazz, "compareInternal",
+        "(Lorg/fluss/rocksdb/AbstractComparator;Ljava/nio/"
+        "ByteBuffer;ILjava/nio/ByteBuffer;I)I");
     assert(mid != nullptr);
     return mid;
   }
@@ -3875,10 +3880,10 @@ class AbstractComparatorJniBridge : public JavaClass {
    */
   static jmethodID getFindShortestSeparatorInternalMethodId(JNIEnv* env,
                                                             jclass jclazz) {
-    static jmethodID mid =
-        env->GetStaticMethodID(jclazz, "findShortestSeparatorInternal",
-                               "(Lorg/rocksdb/AbstractComparator;Ljava/nio/"
-                               "ByteBuffer;ILjava/nio/ByteBuffer;I)I");
+    static jmethodID mid = env->GetStaticMethodID(
+        jclazz, "findShortestSeparatorInternal",
+        "(Lorg/fluss/rocksdb/AbstractComparator;Ljava/nio/"
+        "ByteBuffer;ILjava/nio/ByteBuffer;I)I");
     assert(mid != nullptr);
     return mid;
   }
@@ -3896,19 +3901,19 @@ class AbstractComparatorJniBridge : public JavaClass {
                                                          jclass jclazz) {
     static jmethodID mid = env->GetStaticMethodID(
         jclazz, "findShortSuccessorInternal",
-        "(Lorg/rocksdb/AbstractComparator;Ljava/nio/ByteBuffer;I)I");
+        "(Lorg/fluss/rocksdb/AbstractComparator;Ljava/nio/ByteBuffer;I)I");
     assert(mid != nullptr);
     return mid;
   }
 };
 
-// The portal class for org.rocksdb.AbstractComparator
+// The portal class for org.fluss.rocksdb.AbstractComparator
 class AbstractComparatorJni
     : public RocksDBNativeClass<const ROCKSDB_NAMESPACE::ComparatorJniCallback*,
                                 AbstractComparatorJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.AbstractComparator
+   * Get the Java Class org.fluss.rocksdb.AbstractComparator
    *
    * @param env A pointer to the Java environment
    *
@@ -3917,7 +3922,8 @@ class AbstractComparatorJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/AbstractComparator");
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/AbstractComparator");
   }
 
   /**
@@ -3942,13 +3948,13 @@ class AbstractComparatorJni
   }
 };
 
-// The portal class for org.rocksdb.AbstractSlice
+// The portal class for org.fluss.rocksdb.AbstractSlice
 class AbstractSliceJni
     : public NativeRocksMutableObject<const ROCKSDB_NAMESPACE::Slice*,
                                       AbstractSliceJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.AbstractSlice
+   * Get the Java Class org.fluss.rocksdb.AbstractSlice
    *
    * @param env A pointer to the Java environment
    *
@@ -3957,17 +3963,18 @@ class AbstractSliceJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/AbstractSlice");
+    return RocksDBNativeClass::getJClass(env,
+                                         "org/fluss/rocksdb/AbstractSlice");
   }
 };
 
-// The portal class for org.rocksdb.Slice
+// The portal class for org.fluss.rocksdb.Slice
 class SliceJni
     : public NativeRocksMutableObject<const ROCKSDB_NAMESPACE::Slice*,
                                       AbstractSliceJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.Slice
+   * Get the Java Class org.fluss.rocksdb.Slice
    *
    * @param env A pointer to the Java environment
    *
@@ -3976,7 +3983,7 @@ class SliceJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/Slice");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/Slice");
   }
 
   /**
@@ -4009,13 +4016,13 @@ class SliceJni
   }
 };
 
-// The portal class for org.rocksdb.DirectSlice
+// The portal class for org.fluss.rocksdb.DirectSlice
 class DirectSliceJni
     : public NativeRocksMutableObject<const ROCKSDB_NAMESPACE::Slice*,
                                       AbstractSliceJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.DirectSlice
+   * Get the Java Class org.fluss.rocksdb.DirectSlice
    *
    * @param env A pointer to the Java environment
    *
@@ -4024,7 +4031,7 @@ class DirectSliceJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/DirectSlice");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/DirectSlice");
   }
 
   /**
@@ -4057,11 +4064,11 @@ class DirectSliceJni
   }
 };
 
-// The portal class for org.rocksdb.BackupInfo
+// The portal class for org.fluss.rocksdb.BackupInfo
 class BackupInfoJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.BackupInfo
+   * Get the Java Class org.fluss.rocksdb.BackupInfo
    *
    * @param env A pointer to the Java environment
    *
@@ -4070,7 +4077,7 @@ class BackupInfoJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/BackupInfo");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/BackupInfo");
   }
 
   /**
@@ -4126,7 +4133,7 @@ class BackupInfoListJni {
  public:
   /**
    * Converts a C++ std::vector<BackupInfo> object to
-   * a Java ArrayList<org.rocksdb.BackupInfo> object
+   * a Java ArrayList<org.fluss.rocksdb.BackupInfo> object
    *
    * @param env A pointer to the Java environment
    * @param backup_infos A vector of BackupInfo
@@ -4201,11 +4208,11 @@ class BackupInfoListJni {
   }
 };
 
-// The portal class for org.rocksdb.WBWIRocksIterator
+// The portal class for org.fluss.rocksdb.WBWIRocksIterator
 class WBWIRocksIteratorJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.WBWIRocksIterator
+   * Get the Java Class org.fluss.rocksdb.WBWIRocksIterator
    *
    * @param env A pointer to the Java environment
    *
@@ -4214,7 +4221,7 @@ class WBWIRocksIteratorJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/WBWIRocksIterator");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/WBWIRocksIterator");
   }
 
   /**
@@ -4233,7 +4240,7 @@ class WBWIRocksIteratorJni : public JavaClass {
     }
 
     static jfieldID fid = env->GetFieldID(
-        jclazz, "entry", "Lorg/rocksdb/WBWIRocksIterator$WriteEntry;");
+        jclazz, "entry", "Lorg/fluss/rocksdb/WBWIRocksIterator$WriteEntry;");
     assert(fid != nullptr);
     return fid;
   }
@@ -4262,7 +4269,7 @@ class WBWIRocksIteratorJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.WBWIRocksIterator.WriteType
+// The portal class for org.fluss.rocksdb.WBWIRocksIterator.WriteType
 class WriteTypeJni : public JavaClass {
  public:
   /**
@@ -4305,8 +4312,8 @@ class WriteTypeJni : public JavaClass {
    */
   static jobject LOG(JNIEnv* env) { return getEnum(env, "LOG"); }
 
-  // Returns the equivalent org.rocksdb.WBWIRocksIterator.WriteType for the
-  // provided C++ ROCKSDB_NAMESPACE::WriteType enum
+  // Returns the equivalent org.fluss.rocksdb.WBWIRocksIterator.WriteType for
+  // the provided C++ ROCKSDB_NAMESPACE::WriteType enum
   static jbyte toJavaWriteType(const ROCKSDB_NAMESPACE::WriteType& writeType) {
     switch (writeType) {
       case ROCKSDB_NAMESPACE::WriteType::kPutRecord:
@@ -4330,7 +4337,7 @@ class WriteTypeJni : public JavaClass {
 
  private:
   /**
-   * Get the Java Class org.rocksdb.WBWIRocksIterator.WriteType
+   * Get the Java Class org.fluss.rocksdb.WBWIRocksIterator.WriteType
    *
    * @param env A pointer to the Java environment
    *
@@ -4339,11 +4346,12 @@ class WriteTypeJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/WBWIRocksIterator$WriteType");
+    return JavaClass::getJClass(
+        env, "org/fluss/rocksdb/WBWIRocksIterator$WriteType");
   }
 
   /**
-   * Get an enum field of org.rocksdb.WBWIRocksIterator.WriteType
+   * Get an enum field of org.fluss.rocksdb.WBWIRocksIterator.WriteType
    *
    * @param env A pointer to the Java environment
    * @param name The name of the enum field
@@ -4359,7 +4367,7 @@ class WriteTypeJni : public JavaClass {
     }
 
     jfieldID jfid = env->GetStaticFieldID(
-        jclazz, name, "Lorg/rocksdb/WBWIRocksIterator$WriteType;");
+        jclazz, name, "Lorg/fluss/rocksdb/WBWIRocksIterator$WriteType;");
     if (env->ExceptionCheck()) {
       // exception occurred while getting field
       return nullptr;
@@ -4373,11 +4381,11 @@ class WriteTypeJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.WBWIRocksIterator.WriteEntry
+// The portal class for org.fluss.rocksdb.WBWIRocksIterator.WriteEntry
 class WriteEntryJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.WBWIRocksIterator.WriteEntry
+   * Get the Java Class org.fluss.rocksdb.WBWIRocksIterator.WriteEntry
    *
    * @param env A pointer to the Java environment
    *
@@ -4386,12 +4394,12 @@ class WriteEntryJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env,
-                                "org/rocksdb/WBWIRocksIterator$WriteEntry");
+    return JavaClass::getJClass(
+        env, "org/fluss/rocksdb/WBWIRocksIterator$WriteEntry");
   }
 };
 
-// The portal class for org.rocksdb.InfoLogLevel
+// The portal class for org.fluss.rocksdb.InfoLogLevel
 class InfoLogLevelJni : public JavaClass {
  public:
   /**
@@ -4464,7 +4472,7 @@ class InfoLogLevelJni : public JavaClass {
 
  private:
   /**
-   * Get the Java Class org.rocksdb.InfoLogLevel
+   * Get the Java Class org.fluss.rocksdb.InfoLogLevel
    *
    * @param env A pointer to the Java environment
    *
@@ -4473,11 +4481,11 @@ class InfoLogLevelJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/InfoLogLevel");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/InfoLogLevel");
   }
 
   /**
-   * Get an enum field of org.rocksdb.InfoLogLevel
+   * Get an enum field of org.fluss.rocksdb.InfoLogLevel
    *
    * @param env A pointer to the Java environment
    * @param name The name of the enum field
@@ -4493,7 +4501,7 @@ class InfoLogLevelJni : public JavaClass {
     }
 
     jfieldID jfid =
-        env->GetStaticFieldID(jclazz, name, "Lorg/rocksdb/InfoLogLevel;");
+        env->GetStaticFieldID(jclazz, name, "Lorg/fluss/rocksdb/InfoLogLevel;");
     if (env->ExceptionCheck()) {
       // exception occurred while getting field
       return nullptr;
@@ -4507,13 +4515,13 @@ class InfoLogLevelJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.Logger
+// The portal class for org.fluss.rocksdb.Logger
 class LoggerJni
     : public RocksDBNativeClass<
           std::shared_ptr<ROCKSDB_NAMESPACE::LoggerJniCallback>*, LoggerJni> {
  public:
   /**
-   * Get the Java Class org/rocksdb/Logger
+   * Get the Java Class org/fluss/rocksdb/Logger
    *
    * @param env A pointer to the Java environment
    *
@@ -4522,7 +4530,7 @@ class LoggerJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/Logger");
+    return RocksDBNativeClass::getJClass(env, "org/fluss/rocksdb/Logger");
   }
 
   /**
@@ -4541,17 +4549,17 @@ class LoggerJni
     }
 
     static jmethodID mid = env->GetMethodID(
-        jclazz, "log", "(Lorg/rocksdb/InfoLogLevel;Ljava/lang/String;)V");
+        jclazz, "log", "(Lorg/fluss/rocksdb/InfoLogLevel;Ljava/lang/String;)V");
     assert(mid != nullptr);
     return mid;
   }
 };
 
-// The portal class for org.rocksdb.TransactionLogIterator.BatchResult
+// The portal class for org.fluss.rocksdb.TransactionLogIterator.BatchResult
 class BatchResultJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.TransactionLogIterator.BatchResult
+   * Get the Java Class org.fluss.rocksdb.TransactionLogIterator.BatchResult
    *
    * @param env A pointer to the Java environment
    *
@@ -4561,19 +4569,19 @@ class BatchResultJni : public JavaClass {
    */
   static jclass getJClass(JNIEnv* env) {
     return JavaClass::getJClass(
-        env, "org/rocksdb/TransactionLogIterator$BatchResult");
+        env, "org/fluss/rocksdb/TransactionLogIterator$BatchResult");
   }
 
   /**
-   * Create a new Java org.rocksdb.TransactionLogIterator.BatchResult object
-   * with the same properties as the provided C++ ROCKSDB_NAMESPACE::BatchResult
-   * object
+   * Create a new Java org.fluss.rocksdb.TransactionLogIterator.BatchResult
+   * object with the same properties as the provided C++
+   * ROCKSDB_NAMESPACE::BatchResult object
    *
    * @param env A pointer to the Java environment
    * @param batch_result The ROCKSDB_NAMESPACE::BatchResult object
    *
    * @return A reference to a Java
-   *     org.rocksdb.TransactionLogIterator.BatchResult object,
+   *     org.fluss.rocksdb.TransactionLogIterator.BatchResult object,
    *     or nullptr if an an exception occurs
    */
   static jobject construct(JNIEnv* env,
@@ -4602,10 +4610,10 @@ class BatchResultJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.BottommostLevelCompaction
+// The portal class for org.fluss.rocksdb.BottommostLevelCompaction
 class BottommostLevelCompactionJni {
  public:
-  // Returns the equivalent org.rocksdb.BottommostLevelCompaction for the
+  // Returns the equivalent org.fluss.rocksdb.BottommostLevelCompaction for the
   // provided C++ ROCKSDB_NAMESPACE::BottommostLevelCompaction enum
   static jint toJavaBottommostLevelCompaction(
       const ROCKSDB_NAMESPACE::BottommostLevelCompaction&
@@ -4626,7 +4634,7 @@ class BottommostLevelCompactionJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::BottommostLevelCompaction
-  // enum for the provided Java org.rocksdb.BottommostLevelCompaction
+  // enum for the provided Java org.fluss.rocksdb.BottommostLevelCompaction
   static ROCKSDB_NAMESPACE::BottommostLevelCompaction
   toCppBottommostLevelCompaction(jint bottommost_level_compaction) {
     switch (bottommost_level_compaction) {
@@ -4647,11 +4655,11 @@ class BottommostLevelCompactionJni {
   }
 };
 
-// The portal class for org.rocksdb.CompactionStopStyle
+// The portal class for org.fluss.rocksdb.CompactionStopStyle
 class CompactionStopStyleJni {
  public:
-  // Returns the equivalent org.rocksdb.CompactionStopStyle for the provided
-  // C++ ROCKSDB_NAMESPACE::CompactionStopStyle enum
+  // Returns the equivalent org.fluss.rocksdb.CompactionStopStyle for the
+  // provided C++ ROCKSDB_NAMESPACE::CompactionStopStyle enum
   static jbyte toJavaCompactionStopStyle(
       const ROCKSDB_NAMESPACE::CompactionStopStyle& compaction_stop_style) {
     switch (compaction_stop_style) {
@@ -4667,7 +4675,7 @@ class CompactionStopStyleJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::CompactionStopStyle enum for
-  // the provided Java org.rocksdb.CompactionStopStyle
+  // the provided Java org.fluss.rocksdb.CompactionStopStyle
   static ROCKSDB_NAMESPACE::CompactionStopStyle toCppCompactionStopStyle(
       jbyte jcompaction_stop_style) {
     switch (jcompaction_stop_style) {
@@ -4685,10 +4693,10 @@ class CompactionStopStyleJni {
   }
 };
 
-// The portal class for org.rocksdb.CompressionType
+// The portal class for org.fluss.rocksdb.CompressionType
 class CompressionTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.CompressionType for the provided
+  // Returns the equivalent org.fluss.rocksdb.CompressionType for the provided
   // C++ ROCKSDB_NAMESPACE::CompressionType enum
   static jbyte toJavaCompressionType(
       const ROCKSDB_NAMESPACE::CompressionType& compression_type) {
@@ -4716,7 +4724,7 @@ class CompressionTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::CompressionType enum for the
-  // provided Java org.rocksdb.CompressionType
+  // provided Java org.fluss.rocksdb.CompressionType
   static ROCKSDB_NAMESPACE::CompressionType toCppCompressionType(
       jbyte jcompression_type) {
     switch (jcompression_type) {
@@ -4743,11 +4751,11 @@ class CompressionTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.CompactionPriority
+// The portal class for org.fluss.rocksdb.CompactionPriority
 class CompactionPriorityJni {
  public:
-  // Returns the equivalent org.rocksdb.CompactionPriority for the provided
-  // C++ ROCKSDB_NAMESPACE::CompactionPri enum
+  // Returns the equivalent org.fluss.rocksdb.CompactionPriority for the
+  // provided C++ ROCKSDB_NAMESPACE::CompactionPri enum
   static jbyte toJavaCompactionPriority(
       const ROCKSDB_NAMESPACE::CompactionPri& compaction_priority) {
     switch (compaction_priority) {
@@ -4767,7 +4775,7 @@ class CompactionPriorityJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::CompactionPri enum for the
-  // provided Java org.rocksdb.CompactionPriority
+  // provided Java org.fluss.rocksdb.CompactionPriority
   static ROCKSDB_NAMESPACE::CompactionPri toCppCompactionPriority(
       jbyte jcompaction_priority) {
     switch (jcompaction_priority) {
@@ -4788,10 +4796,10 @@ class CompactionPriorityJni {
   }
 };
 
-// The portal class for org.rocksdb.WALRecoveryMode
+// The portal class for org.fluss.rocksdb.WALRecoveryMode
 class WALRecoveryModeJni {
  public:
-  // Returns the equivalent org.rocksdb.WALRecoveryMode for the provided
+  // Returns the equivalent org.fluss.rocksdb.WALRecoveryMode for the provided
   // C++ ROCKSDB_NAMESPACE::WALRecoveryMode enum
   static jbyte toJavaWALRecoveryMode(
       const ROCKSDB_NAMESPACE::WALRecoveryMode& wal_recovery_mode) {
@@ -4811,7 +4819,7 @@ class WALRecoveryModeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::WALRecoveryMode enum for the
-  // provided Java org.rocksdb.WALRecoveryMode
+  // provided Java org.fluss.rocksdb.WALRecoveryMode
   static ROCKSDB_NAMESPACE::WALRecoveryMode toCppWALRecoveryMode(
       jbyte jwal_recovery_mode) {
     switch (jwal_recovery_mode) {
@@ -4831,10 +4839,10 @@ class WALRecoveryModeJni {
   }
 };
 
-// The portal class for org.rocksdb.TickerType
+// The portal class for org.fluss.rocksdb.TickerType
 class TickerTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.TickerType for the provided
+  // Returns the equivalent org.fluss.rocksdb.TickerType for the provided
   // C++ ROCKSDB_NAMESPACE::Tickers enum
   static jbyte toJavaTickerType(const ROCKSDB_NAMESPACE::Tickers& tickers) {
     switch (tickers) {
@@ -5376,7 +5384,7 @@ class TickerTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::Tickers enum for the
-  // provided Java org.rocksdb.TickerType
+  // provided Java org.fluss.rocksdb.TickerType
   static ROCKSDB_NAMESPACE::Tickers toCppTickers(jbyte jticker_type) {
     switch (jticker_type) {
       case 0x0:
@@ -5926,10 +5934,10 @@ class TickerTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.HistogramType
+// The portal class for org.fluss.rocksdb.HistogramType
 class HistogramTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.HistogramType for the provided
+  // Returns the equivalent org.fluss.rocksdb.HistogramType for the provided
   // C++ ROCKSDB_NAMESPACE::Histograms enum
   static jbyte toJavaHistogramsType(
       const ROCKSDB_NAMESPACE::Histograms& histograms) {
@@ -6110,7 +6118,7 @@ class HistogramTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::Histograms enum for the
-  // provided Java org.rocksdb.HistogramsType
+  // provided Java org.fluss.rocksdb.HistogramsType
   static ROCKSDB_NAMESPACE::Histograms toCppHistograms(jbyte jhistograms_type) {
     switch (jhistograms_type) {
       case 0x0:
@@ -6293,10 +6301,10 @@ class HistogramTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.StatsLevel
+// The portal class for org.fluss.rocksdb.StatsLevel
 class StatsLevelJni {
  public:
-  // Returns the equivalent org.rocksdb.StatsLevel for the provided
+  // Returns the equivalent org.fluss.rocksdb.StatsLevel for the provided
   // C++ ROCKSDB_NAMESPACE::StatsLevel enum
   static jbyte toJavaStatsLevel(
       const ROCKSDB_NAMESPACE::StatsLevel& stats_level) {
@@ -6315,7 +6323,7 @@ class StatsLevelJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::StatsLevel enum for the
-  // provided Java org.rocksdb.StatsLevel
+  // provided Java org.fluss.rocksdb.StatsLevel
   static ROCKSDB_NAMESPACE::StatsLevel toCppStatsLevel(jbyte jstats_level) {
     switch (jstats_level) {
       case 0x0:
@@ -6332,10 +6340,10 @@ class StatsLevelJni {
   }
 };
 
-// The portal class for org.rocksdb.RateLimiterMode
+// The portal class for org.fluss.rocksdb.RateLimiterMode
 class RateLimiterModeJni {
  public:
-  // Returns the equivalent org.rocksdb.RateLimiterMode for the provided
+  // Returns the equivalent org.fluss.rocksdb.RateLimiterMode for the provided
   // C++ ROCKSDB_NAMESPACE::RateLimiter::Mode enum
   static jbyte toJavaRateLimiterMode(
       const ROCKSDB_NAMESPACE::RateLimiter::Mode& rate_limiter_mode) {
@@ -6354,7 +6362,7 @@ class RateLimiterModeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::RateLimiter::Mode enum for
-  // the provided Java org.rocksdb.RateLimiterMode
+  // the provided Java org.fluss.rocksdb.RateLimiterMode
   static ROCKSDB_NAMESPACE::RateLimiter::Mode toCppRateLimiterMode(
       jbyte jrate_limiter_mode) {
     switch (jrate_limiter_mode) {
@@ -6372,10 +6380,10 @@ class RateLimiterModeJni {
   }
 };
 
-// The portal class for org.rocksdb.MemoryUsageType
+// The portal class for org.fluss.rocksdb.MemoryUsageType
 class MemoryUsageTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.MemoryUsageType for the provided
+  // Returns the equivalent org.fluss.rocksdb.MemoryUsageType for the provided
   // C++ ROCKSDB_NAMESPACE::MemoryUtil::UsageType enum
   static jbyte toJavaMemoryUsageType(
       const ROCKSDB_NAMESPACE::MemoryUtil::UsageType& usage_type) {
@@ -6395,7 +6403,7 @@ class MemoryUsageTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::MemoryUtil::UsageType enum
-  // for the provided Java org.rocksdb.MemoryUsageType
+  // for the provided Java org.fluss.rocksdb.MemoryUsageType
   static ROCKSDB_NAMESPACE::MemoryUtil::UsageType toCppMemoryUsageType(
       jbyte usage_type) {
     switch (usage_type) {
@@ -6460,11 +6468,11 @@ class PerfLevelTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.Transaction
+// The portal class for org.fluss.rocksdb.Transaction
 class TransactionJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.Transaction
+   * Get the Java Class org.fluss.rocksdb.Transaction
    *
    * @param env A pointer to the Java environment
    *
@@ -6473,20 +6481,20 @@ class TransactionJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/Transaction");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/Transaction");
   }
 
   /**
-   * Create a new Java org.rocksdb.Transaction.WaitingTransactions object
+   * Create a new Java org.fluss.rocksdb.Transaction.WaitingTransactions object
    *
    * @param env A pointer to the Java environment
-   * @param jtransaction A Java org.rocksdb.Transaction object
+   * @param jtransaction A Java org.fluss.rocksdb.Transaction object
    * @param column_family_id The id of the column family
    * @param key The key
    * @param transaction_ids The transaction ids
    *
    * @return A reference to a Java
-   *     org.rocksdb.Transaction.WaitingTransactions object,
+   *     org.fluss.rocksdb.Transaction.WaitingTransactions object,
    *     or nullptr if an an exception occurs
    */
   static jobject newWaitingTransactions(
@@ -6499,9 +6507,10 @@ class TransactionJni : public JavaClass {
       return nullptr;
     }
 
-    jmethodID mid = env->GetMethodID(
-        jclazz, "newWaitingTransactions",
-        "(JLjava/lang/String;[J)Lorg/rocksdb/Transaction$WaitingTransactions;");
+    jmethodID mid =
+        env->GetMethodID(jclazz, "newWaitingTransactions",
+                         "(JLjava/lang/String;[J)Lorg/fluss/rocksdb/"
+                         "Transaction$WaitingTransactions;");
     if (mid == nullptr) {
       // exception thrown: NoSuchMethodException or OutOfMemoryError
       return nullptr;
@@ -6549,11 +6558,11 @@ class TransactionJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.TransactionDB
+// The portal class for org.fluss.rocksdb.TransactionDB
 class TransactionDBJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.TransactionDB
+   * Get the Java Class org.fluss.rocksdb.TransactionDB
    *
    * @param env A pointer to the Java environment
    *
@@ -6562,20 +6571,20 @@ class TransactionDBJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TransactionDB");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/TransactionDB");
   }
 
   /**
-   * Create a new Java org.rocksdb.TransactionDB.DeadlockInfo object
+   * Create a new Java org.fluss.rocksdb.TransactionDB.DeadlockInfo object
    *
    * @param env A pointer to the Java environment
-   * @param jtransaction A Java org.rocksdb.Transaction object
+   * @param jtransaction A Java org.fluss.rocksdb.Transaction object
    * @param column_family_id The id of the column family
    * @param key The key
    * @param transaction_ids The transaction ids
    *
    * @return A reference to a Java
-   *     org.rocksdb.Transaction.WaitingTransactions object,
+   *     org.fluss.rocksdb.Transaction.WaitingTransactions object,
    *     or nullptr if an an exception occurs
    */
   static jobject newDeadlockInfo(
@@ -6589,9 +6598,9 @@ class TransactionDBJni : public JavaClass {
       return nullptr;
     }
 
-    jmethodID mid = env->GetMethodID(
-        jclazz, "newDeadlockInfo",
-        "(JJLjava/lang/String;Z)Lorg/rocksdb/TransactionDB$DeadlockInfo;");
+    jmethodID mid = env->GetMethodID(jclazz, "newDeadlockInfo",
+                                     "(JJLjava/lang/String;Z)Lorg/fluss/"
+                                     "rocksdb/TransactionDB$DeadlockInfo;");
     if (mid == nullptr) {
       // exception thrown: NoSuchMethodException or OutOfMemoryError
       return nullptr;
@@ -6617,10 +6626,10 @@ class TransactionDBJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.TxnDBWritePolicy
+// The portal class for org.fluss.rocksdb.TxnDBWritePolicy
 class TxnDBWritePolicyJni {
  public:
-  // Returns the equivalent org.rocksdb.TxnDBWritePolicy for the provided
+  // Returns the equivalent org.fluss.rocksdb.TxnDBWritePolicy for the provided
   // C++ ROCKSDB_NAMESPACE::TxnDBWritePolicy enum
   static jbyte toJavaTxnDBWritePolicy(
       const ROCKSDB_NAMESPACE::TxnDBWritePolicy& txndb_write_policy) {
@@ -6637,7 +6646,7 @@ class TxnDBWritePolicyJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::TxnDBWritePolicy enum for the
-  // provided Java org.rocksdb.TxnDBWritePolicy
+  // provided Java org.fluss.rocksdb.TxnDBWritePolicy
   static ROCKSDB_NAMESPACE::TxnDBWritePolicy toCppTxnDBWritePolicy(
       jbyte jtxndb_write_policy) {
     switch (jtxndb_write_policy) {
@@ -6654,11 +6663,11 @@ class TxnDBWritePolicyJni {
   }
 };
 
-// The portal class for org.rocksdb.TransactionDB.KeyLockInfo
+// The portal class for org.fluss.rocksdb.TransactionDB.KeyLockInfo
 class KeyLockInfoJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.TransactionDB.KeyLockInfo
+   * Get the Java Class org.fluss.rocksdb.TransactionDB.KeyLockInfo
    *
    * @param env A pointer to the Java environment
    *
@@ -6667,11 +6676,12 @@ class KeyLockInfoJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TransactionDB$KeyLockInfo");
+    return JavaClass::getJClass(env,
+                                "org/fluss/rocksdb/TransactionDB$KeyLockInfo");
   }
 
   /**
-   * Create a new Java org.rocksdb.TransactionDB.KeyLockInfo object
+   * Create a new Java org.fluss.rocksdb.TransactionDB.KeyLockInfo object
    * with the same properties as the provided C++ ROCKSDB_NAMESPACE::KeyLockInfo
    * object
    *
@@ -6679,7 +6689,7 @@ class KeyLockInfoJni : public JavaClass {
    * @param key_lock_info The ROCKSDB_NAMESPACE::KeyLockInfo object
    *
    * @return A reference to a Java
-   *     org.rocksdb.TransactionDB.KeyLockInfo object,
+   *     org.fluss.rocksdb.TransactionDB.KeyLockInfo object,
    *     or nullptr if an an exception occurs
    */
   static jobject construct(
@@ -6725,11 +6735,11 @@ class KeyLockInfoJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.TransactionDB.DeadlockInfo
+// The portal class for org.fluss.rocksdb.TransactionDB.DeadlockInfo
 class DeadlockInfoJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.TransactionDB.DeadlockInfo
+   * Get the Java Class org.fluss.rocksdb.TransactionDB.DeadlockInfo
    *
    * @param env A pointer to the Java environment
    *
@@ -6738,15 +6748,16 @@ class DeadlockInfoJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TransactionDB$DeadlockInfo");
+    return JavaClass::getJClass(env,
+                                "org/fluss/rocksdb/TransactionDB$DeadlockInfo");
   }
 };
 
-// The portal class for org.rocksdb.TransactionDB.DeadlockPath
+// The portal class for org.fluss.rocksdb.TransactionDB.DeadlockPath
 class DeadlockPathJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.TransactionDB.DeadlockPath
+   * Get the Java Class org.fluss.rocksdb.TransactionDB.DeadlockPath
    *
    * @param env A pointer to the Java environment
    *
@@ -6755,16 +6766,17 @@ class DeadlockPathJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TransactionDB$DeadlockPath");
+    return JavaClass::getJClass(env,
+                                "org/fluss/rocksdb/TransactionDB$DeadlockPath");
   }
 
   /**
-   * Create a new Java org.rocksdb.TransactionDB.DeadlockPath object
+   * Create a new Java org.fluss.rocksdb.TransactionDB.DeadlockPath object
    *
    * @param env A pointer to the Java environment
    *
    * @return A reference to a Java
-   *     org.rocksdb.TransactionDB.DeadlockPath object,
+   *     org.fluss.rocksdb.TransactionDB.DeadlockPath object,
    *     or nullptr if an an exception occurs
    */
   static jobject construct(JNIEnv* env, const jobjectArray jdeadlock_infos,
@@ -6812,27 +6824,27 @@ class AbstractTableFilterJni
       return nullptr;
     }
 
-    static jmethodID mid =
-        env->GetMethodID(jclazz, "filter", "(Lorg/rocksdb/TableProperties;)Z");
+    static jmethodID mid = env->GetMethodID(
+        jclazz, "filter", "(Lorg/fluss/rocksdb/TableProperties;)Z");
     assert(mid != nullptr);
     return mid;
   }
 
  private:
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TableFilter");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/TableFilter");
   }
 };
 
 class TablePropertiesJni : public JavaClass {
  public:
   /**
-   * Create a new Java org.rocksdb.TableProperties object.
+   * Create a new Java org.fluss.rocksdb.TableProperties object.
    *
    * @param env A pointer to the Java environment
    * @param table_properties A Cpp table properties object
    *
-   * @return A reference to a Java org.rocksdb.TableProperties object, or
+   * @return A reference to a Java org.fluss.rocksdb.TableProperties object, or
    * nullptr if an an exception occurs
    */
   static jobject fromCppTableProperties(
@@ -6996,14 +7008,14 @@ class TablePropertiesJni : public JavaClass {
 
  private:
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TableProperties");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/TableProperties");
   }
 };
 
 class ColumnFamilyDescriptorJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.ColumnFamilyDescriptor
+   * Get the Java Class org.fluss.rocksdb.ColumnFamilyDescriptor
    *
    * @param env A pointer to the Java environment
    *
@@ -7012,19 +7024,20 @@ class ColumnFamilyDescriptorJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/ColumnFamilyDescriptor");
+    return JavaClass::getJClass(env,
+                                "org/fluss/rocksdb/ColumnFamilyDescriptor");
   }
 
   /**
-   * Create a new Java org.rocksdb.ColumnFamilyDescriptor object with the same
-   * properties as the provided C++ ROCKSDB_NAMESPACE::ColumnFamilyDescriptor
-   * object
+   * Create a new Java org.fluss.rocksdb.ColumnFamilyDescriptor object with the
+   * same properties as the provided C++
+   * ROCKSDB_NAMESPACE::ColumnFamilyDescriptor object
    *
    * @param env A pointer to the Java environment
    * @param cfd A pointer to ROCKSDB_NAMESPACE::ColumnFamilyDescriptor object
    *
-   * @return A reference to a Java org.rocksdb.ColumnFamilyDescriptor object, or
-   * nullptr if an an exception occurs
+   * @return A reference to a Java org.fluss.rocksdb.ColumnFamilyDescriptor
+   * object, or nullptr if an an exception occurs
    */
   static jobject construct(JNIEnv* env, ColumnFamilyDescriptor* cfd) {
     jbyteArray jcf_name = JniUtil::copyBytes(env, cfd->name);
@@ -7036,8 +7049,8 @@ class ColumnFamilyDescriptorJni : public JavaClass {
       return nullptr;
     }
 
-    jmethodID mid = env->GetMethodID(jclazz, "<init>",
-                                     "([BLorg/rocksdb/ColumnFamilyOptions;)V");
+    jmethodID mid = env->GetMethodID(
+        jclazz, "<init>", "([BLorg/fluss/rocksdb/ColumnFamilyOptions;)V");
     if (mid == nullptr) {
       // exception thrown: NoSuchMethodException or OutOfMemoryError
       env->DeleteLocalRef(jcf_name);
@@ -7088,17 +7101,18 @@ class ColumnFamilyDescriptorJni : public JavaClass {
       return nullptr;
     }
 
-    static jmethodID mid = env->GetMethodID(
-        jclazz, "columnFamilyOptions", "()Lorg/rocksdb/ColumnFamilyOptions;");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "columnFamilyOptions",
+                         "()Lorg/fluss/rocksdb/ColumnFamilyOptions;");
     assert(mid != nullptr);
     return mid;
   }
 };
 
-// The portal class for org.rocksdb.IndexType
+// The portal class for org.fluss.rocksdb.IndexType
 class IndexTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.IndexType for the provided
+  // Returns the equivalent org.fluss.rocksdb.IndexType for the provided
   // C++ ROCKSDB_NAMESPACE::IndexType enum
   static jbyte toJavaIndexType(
       const ROCKSDB_NAMESPACE::BlockBasedTableOptions::IndexType& index_type) {
@@ -7119,7 +7133,7 @@ class IndexTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::IndexType enum for the
-  // provided Java org.rocksdb.IndexType
+  // provided Java org.fluss.rocksdb.IndexType
   static ROCKSDB_NAMESPACE::BlockBasedTableOptions::IndexType toCppIndexType(
       jbyte jindex_type) {
     switch (jindex_type) {
@@ -7143,11 +7157,11 @@ class IndexTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.DataBlockIndexType
+// The portal class for org.fluss.rocksdb.DataBlockIndexType
 class DataBlockIndexTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.DataBlockIndexType for the provided
-  // C++ ROCKSDB_NAMESPACE::DataBlockIndexType enum
+  // Returns the equivalent org.fluss.rocksdb.DataBlockIndexType for the
+  // provided C++ ROCKSDB_NAMESPACE::DataBlockIndexType enum
   static jbyte toJavaDataBlockIndexType(
       const ROCKSDB_NAMESPACE::BlockBasedTableOptions::DataBlockIndexType&
           index_type) {
@@ -7164,7 +7178,7 @@ class DataBlockIndexTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::DataBlockIndexType enum for
-  // the provided Java org.rocksdb.DataBlockIndexType
+  // the provided Java org.fluss.rocksdb.DataBlockIndexType
   static ROCKSDB_NAMESPACE::BlockBasedTableOptions::DataBlockIndexType
   toCppDataBlockIndexType(jbyte jindex_type) {
     switch (jindex_type) {
@@ -7182,10 +7196,10 @@ class DataBlockIndexTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.IndexSearchType
+// The portal class for org.fluss.rocksdb.IndexSearchType
 class IndexSearchTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.IndexSearchType for the provided
+  // Returns the equivalent org.fluss.rocksdb.IndexSearchType for the provided
   // C++ ROCKSDB_NAMESPACE::BlockSearchType enum
   static jbyte toJavaIndexSearchType(
       const ROCKSDB_NAMESPACE::BlockBasedTableOptions::BlockSearchType&
@@ -7204,7 +7218,7 @@ class IndexSearchTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::BlockSearchType enum for
-  // the provided Java org.rocksdb.IndexSearchType
+  // the provided Java org.fluss.rocksdb.IndexSearchType
   static ROCKSDB_NAMESPACE::BlockBasedTableOptions::BlockSearchType
   toCppIndexSearchType(jbyte jindex_search_type) {
     switch (jindex_search_type) {
@@ -7225,10 +7239,10 @@ class IndexSearchTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.ChecksumType
+// The portal class for org.fluss.rocksdb.ChecksumType
 class ChecksumTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.ChecksumType for the provided
+  // Returns the equivalent org.fluss.rocksdb.ChecksumType for the provided
   // C++ ROCKSDB_NAMESPACE::ChecksumType enum
   static jbyte toJavaChecksumType(
       const ROCKSDB_NAMESPACE::ChecksumType& checksum_type) {
@@ -7249,7 +7263,7 @@ class ChecksumTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::ChecksumType enum for the
-  // provided Java org.rocksdb.ChecksumType
+  // provided Java org.fluss.rocksdb.ChecksumType
   static ROCKSDB_NAMESPACE::ChecksumType toCppChecksumType(
       jbyte jchecksum_type) {
     switch (jchecksum_type) {
@@ -7270,11 +7284,11 @@ class ChecksumTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.IndexShorteningMode
+// The portal class for org.fluss.rocksdb.IndexShorteningMode
 class IndexShorteningModeJni {
  public:
-  // Returns the equivalent org.rocksdb.IndexShorteningMode for the provided
-  // C++ ROCKSDB_NAMESPACE::IndexShorteningMode enum
+  // Returns the equivalent org.fluss.rocksdb.IndexShorteningMode for the
+  // provided C++ ROCKSDB_NAMESPACE::IndexShorteningMode enum
   static jbyte toJavaIndexShorteningMode(
       const ROCKSDB_NAMESPACE::BlockBasedTableOptions::IndexShorteningMode&
           index_shortening_mode) {
@@ -7294,7 +7308,7 @@ class IndexShorteningModeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::IndexShorteningMode enum for
-  // the provided Java org.rocksdb.IndexShorteningMode
+  // the provided Java org.fluss.rocksdb.IndexShorteningMode
   static ROCKSDB_NAMESPACE::BlockBasedTableOptions::IndexShorteningMode
   toCppIndexShorteningMode(jbyte jindex_shortening_mode) {
     switch (jindex_shortening_mode) {
@@ -7315,10 +7329,10 @@ class IndexShorteningModeJni {
   }
 };
 
-// The portal class for org.rocksdb.Priority
+// The portal class for org.fluss.rocksdb.Priority
 class PriorityJni {
  public:
-  // Returns the equivalent org.rocksdb.Priority for the provided
+  // Returns the equivalent org.fluss.rocksdb.Priority for the provided
   // C++ ROCKSDB_NAMESPACE::Env::Priority enum
   static jbyte toJavaPriority(
       const ROCKSDB_NAMESPACE::Env::Priority& priority) {
@@ -7337,7 +7351,7 @@ class PriorityJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::env::Priority enum for the
-  // provided Java org.rocksdb.Priority
+  // provided Java org.fluss.rocksdb.Priority
   static ROCKSDB_NAMESPACE::Env::Priority toCppPriority(jbyte jpriority) {
     switch (jpriority) {
       case 0x0:
@@ -7355,10 +7369,10 @@ class PriorityJni {
   }
 };
 
-// The portal class for org.rocksdb.ThreadType
+// The portal class for org.fluss.rocksdb.ThreadType
 class ThreadTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.ThreadType for the provided
+  // Returns the equivalent org.fluss.rocksdb.ThreadType for the provided
   // C++ ROCKSDB_NAMESPACE::ThreadStatus::ThreadType enum
   static jbyte toJavaThreadType(
       const ROCKSDB_NAMESPACE::ThreadStatus::ThreadType& thread_type) {
@@ -7377,7 +7391,7 @@ class ThreadTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::ThreadStatus::ThreadType enum
-  // for the provided Java org.rocksdb.ThreadType
+  // for the provided Java org.fluss.rocksdb.ThreadType
   static ROCKSDB_NAMESPACE::ThreadStatus::ThreadType toCppThreadType(
       jbyte jthread_type) {
     switch (jthread_type) {
@@ -7396,10 +7410,10 @@ class ThreadTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.OperationType
+// The portal class for org.fluss.rocksdb.OperationType
 class OperationTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.OperationType for the provided
+  // Returns the equivalent org.fluss.rocksdb.OperationType for the provided
   // C++ ROCKSDB_NAMESPACE::ThreadStatus::OperationType enum
   static jbyte toJavaOperationType(
       const ROCKSDB_NAMESPACE::ThreadStatus::OperationType& operation_type) {
@@ -7418,7 +7432,7 @@ class OperationTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::ThreadStatus::OperationType
-  // enum for the provided Java org.rocksdb.OperationType
+  // enum for the provided Java org.fluss.rocksdb.OperationType
   static ROCKSDB_NAMESPACE::ThreadStatus::OperationType toCppOperationType(
       jbyte joperation_type) {
     switch (joperation_type) {
@@ -7437,10 +7451,10 @@ class OperationTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.OperationStage
+// The portal class for org.fluss.rocksdb.OperationStage
 class OperationStageJni {
  public:
-  // Returns the equivalent org.rocksdb.OperationStage for the provided
+  // Returns the equivalent org.fluss.rocksdb.OperationStage for the provided
   // C++ ROCKSDB_NAMESPACE::ThreadStatus::OperationStage enum
   static jbyte toJavaOperationStage(
       const ROCKSDB_NAMESPACE::ThreadStatus::OperationStage& operation_stage) {
@@ -7482,7 +7496,7 @@ class OperationStageJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::ThreadStatus::OperationStage
-  // enum for the provided Java org.rocksdb.OperationStage
+  // enum for the provided Java org.fluss.rocksdb.OperationStage
   static ROCKSDB_NAMESPACE::ThreadStatus::OperationStage toCppOperationStage(
       jbyte joperation_stage) {
     switch (joperation_stage) {
@@ -7524,10 +7538,10 @@ class OperationStageJni {
   }
 };
 
-// The portal class for org.rocksdb.StateType
+// The portal class for org.fluss.rocksdb.StateType
 class StateTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.StateType for the provided
+  // Returns the equivalent org.fluss.rocksdb.StateType for the provided
   // C++ ROCKSDB_NAMESPACE::ThreadStatus::StateType enum
   static jbyte toJavaStateType(
       const ROCKSDB_NAMESPACE::ThreadStatus::StateType& state_type) {
@@ -7542,7 +7556,7 @@ class StateTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::ThreadStatus::StateType enum
-  // for the provided Java org.rocksdb.StateType
+  // for the provided Java org.fluss.rocksdb.StateType
   static ROCKSDB_NAMESPACE::ThreadStatus::StateType toCppStateType(
       jbyte jstate_type) {
     switch (jstate_type) {
@@ -7557,11 +7571,11 @@ class StateTypeJni {
   }
 };
 
-// The portal class for org.rocksdb.ThreadStatus
+// The portal class for org.fluss.rocksdb.ThreadStatus
 class ThreadStatusJni : public JavaClass {
  public:
   /**
-   * Get the Java Class org.rocksdb.ThreadStatus
+   * Get the Java Class org.fluss.rocksdb.ThreadStatus
    *
    * @param env A pointer to the Java environment
    *
@@ -7570,18 +7584,18 @@ class ThreadStatusJni : public JavaClass {
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/ThreadStatus");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/ThreadStatus");
   }
 
   /**
-   * Create a new Java org.rocksdb.ThreadStatus object with the same
+   * Create a new Java org.fluss.rocksdb.ThreadStatus object with the same
    * properties as the provided C++ ROCKSDB_NAMESPACE::ThreadStatus object
    *
    * @param env A pointer to the Java environment
    * @param thread_status A pointer to ROCKSDB_NAMESPACE::ThreadStatus object
    *
-   * @return A reference to a Java org.rocksdb.ColumnFamilyOptions object, or
-   * nullptr if an an exception occurs
+   * @return A reference to a Java org.fluss.rocksdb.ColumnFamilyOptions object,
+   * or nullptr if an an exception occurs
    */
   static jobject construct(
       JNIEnv* env, const ROCKSDB_NAMESPACE::ThreadStatus* thread_status) {
@@ -7664,10 +7678,10 @@ class ThreadStatusJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.CompactionStyle
+// The portal class for org.fluss.rocksdb.CompactionStyle
 class CompactionStyleJni {
  public:
-  // Returns the equivalent org.rocksdb.CompactionStyle for the provided
+  // Returns the equivalent org.fluss.rocksdb.CompactionStyle for the provided
   // C++ ROCKSDB_NAMESPACE::CompactionStyle enum
   static jbyte toJavaCompactionStyle(
       const ROCKSDB_NAMESPACE::CompactionStyle& compaction_style) {
@@ -7686,7 +7700,7 @@ class CompactionStyleJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::CompactionStyle enum for the
-  // provided Java org.rocksdb.CompactionStyle
+  // provided Java org.fluss.rocksdb.CompactionStyle
   static ROCKSDB_NAMESPACE::CompactionStyle toCppCompactionStyle(
       jbyte jcompaction_style) {
     switch (jcompaction_style) {
@@ -7705,10 +7719,10 @@ class CompactionStyleJni {
   }
 };
 
-// The portal class for org.rocksdb.CompactionReason
+// The portal class for org.fluss.rocksdb.CompactionReason
 class CompactionReasonJni {
  public:
-  // Returns the equivalent org.rocksdb.CompactionReason for the provided
+  // Returns the equivalent org.fluss.rocksdb.CompactionReason for the provided
   // C++ ROCKSDB_NAMESPACE::CompactionReason enum
   static jbyte toJavaCompactionReason(
       const ROCKSDB_NAMESPACE::CompactionReason& compaction_reason) {
@@ -7759,7 +7773,7 @@ class CompactionReasonJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::CompactionReason enum for the
-  // provided Java org.rocksdb.CompactionReason
+  // provided Java org.fluss.rocksdb.CompactionReason
   static ROCKSDB_NAMESPACE::CompactionReason toCppCompactionReason(
       jbyte jcompaction_reason) {
     switch (jcompaction_reason) {
@@ -7810,10 +7824,10 @@ class CompactionReasonJni {
   }
 };
 
-// The portal class for org.rocksdb.WalFileType
+// The portal class for org.fluss.rocksdb.WalFileType
 class WalFileTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.WalFileType for the provided
+  // Returns the equivalent org.fluss.rocksdb.WalFileType for the provided
   // C++ ROCKSDB_NAMESPACE::WalFileType enum
   static jbyte toJavaWalFileType(
       const ROCKSDB_NAMESPACE::WalFileType& wal_file_type) {
@@ -7828,7 +7842,7 @@ class WalFileTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::WalFileType enum for the
-  // provided Java org.rocksdb.WalFileType
+  // provided Java org.fluss.rocksdb.WalFileType
   static ROCKSDB_NAMESPACE::WalFileType toCppWalFileType(jbyte jwal_file_type) {
     switch (jwal_file_type) {
       case 0x0:
@@ -7845,12 +7859,12 @@ class WalFileTypeJni {
 class LogFileJni : public JavaClass {
  public:
   /**
-   * Create a new Java org.rocksdb.LogFile object.
+   * Create a new Java org.fluss.rocksdb.LogFile object.
    *
    * @param env A pointer to the Java environment
    * @param log_file A Cpp log file object
    *
-   * @return A reference to a Java org.rocksdb.LogFile object, or
+   * @return A reference to a Java org.fluss.rocksdb.LogFile object, or
    * nullptr if an an exception occurs
    */
   static jobject fromCppLogFile(JNIEnv* env,
@@ -7894,19 +7908,19 @@ class LogFileJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/LogFile");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/LogFile");
   }
 };
 
 class LiveFileMetaDataJni : public JavaClass {
  public:
   /**
-   * Create a new Java org.rocksdb.LiveFileMetaData object.
+   * Create a new Java org.fluss.rocksdb.LiveFileMetaData object.
    *
    * @param env A pointer to the Java environment
    * @param live_file_meta_data A Cpp live file meta data object
    *
-   * @return A reference to a Java org.rocksdb.LiveFileMetaData object, or
+   * @return A reference to a Java org.fluss.rocksdb.LiveFileMetaData object, or
    * nullptr if an an exception occurs
    */
   static jobject fromCppLiveFileMetaData(
@@ -8016,19 +8030,19 @@ class LiveFileMetaDataJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/LiveFileMetaData");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/LiveFileMetaData");
   }
 };
 
 class SstFileMetaDataJni : public JavaClass {
  public:
   /**
-   * Create a new Java org.rocksdb.SstFileMetaData object.
+   * Create a new Java org.fluss.rocksdb.SstFileMetaData object.
    *
    * @param env A pointer to the Java environment
    * @param sst_file_meta_data A Cpp sst file meta data object
    *
-   * @return A reference to a Java org.rocksdb.SstFileMetaData object, or
+   * @return A reference to a Java org.fluss.rocksdb.SstFileMetaData object, or
    * nullptr if an an exception occurs
    */
   static jobject fromCppSstFileMetaData(
@@ -8123,19 +8137,19 @@ class SstFileMetaDataJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/SstFileMetaData");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/SstFileMetaData");
   }
 };
 
 class LevelMetaDataJni : public JavaClass {
  public:
   /**
-   * Create a new Java org.rocksdb.LevelMetaData object.
+   * Create a new Java org.fluss.rocksdb.LevelMetaData object.
    *
    * @param env A pointer to the Java environment
    * @param level_meta_data A Cpp level meta data object
    *
-   * @return A reference to a Java org.rocksdb.LevelMetaData object, or
+   * @return A reference to a Java org.fluss.rocksdb.LevelMetaData object, or
    * nullptr if an an exception occurs
    */
   static jobject fromCppLevelMetaData(
@@ -8146,8 +8160,8 @@ class LevelMetaDataJni : public JavaClass {
       return nullptr;
     }
 
-    jmethodID mid = env->GetMethodID(jclazz, "<init>",
-                                     "(IJ[Lorg/rocksdb/SstFileMetaData;)V");
+    jmethodID mid = env->GetMethodID(
+        jclazz, "<init>", "(IJ[Lorg/fluss/rocksdb/SstFileMetaData;)V");
     if (mid == nullptr) {
       // exception thrown: NoSuchMethodException or OutOfMemoryError
       return nullptr;
@@ -8189,20 +8203,20 @@ class LevelMetaDataJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/LevelMetaData");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/LevelMetaData");
   }
 };
 
 class ColumnFamilyMetaDataJni : public JavaClass {
  public:
   /**
-   * Create a new Java org.rocksdb.ColumnFamilyMetaData object.
+   * Create a new Java org.fluss.rocksdb.ColumnFamilyMetaData object.
    *
    * @param env A pointer to the Java environment
    * @param column_famly_meta_data A Cpp live file meta data object
    *
-   * @return A reference to a Java org.rocksdb.ColumnFamilyMetaData object, or
-   * nullptr if an an exception occurs
+   * @return A reference to a Java org.fluss.rocksdb.ColumnFamilyMetaData
+   * object, or nullptr if an an exception occurs
    */
   static jobject fromCppColumnFamilyMetaData(
       JNIEnv* env,
@@ -8213,8 +8227,8 @@ class ColumnFamilyMetaDataJni : public JavaClass {
       return nullptr;
     }
 
-    jmethodID mid = env->GetMethodID(jclazz, "<init>",
-                                     "(JJ[B[Lorg/rocksdb/LevelMetaData;)V");
+    jmethodID mid = env->GetMethodID(
+        jclazz, "<init>", "(JJ[B[Lorg/fluss/rocksdb/LevelMetaData;)V");
     if (mid == nullptr) {
       // exception thrown: NoSuchMethodException or OutOfMemoryError
       return nullptr;
@@ -8268,18 +8282,18 @@ class ColumnFamilyMetaDataJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/ColumnFamilyMetaData");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/ColumnFamilyMetaData");
   }
 };
 
-// The portal class for org.rocksdb.AbstractTraceWriter
+// The portal class for org.fluss.rocksdb.AbstractTraceWriter
 class AbstractTraceWriterJni
     : public RocksDBNativeClass<
           const ROCKSDB_NAMESPACE::TraceWriterJniCallback*,
           AbstractTraceWriterJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.AbstractTraceWriter
+   * Get the Java Class org.fluss.rocksdb.AbstractTraceWriter
    *
    * @param env A pointer to the Java environment
    *
@@ -8288,8 +8302,8 @@ class AbstractTraceWriterJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env,
-                                         "org/rocksdb/AbstractTraceWriter");
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/AbstractTraceWriter");
   }
 
   /**
@@ -8353,13 +8367,13 @@ class AbstractTraceWriterJni
   }
 };
 
-// The portal class for org.rocksdb.AbstractWalFilter
+// The portal class for org.fluss.rocksdb.AbstractWalFilter
 class AbstractWalFilterJni
     : public RocksDBNativeClass<const ROCKSDB_NAMESPACE::WalFilterJniCallback*,
                                 AbstractWalFilterJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.AbstractWalFilter
+   * Get the Java Class org.fluss.rocksdb.AbstractWalFilter
    *
    * @param env A pointer to the Java environment
    *
@@ -8368,7 +8382,8 @@ class AbstractWalFilterJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env, "org/rocksdb/AbstractWalFilter");
+    return RocksDBNativeClass::getJClass(env,
+                                         "org/fluss/rocksdb/AbstractWalFilter");
   }
 
   /**
@@ -8436,11 +8451,11 @@ class AbstractWalFilterJni
   }
 };
 
-// The portal class for org.rocksdb.WalProcessingOption
+// The portal class for org.fluss.rocksdb.WalProcessingOption
 class WalProcessingOptionJni {
  public:
-  // Returns the equivalent org.rocksdb.WalProcessingOption for the provided
-  // C++ ROCKSDB_NAMESPACE::WalFilter::WalProcessingOption enum
+  // Returns the equivalent org.fluss.rocksdb.WalProcessingOption for the
+  // provided C++ ROCKSDB_NAMESPACE::WalFilter::WalProcessingOption enum
   static jbyte toJavaWalProcessingOption(
       const ROCKSDB_NAMESPACE::WalFilter::WalProcessingOption&
           wal_processing_option) {
@@ -8462,7 +8477,7 @@ class WalProcessingOptionJni {
 
   // Returns the equivalent C++
   // ROCKSDB_NAMESPACE::WalFilter::WalProcessingOption enum for the provided
-  // Java org.rocksdb.WalProcessingOption
+  // Java org.fluss.rocksdb.WalProcessingOption
   static ROCKSDB_NAMESPACE::WalFilter::WalProcessingOption
   toCppWalProcessingOption(jbyte jwal_processing_option) {
     switch (jwal_processing_option) {
@@ -8485,10 +8500,10 @@ class WalProcessingOptionJni {
   }
 };
 
-// The portal class for org.rocksdb.ReusedSynchronisationType
+// The portal class for org.fluss.rocksdb.ReusedSynchronisationType
 class ReusedSynchronisationTypeJni {
  public:
-  // Returns the equivalent org.rocksdb.ReusedSynchronisationType for the
+  // Returns the equivalent org.fluss.rocksdb.ReusedSynchronisationType for the
   // provided C++ ROCKSDB_NAMESPACE::ReusedSynchronisationType enum
   static jbyte toJavaReusedSynchronisationType(
       const ROCKSDB_NAMESPACE::ReusedSynchronisationType&
@@ -8506,7 +8521,7 @@ class ReusedSynchronisationTypeJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::ReusedSynchronisationType
-  // enum for the provided Java org.rocksdb.ReusedSynchronisationType
+  // enum for the provided Java org.fluss.rocksdb.ReusedSynchronisationType
   static ROCKSDB_NAMESPACE::ReusedSynchronisationType
   toCppReusedSynchronisationType(jbyte reused_synchronisation_type) {
     switch (reused_synchronisation_type) {
@@ -8522,10 +8537,10 @@ class ReusedSynchronisationTypeJni {
     }
   }
 };
-// The portal class for org.rocksdb.SanityLevel
+// The portal class for org.fluss.rocksdb.SanityLevel
 class SanityLevelJni {
  public:
-  // Returns the equivalent org.rocksdb.SanityLevel for the provided
+  // Returns the equivalent org.fluss.rocksdb.SanityLevel for the provided
   // C++ ROCKSDB_NAMESPACE::ConfigOptions::SanityLevel enum
   static jbyte toJavaSanityLevel(
       const ROCKSDB_NAMESPACE::ConfigOptions::SanityLevel& sanity_level) {
@@ -8544,7 +8559,7 @@ class SanityLevelJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::ConfigOptions::SanityLevel
-  // enum for the provided Java org.rocksdb.SanityLevel
+  // enum for the provided Java org.fluss.rocksdb.SanityLevel
   static ROCKSDB_NAMESPACE::ConfigOptions::SanityLevel toCppSanityLevel(
       jbyte sanity_level) {
     switch (sanity_level) {
@@ -8559,11 +8574,11 @@ class SanityLevelJni {
   }
 };
 
-// The portal class for org.rocksdb.PrepopulateBlobCache
+// The portal class for org.fluss.rocksdb.PrepopulateBlobCache
 class PrepopulateBlobCacheJni {
  public:
-  // Returns the equivalent org.rocksdb.PrepopulateBlobCache for the provided
-  // C++ ROCKSDB_NAMESPACE::PrepopulateBlobCache enum
+  // Returns the equivalent org.fluss.rocksdb.PrepopulateBlobCache for the
+  // provided C++ ROCKSDB_NAMESPACE::PrepopulateBlobCache enum
   static jbyte toJavaPrepopulateBlobCache(
       ROCKSDB_NAMESPACE::PrepopulateBlobCache prepopulate_blob_cache) {
     switch (prepopulate_blob_cache) {
@@ -8577,7 +8592,7 @@ class PrepopulateBlobCacheJni {
   }
 
   // Returns the equivalent C++ ROCKSDB_NAMESPACE::PrepopulateBlobCache enum for
-  // the provided Java org.rocksdb.PrepopulateBlobCache
+  // the provided Java org.fluss.rocksdb.PrepopulateBlobCache
   static ROCKSDB_NAMESPACE::PrepopulateBlobCache toCppPrepopulateBlobCache(
       jbyte jprepopulate_blob_cache) {
     switch (jprepopulate_blob_cache) {
@@ -8593,7 +8608,7 @@ class PrepopulateBlobCacheJni {
   }
 };
 
-// The portal class for org.rocksdb.AbstractListener.EnabledEventCallback
+// The portal class for org.fluss.rocksdb.AbstractListener.EnabledEventCallback
 class EnabledEventCallbackJni {
  public:
   // Returns the set of equivalent C++
@@ -8612,14 +8627,14 @@ class EnabledEventCallbackJni {
   }
 };
 
-// The portal class for org.rocksdb.AbstractEventListener
+// The portal class for org.fluss.rocksdb.AbstractEventListener
 class AbstractEventListenerJni
     : public RocksDBNativeClass<
           const ROCKSDB_NAMESPACE::EventListenerJniCallback*,
           AbstractEventListenerJni> {
  public:
   /**
-   * Get the Java Class org.rocksdb.AbstractEventListener
+   * Get the Java Class org.fluss.rocksdb.AbstractEventListener
    *
    * @param env A pointer to the Java environment
    *
@@ -8628,8 +8643,8 @@ class AbstractEventListenerJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env,
-                                         "org/rocksdb/AbstractEventListener");
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/AbstractEventListener");
   }
 
   /**
@@ -8642,8 +8657,9 @@ class AbstractEventListenerJni
   static jmethodID getOnFlushCompletedProxyMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(jclazz, "onFlushCompletedProxy",
-                                            "(JLorg/rocksdb/FlushJobInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onFlushCompletedProxy",
+                         "(JLorg/fluss/rocksdb/FlushJobInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8658,8 +8674,8 @@ class AbstractEventListenerJni
   static jmethodID getOnFlushBeginProxyMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(jclazz, "onFlushBeginProxy",
-                                            "(JLorg/rocksdb/FlushJobInfo;)V");
+    static jmethodID mid = env->GetMethodID(
+        jclazz, "onFlushBeginProxy", "(JLorg/fluss/rocksdb/FlushJobInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8674,8 +8690,9 @@ class AbstractEventListenerJni
   static jmethodID getOnTableFileDeletedMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(
-        jclazz, "onTableFileDeleted", "(Lorg/rocksdb/TableFileDeletionInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onTableFileDeleted",
+                         "(Lorg/fluss/rocksdb/TableFileDeletionInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8692,7 +8709,7 @@ class AbstractEventListenerJni
     assert(jclazz != nullptr);
     static jmethodID mid =
         env->GetMethodID(jclazz, "onCompactionBeginProxy",
-                         "(JLorg/rocksdb/CompactionJobInfo;)V");
+                         "(JLorg/fluss/rocksdb/CompactionJobInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8709,7 +8726,7 @@ class AbstractEventListenerJni
     assert(jclazz != nullptr);
     static jmethodID mid =
         env->GetMethodID(jclazz, "onCompactionCompletedProxy",
-                         "(JLorg/rocksdb/CompactionJobInfo;)V");
+                         "(JLorg/fluss/rocksdb/CompactionJobInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8724,8 +8741,9 @@ class AbstractEventListenerJni
   static jmethodID getOnTableFileCreatedMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(
-        jclazz, "onTableFileCreated", "(Lorg/rocksdb/TableFileCreationInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onTableFileCreated",
+                         "(Lorg/fluss/rocksdb/TableFileCreationInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8742,7 +8760,7 @@ class AbstractEventListenerJni
     assert(jclazz != nullptr);
     static jmethodID mid =
         env->GetMethodID(jclazz, "onTableFileCreationStarted",
-                         "(Lorg/rocksdb/TableFileCreationBriefInfo;)V");
+                         "(Lorg/fluss/rocksdb/TableFileCreationBriefInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8757,8 +8775,8 @@ class AbstractEventListenerJni
   static jmethodID getOnMemTableSealedMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(jclazz, "onMemTableSealed",
-                                            "(Lorg/rocksdb/MemTableInfo;)V");
+    static jmethodID mid = env->GetMethodID(
+        jclazz, "onMemTableSealed", "(Lorg/fluss/rocksdb/MemTableInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8776,7 +8794,7 @@ class AbstractEventListenerJni
     assert(jclazz != nullptr);
     static jmethodID mid =
         env->GetMethodID(jclazz, "onColumnFamilyHandleDeletionStarted",
-                         "(Lorg/rocksdb/ColumnFamilyHandle;)V");
+                         "(Lorg/fluss/rocksdb/ColumnFamilyHandle;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8793,7 +8811,7 @@ class AbstractEventListenerJni
     assert(jclazz != nullptr);
     static jmethodID mid =
         env->GetMethodID(jclazz, "onExternalFileIngestedProxy",
-                         "(JLorg/rocksdb/ExternalFileIngestionInfo;)V");
+                         "(JLorg/fluss/rocksdb/ExternalFileIngestionInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8809,7 +8827,7 @@ class AbstractEventListenerJni
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
     static jmethodID mid = env->GetMethodID(jclazz, "onBackgroundErrorProxy",
-                                            "(BLorg/rocksdb/Status;)V");
+                                            "(BLorg/fluss/rocksdb/Status;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8824,8 +8842,9 @@ class AbstractEventListenerJni
   static jmethodID getOnStallConditionsChangedMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(jclazz, "onStallConditionsChanged",
-                                            "(Lorg/rocksdb/WriteStallInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onStallConditionsChanged",
+                         "(Lorg/fluss/rocksdb/WriteStallInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8841,7 +8860,7 @@ class AbstractEventListenerJni
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
     static jmethodID mid = env->GetMethodID(
-        jclazz, "onFileReadFinish", "(Lorg/rocksdb/FileOperationInfo;)V");
+        jclazz, "onFileReadFinish", "(Lorg/fluss/rocksdb/FileOperationInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8856,8 +8875,9 @@ class AbstractEventListenerJni
   static jmethodID getOnFileWriteFinishMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(
-        jclazz, "onFileWriteFinish", "(Lorg/rocksdb/FileOperationInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onFileWriteFinish",
+                         "(Lorg/fluss/rocksdb/FileOperationInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8872,8 +8892,9 @@ class AbstractEventListenerJni
   static jmethodID getOnFileFlushFinishMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(
-        jclazz, "onFileFlushFinish", "(Lorg/rocksdb/FileOperationInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onFileFlushFinish",
+                         "(Lorg/fluss/rocksdb/FileOperationInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8889,7 +8910,7 @@ class AbstractEventListenerJni
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
     static jmethodID mid = env->GetMethodID(
-        jclazz, "onFileSyncFinish", "(Lorg/rocksdb/FileOperationInfo;)V");
+        jclazz, "onFileSyncFinish", "(Lorg/fluss/rocksdb/FileOperationInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8904,8 +8925,9 @@ class AbstractEventListenerJni
   static jmethodID getOnFileRangeSyncFinishMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(
-        jclazz, "onFileRangeSyncFinish", "(Lorg/rocksdb/FileOperationInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onFileRangeSyncFinish",
+                         "(Lorg/fluss/rocksdb/FileOperationInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8920,8 +8942,9 @@ class AbstractEventListenerJni
   static jmethodID getOnFileTruncateFinishMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(
-        jclazz, "onFileTruncateFinish", "(Lorg/rocksdb/FileOperationInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onFileTruncateFinish",
+                         "(Lorg/fluss/rocksdb/FileOperationInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8936,8 +8959,9 @@ class AbstractEventListenerJni
   static jmethodID getOnFileCloseFinishMethodId(JNIEnv* env) {
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
-    static jmethodID mid = env->GetMethodID(
-        jclazz, "onFileCloseFinish", "(Lorg/rocksdb/FileOperationInfo;)V");
+    static jmethodID mid =
+        env->GetMethodID(jclazz, "onFileCloseFinish",
+                         "(Lorg/fluss/rocksdb/FileOperationInfo;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8969,7 +8993,7 @@ class AbstractEventListenerJni
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
     static jmethodID mid = env->GetMethodID(jclazz, "onErrorRecoveryBeginProxy",
-                                            "(BLorg/rocksdb/Status;)Z");
+                                            "(BLorg/fluss/rocksdb/Status;)Z");
     assert(mid != nullptr);
     return mid;
   }
@@ -8985,7 +9009,7 @@ class AbstractEventListenerJni
     jclass jclazz = getJClass(env);
     assert(jclazz != nullptr);
     static jmethodID mid = env->GetMethodID(jclazz, "onErrorRecoveryCompleted",
-                                            "(Lorg/rocksdb/Status;)V");
+                                            "(Lorg/fluss/rocksdb/Status;)V");
     assert(mid != nullptr);
     return mid;
   }
@@ -8994,12 +9018,12 @@ class AbstractEventListenerJni
 class FlushJobInfoJni : public JavaClass {
  public:
   /**
-   * Create a new Java org.rocksdb.FlushJobInfo object.
+   * Create a new Java org.fluss.rocksdb.FlushJobInfo object.
    *
    * @param env A pointer to the Java environment
    * @param flush_job_info A Cpp flush job info object
    *
-   * @return A reference to a Java org.rocksdb.FlushJobInfo object, or
+   * @return A reference to a Java org.fluss.rocksdb.FlushJobInfo object, or
    * nullptr if an an exception occurs
    */
   static jobject fromCppFlushJobInfo(
@@ -9039,26 +9063,26 @@ class FlushJobInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/FlushJobInfo");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/FlushJobInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
     return env->GetMethodID(clazz, "<init>",
                             "(JLjava/lang/String;Ljava/lang/String;JIZZJJLorg/"
-                            "rocksdb/TableProperties;B)V");
+                            "fluss/rocksdb/TableProperties;B)V");
   }
 };
 
 class TableFileDeletionInfoJni : public JavaClass {
  public:
   /**
-   * Create a new Java org.rocksdb.TableFileDeletionInfo object.
+   * Create a new Java org.fluss.rocksdb.TableFileDeletionInfo object.
    *
    * @param env A pointer to the Java environment
    * @param file_del_info A Cpp table file deletion info object
    *
-   * @return A reference to a Java org.rocksdb.TableFileDeletionInfo object, or
-   * nullptr if an an exception occurs
+   * @return A reference to a Java org.fluss.rocksdb.TableFileDeletionInfo
+   * object, or nullptr if an an exception occurs
    */
   static jobject fromCppTableFileDeletionInfo(
       JNIEnv* env,
@@ -9085,13 +9109,13 @@ class TableFileDeletionInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TableFileDeletionInfo");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/TableFileDeletionInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
     return env->GetMethodID(
         clazz, "<init>",
-        "(Ljava/lang/String;Ljava/lang/String;ILorg/rocksdb/Status;)V");
+        "(Ljava/lang/String;Ljava/lang/String;ILorg/fluss/rocksdb/Status;)V");
   }
 };
 
@@ -9109,7 +9133,7 @@ class CompactionJobInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/CompactionJobInfo");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/CompactionJobInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
@@ -9161,14 +9185,14 @@ class TableFileCreationInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TableFileCreationInfo");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/TableFileCreationInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
-    return env->GetMethodID(
-        clazz, "<init>",
-        "(JLorg/rocksdb/TableProperties;Lorg/rocksdb/Status;Ljava/lang/"
-        "String;Ljava/lang/String;Ljava/lang/String;IB)V");
+    return env->GetMethodID(clazz, "<init>",
+                            "(JLorg/fluss/rocksdb/TableProperties;Lorg/fluss/"
+                            "rocksdb/Status;Ljava/lang/"
+                            "String;Ljava/lang/String;Ljava/lang/String;IB)V");
   }
 };
 
@@ -9201,7 +9225,8 @@ class TableFileCreationBriefInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/TableFileCreationBriefInfo");
+    return JavaClass::getJClass(env,
+                                "org/fluss/rocksdb/TableFileCreationBriefInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
@@ -9231,7 +9256,7 @@ class MemTableInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/MemTableInfo");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/MemTableInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
@@ -9278,13 +9303,14 @@ class ExternalFileIngestionInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/ExternalFileIngestionInfo");
+    return JavaClass::getJClass(env,
+                                "org/fluss/rocksdb/ExternalFileIngestionInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
     return env->GetMethodID(clazz, "<init>",
                             "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/"
-                            "String;JLorg/rocksdb/TableProperties;)V");
+                            "String;JLorg/fluss/rocksdb/TableProperties;)V");
   }
 };
 
@@ -9306,7 +9332,7 @@ class WriteStallInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/WriteStallInfo");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/WriteStallInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
@@ -9339,12 +9365,12 @@ class FileOperationInfoJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env, "org/rocksdb/FileOperationInfo");
+    return JavaClass::getJClass(env, "org/fluss/rocksdb/FileOperationInfo");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
-    return env->GetMethodID(clazz, "<init>",
-                            "(Ljava/lang/String;JJJJLorg/rocksdb/Status;)V");
+    return env->GetMethodID(
+        clazz, "<init>", "(Ljava/lang/String;JJJJLorg/fluss/rocksdb/Status;)V");
   }
 };
 
@@ -9361,8 +9387,8 @@ class CompactRangeOptionsTimestampJni : public JavaClass {
   }
 
   static jclass getJClass(JNIEnv* env) {
-    return JavaClass::getJClass(env,
-                                "org/rocksdb/CompactRangeOptions$Timestamp");
+    return JavaClass::getJClass(
+        env, "org/fluss/rocksdb/CompactRangeOptions$Timestamp");
   }
 
   static jmethodID getConstructorMethodId(JNIEnv* env, jclass clazz) {
@@ -9370,13 +9396,13 @@ class CompactRangeOptionsTimestampJni : public JavaClass {
   }
 };
 
-// The portal class for org.rocksdb.BlockBasedTableOptions
+// The portal class for org.fluss.rocksdb.BlockBasedTableOptions
 class BlockBasedTableOptionsJni
     : public RocksDBNativeClass<ROCKSDB_NAMESPACE::BlockBasedTableOptions*,
                                 BlockBasedTableOptions> {
  public:
   /**
-   * Get the Java Class org.rocksdb.BlockBasedTableConfig
+   * Get the Java Class org.fluss.rocksdb.BlockBasedTableConfig
    *
    * @param env A pointer to the Java environment
    *
@@ -9385,20 +9411,20 @@ class BlockBasedTableOptionsJni
    *     OutOfMemoryError or ExceptionInInitializerError exceptions is thrown
    */
   static jclass getJClass(JNIEnv* env) {
-    return RocksDBNativeClass::getJClass(env,
-                                         "org/rocksdb/BlockBasedTableConfig");
+    return RocksDBNativeClass::getJClass(
+        env, "org/fluss/rocksdb/BlockBasedTableConfig");
   }
 
   /**
-   * Create a new Java org.rocksdb.BlockBasedTableConfig object with the
+   * Create a new Java org.fluss.rocksdb.BlockBasedTableConfig object with the
    * properties as the provided C++ ROCKSDB_NAMESPACE::BlockBasedTableOptions
    * object
    *
    * @param env A pointer to the Java environment
    * @param cfoptions A pointer to ROCKSDB_NAMESPACE::ColumnFamilyOptions object
    *
-   * @return A reference to a Java org.rocksdb.ColumnFamilyOptions object, or
-   * nullptr if an an exception occurs
+   * @return A reference to a Java org.fluss.rocksdb.ColumnFamilyOptions object,
+   * or nullptr if an an exception occurs
    */
   static jobject construct(
       JNIEnv* env, const BlockBasedTableOptions* table_factory_options) {
