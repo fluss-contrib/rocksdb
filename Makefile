@@ -1715,6 +1715,9 @@ db_log_iter_test: $(OBJ_DIR)/db/db_log_iter_test.o $(TEST_LIBRARY) $(LIBRARY)
 db_compaction_filter_test: $(OBJ_DIR)/db/db_compaction_filter_test.o $(TEST_LIBRARY) $(LIBRARY)
 	$(AM_LINK)
 
+fluss_ttl_compaction_filter_test: $(OBJ_DIR)/utilities/fluss/fluss_ttl_compaction_filter_test.o $(TEST_LIBRARY) $(LIBRARY)
+	$(AM_LINK)
+
 db_compaction_test: $(OBJ_DIR)/db/db_compaction_test.o $(TEST_LIBRARY) $(LIBRARY)
 	$(AM_LINK)
 
