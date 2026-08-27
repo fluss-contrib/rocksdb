@@ -6,16 +6,16 @@
 
 #include <jni.h>
 
-#include "include/org_rocksdb_ImportColumnFamilyOptions.h"
+#include "include/org_fluss_rocksdb_ImportColumnFamilyOptions.h"
 #include "rocksdb/options.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_rocksdb_ImportColumnFamilyOptions
+ * Class:     org_fluss_rocksdb_ImportColumnFamilyOptions
  * Method:    newImportColumnFamilyOptions
  * Signature: ()J
  */
-jlong Java_org_rocksdb_ImportColumnFamilyOptions_newImportColumnFamilyOptions(
+jlong Java_org_fluss_rocksdb_ImportColumnFamilyOptions_newImportColumnFamilyOptions(
     JNIEnv*, jclass) {
   ROCKSDB_NAMESPACE::ImportColumnFamilyOptions* opts =
       new ROCKSDB_NAMESPACE::ImportColumnFamilyOptions();
@@ -23,11 +23,11 @@ jlong Java_org_rocksdb_ImportColumnFamilyOptions_newImportColumnFamilyOptions(
 }
 
 /*
- * Class:     org_rocksdb_ImportColumnFamilyOptions
+ * Class:     org_fluss_rocksdb_ImportColumnFamilyOptions
  * Method:    setMoveFiles
  * Signature: (JZ)V
  */
-void Java_org_rocksdb_ImportColumnFamilyOptions_setMoveFiles(
+void Java_org_fluss_rocksdb_ImportColumnFamilyOptions_setMoveFiles(
     JNIEnv*, jobject, jlong jhandle, jboolean jmove_files) {
   auto* options =
       reinterpret_cast<ROCKSDB_NAMESPACE::ImportColumnFamilyOptions*>(jhandle);
@@ -35,25 +35,24 @@ void Java_org_rocksdb_ImportColumnFamilyOptions_setMoveFiles(
 }
 
 /*
- * Class:     org_rocksdb_ImportColumnFamilyOptions
+ * Class:     org_fluss_rocksdb_ImportColumnFamilyOptions
  * Method:    moveFiles
  * Signature: (J)Z
  */
-jboolean Java_org_rocksdb_ImportColumnFamilyOptions_moveFiles(JNIEnv*, jobject,
-                                                              jlong jhandle) {
+jboolean Java_org_fluss_rocksdb_ImportColumnFamilyOptions_moveFiles(
+    JNIEnv*, jobject, jlong jhandle) {
   auto* options =
       reinterpret_cast<ROCKSDB_NAMESPACE::ImportColumnFamilyOptions*>(jhandle);
   return static_cast<jboolean>(options->move_files);
 }
 
 /*
- * Class:     org_rocksdb_ImportColumnFamilyOptions
+ * Class:     org_fluss_rocksdb_ImportColumnFamilyOptions
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_ImportColumnFamilyOptions_disposeInternal(JNIEnv*,
-                                                                jobject,
-                                                                jlong jhandle) {
+void Java_org_fluss_rocksdb_ImportColumnFamilyOptions_disposeInternal(
+    JNIEnv*, jobject, jlong jhandle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::ImportColumnFamilyOptions*>(
       jhandle);
 }

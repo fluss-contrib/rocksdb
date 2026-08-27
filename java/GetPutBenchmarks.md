@@ -9,7 +9,7 @@ Mac
 make clean jclean
 DEBUG_LEVEL=0 make -j12 rocksdbjava
 (cd java/target; cp rocksdbjni-7.10.0-osx.jar rocksdbjni-7.10.0-SNAPSHOT-osx.jar)
-mvn install:install-file -Dfile=./java/target/rocksdbjni-7.10.0-SNAPSHOT-osx.jar -DgroupId=org.rocksdb -DartifactId=rocksdbjni -Dversion=7.10.0-SNAPSHOT -Dpackaging=jar
+mvn install:install-file -Dfile=./java/target/rocksdbjni-7.10.0-SNAPSHOT-osx.jar -DgroupId=org.fluss.rocksdb -DartifactId=rocksdbjni -Dversion=7.10.0-SNAPSHOT -Dpackaging=jar
 ```
 
 Linux
@@ -17,7 +17,7 @@ Linux
 make clean jclean
 DEBUG_LEVEL=0 make -j12 rocksdbjava
 (cd java/target; cp rocksdbjni-7.10.0-linux64.jar rocksdbjni-7.10.0-SNAPSHOT-linux64.jar)
-mvn install:install-file -Dfile=./java/target/rocksdbjni-7.10.0-SNAPSHOT-linux64.jar -DgroupId=org.rocksdb -DartifactId=rocksdbjni -Dversion=7.10.0-SNAPSHOT -Dpackaging=jar
+mvn install:install-file -Dfile=./java/target/rocksdbjni-7.10.0-SNAPSHOT-linux64.jar -DgroupId=org.fluss.rocksdb -DartifactId=rocksdbjni -Dversion=7.10.0-SNAPSHOT -Dpackaging=jar
 ```
 
 Build jmh test package, on either platform

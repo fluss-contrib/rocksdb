@@ -9,7 +9,7 @@ These are micro-benchmarks for RocksJava functionality, using [JMH (Java Microbe
 For instance, this is how to install the OSX jar you just built for 8.11.0
 
 ```bash
-$ mvn install:install-file -Dfile=./java/target/rocksdbjni-8.11.0-SNAPSHOT-osx.jar -DgroupId=org.rocksdb -DartifactId=rocksdbjni -Dversion=8.11.0-SNAPSHOT -Dpackaging=jar
+$ mvn install:install-file -Dfile=./java/target/rocksdbjni-8.11.0-SNAPSHOT-osx.jar -DgroupId=org.fluss.rocksdb -DartifactId=rocksdbjni -Dversion=8.11.0-SNAPSHOT -Dpackaging=jar
 ```
 
 ```bash

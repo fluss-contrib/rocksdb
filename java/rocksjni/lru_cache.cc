@@ -10,20 +10,18 @@
 
 #include <jni.h>
 
-#include "include/org_rocksdb_LRUCache.h"
+#include "include/org_fluss_rocksdb_LRUCache.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_rocksdb_LRUCache
+ * Class:     org_fluss_rocksdb_LRUCache
  * Method:    newLRUCache
  * Signature: (JIZD)J
  */
-jlong Java_org_rocksdb_LRUCache_newLRUCache(JNIEnv* /*env*/, jclass /*jcls*/,
-                                            jlong jcapacity,
-                                            jint jnum_shard_bits,
-                                            jboolean jstrict_capacity_limit,
-                                            jdouble jhigh_pri_pool_ratio,
-                                            jdouble jlow_pri_pool_ratio) {
+jlong Java_org_fluss_rocksdb_LRUCache_newLRUCache(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jcapacity, jint jnum_shard_bits,
+    jboolean jstrict_capacity_limit, jdouble jhigh_pri_pool_ratio,
+    jdouble jlow_pri_pool_ratio) {
   auto* sptr_lru_cache = new std::shared_ptr<ROCKSDB_NAMESPACE::Cache>(
       ROCKSDB_NAMESPACE::NewLRUCache(
           static_cast<size_t>(jcapacity), static_cast<int>(jnum_shard_bits),
@@ -36,13 +34,13 @@ jlong Java_org_rocksdb_LRUCache_newLRUCache(JNIEnv* /*env*/, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_rocksdb_LRUCache
+ * Class:     org_fluss_rocksdb_LRUCache
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_rocksdb_LRUCache_disposeInternalJni(JNIEnv* /*env*/,
-                                                  jclass /*jcls*/,
-                                                  jlong jhandle) {
+void Java_org_fluss_rocksdb_LRUCache_disposeInternalJni(JNIEnv* /*env*/,
+                                                        jclass /*jcls*/,
+                                                        jlong jhandle) {
   auto* sptr_lru_cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::Cache>*>(jhandle);
   delete sptr_lru_cache;  // delete std::shared_ptr

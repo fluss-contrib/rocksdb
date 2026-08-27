@@ -10,19 +10,19 @@
 
 #include <jni.h>
 
-#include "include/org_rocksdb_BlockBasedTableConfig.h"
-#include "include/org_rocksdb_PlainTableConfig.h"
+#include "include/org_fluss_rocksdb_BlockBasedTableConfig.h"
+#include "include/org_fluss_rocksdb_PlainTableConfig.h"
 #include "portal.h"
 #include "rocksdb/cache.h"
 #include "rocksdb/filter_policy.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_rocksdb_PlainTableConfig
+ * Class:     org_fluss_rocksdb_PlainTableConfig
  * Method:    newTableFactoryHandle
  * Signature: (IIDIIBZZ)J
  */
-jlong Java_org_rocksdb_PlainTableConfig_newTableFactoryHandle(
+jlong Java_org_fluss_rocksdb_PlainTableConfig_newTableFactoryHandle(
     JNIEnv* /*env*/, jclass /*jcls*/, jint jkey_size, jint jbloom_bits_per_key,
     jdouble jhash_table_ratio, jint jindex_sparseness, jint jhuge_page_tlb_size,
     jbyte jencoding_type, jboolean jfull_scan_mode,
@@ -43,11 +43,11 @@ jlong Java_org_rocksdb_PlainTableConfig_newTableFactoryHandle(
 }
 
 /*
- * Class:     org_rocksdb_BlockBasedTableConfig
+ * Class:     org_fluss_rocksdb_BlockBasedTableConfig
  * Method:    newTableFactoryHandle
  * Signature: (ZZZZBBDBZJJJIIIJZZZJZZIIZZJJBBJI)J
  */
-jlong Java_org_rocksdb_BlockBasedTableConfig_newTableFactoryHandle(
+jlong Java_org_fluss_rocksdb_BlockBasedTableConfig_newTableFactoryHandle(
     JNIEnv*, jclass, jboolean jcache_index_and_filter_blocks,
     jboolean jcache_index_and_filter_blocks_with_high_priority,
     jboolean jpin_l0_filter_and_index_blocks_in_cache,
