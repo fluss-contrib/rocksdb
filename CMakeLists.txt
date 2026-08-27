@@ -1047,6 +1047,7 @@ set(SOURCES
         utilities/fault_injection_env.cc
         utilities/fault_injection_fs.cc
         utilities/fault_injection_secondary_cache.cc
+        utilities/fluss/fluss_ttl_compaction_filter.cc
         utilities/leveldb_options/leveldb_options.cc
         utilities/memory/memory_util.cc
         utilities/merge_operators.cc
@@ -1646,6 +1647,7 @@ if(WITH_TESTS)
         utilities/sorted_run_builder/sorted_run_builder_test.cc
         utilities/env_timed_test.cc
         utilities/fault_injection_fs_test.cc
+        utilities/fluss/fluss_ttl_compaction_filter_test.cc
         utilities/memory/memory_test.cc
         utilities/merge_operators/string_append/stringappend_test.cc
         utilities/object_registry_test.cc

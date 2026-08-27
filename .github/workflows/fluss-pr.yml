@@ -61,6 +61,19 @@ jobs:
       - name: Check sources
         run: make check-sources
 
+  test-cpp-linux-x86-64:
+    name: Test C++ Linux x86_64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    container:
+      image: ghcr.io/facebook/rocksdb_ubuntu:22.1
+      options: --shm-size=16gb
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run complete RocksDB C++ test suite
+        run: SKIP_FORMAT_BUCK_CHECKS=1 make V=1 J=4 -j4 check
+
   test-linux-x86-64:
     name: Test Linux x86_64
     runs-on: ubuntu-24.04

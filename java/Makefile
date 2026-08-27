@@ -34,6 +34,7 @@ NATIVE_JAVA_CLASSES = \
 	org.fluss.rocksdb.EnvOptions\
 	org.fluss.rocksdb.FlushOptions\
 	org.fluss.rocksdb.Filter\
+	org.fluss.rocksdb.FlussTtlCompactionFilter\
 	org.fluss.rocksdb.IngestExternalFileOptions\
 	org.fluss.rocksdb.HashLinkedListMemTableConfig\
 	org.fluss.rocksdb.HashSkipListMemTableConfig\
@@ -141,6 +142,7 @@ JAVA_TESTS = \
 	org.fluss.rocksdb.util.IntComparatorTest\
 	org.fluss.rocksdb.util.JNIComparatorTest\
 	org.fluss.rocksdb.FilterTest\
+	org.fluss.rocksdb.FlussTtlCompactionFilterTest\
 	org.fluss.rocksdb.FlushTest\
 	org.fluss.rocksdb.ImportColumnFamilyTest\
 	org.fluss.rocksdb.InfoLogLevelTest\
