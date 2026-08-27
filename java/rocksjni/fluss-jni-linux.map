@@ -1,0 +1,8 @@
+{
+  global:
+    Java_org_fluss_rocksdb_*;
+    JNI_OnLoad;
+    JNI_OnUnload;
+  local:
+    *;
+};
