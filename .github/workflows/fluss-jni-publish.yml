@@ -54,7 +54,11 @@ jobs:
           mode=
           version=
           should_build=true
-          case "$EVENT_NAME" in
+          workflow_event=$EVENT_NAME
+          if [[ "$EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/upgrade-rocksdb-* ]]; then
+            workflow_event=upgrade
+          fi
+          case "$workflow_event" in
             pull_request)
               mode=preflight
               version="$source_rocksdb_version-fluss-SNAPSHOT"
@@ -104,60 +108,59 @@ jobs:
               mode=snapshot
               version="$source_rocksdb_version-fluss-SNAPSHOT"
               ;;
-            push)
-              if [[ "$GITHUB_REF" == refs/heads/upgrade-rocksdb-* ]]; then
-                expected_branch="upgrade-rocksdb-$source_rocksdb_version"
-                if [[ "$RELEASE_TAG" != "$expected_branch" ]]; then
-                  echo "Upgrade branch $RELEASE_TAG does not match source version $source_rocksdb_version" >&2
-                  exit 1
-                fi
-                mode=preflight
-                version="$source_rocksdb_version-fluss-SNAPSHOT"
-              else
-                if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-fluss-[1-9][0-9]*(-rc[1-9][0-9]*)?$ ]]; then
-                  echo "Invalid Fluss release tag: $RELEASE_TAG" >&2
-                  exit 1
-                fi
-
-                tagged_rocksdb_version=${RELEASE_TAG#v}
-                tagged_rocksdb_version=${tagged_rocksdb_version%%-fluss-*}
-                if [[ "$tagged_rocksdb_version" != "$source_rocksdb_version" ]]; then
-                  echo "Tag RocksDB version $tagged_rocksdb_version does not match source version $source_rocksdb_version" >&2
-                  exit 1
-                fi
-
-                release_series=${tagged_rocksdb_version%.*}
-                release_branch="fluss-release-$release_series"
-                release_ref="refs/remotes/origin/$release_branch"
-                upstream_tag="v$tagged_rocksdb_version"
-
-                git fetch --no-tags origin \
-                  '+refs/heads/fluss-main:refs/remotes/origin/fluss-main' \
-                  "+refs/heads/$release_branch:$release_ref" \
-                  "+refs/tags/$upstream_tag:refs/tags/$upstream_tag"
-                tag_commit=$(git rev-parse "$RELEASE_TAG^{commit}")
-                if git merge-base --is-ancestor \
-                  "$tag_commit" refs/remotes/origin/fluss-main; then
-                  echo "RC/final release tags must not target a commit contained in origin/fluss-main" >&2
-                  exit 1
-                fi
-
-                if ! git merge-base --is-ancestor \
-                  "$tag_commit" "$release_ref"; then
-                  echo "Release tag target is not contained in origin/$release_branch" >&2
-                  exit 1
-                fi
-
-                upstream_commit=$(git rev-parse "$upstream_tag^{commit}")
-                if ! git merge-base --is-ancestor \
-                  "$upstream_commit" "$tag_commit"; then
-                  echo "Release tag target is not descended from upstream tag $upstream_tag" >&2
-                  exit 1
-                fi
-
-                mode=release
-                version=${RELEASE_TAG#v}
+            upgrade)
+              expected_branch="upgrade-rocksdb-$source_rocksdb_version"
+              if [[ "$RELEASE_TAG" != "$expected_branch" ]]; then
+                echo "Upgrade branch $RELEASE_TAG does not match source version $source_rocksdb_version" >&2
+                exit 1
               fi
+              mode=preflight
+              version="$source_rocksdb_version-fluss-SNAPSHOT"
+              ;;
+            push)
+              if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-fluss-[1-9][0-9]*(-rc[1-9][0-9]*)?$ ]]; then
+                echo "Invalid Fluss release tag: $RELEASE_TAG" >&2
+                exit 1
+              fi
+
+              tagged_rocksdb_version=${RELEASE_TAG#v}
+              tagged_rocksdb_version=${tagged_rocksdb_version%%-fluss-*}
+              if [[ "$tagged_rocksdb_version" != "$source_rocksdb_version" ]]; then
+                echo "Tag RocksDB version $tagged_rocksdb_version does not match source version $source_rocksdb_version" >&2
+                exit 1
+              fi
+
+              release_series=${tagged_rocksdb_version%.*}
+              release_branch="fluss-release-$release_series"
+              release_ref="refs/remotes/origin/$release_branch"
+              upstream_tag="v$tagged_rocksdb_version"
+
+              git fetch --no-tags origin \
+                '+refs/heads/fluss-main:refs/remotes/origin/fluss-main' \
+                "+refs/heads/$release_branch:$release_ref" \
+                "+refs/tags/$upstream_tag:refs/tags/$upstream_tag"
+              tag_commit=$(git rev-parse "$RELEASE_TAG^{commit}")
+              if git merge-base --is-ancestor \
+                "$tag_commit" refs/remotes/origin/fluss-main; then
+                echo "RC/final release tags must not target a commit contained in origin/fluss-main" >&2
+                exit 1
+              fi
+
+              if ! git merge-base --is-ancestor \
+                "$tag_commit" "$release_ref"; then
+                echo "Release tag target is not contained in origin/$release_branch" >&2
+                exit 1
+              fi
+
+              upstream_commit=$(git rev-parse "$upstream_tag^{commit}")
+              if ! git merge-base --is-ancestor \
+                "$upstream_commit" "$tag_commit"; then
+                echo "Release tag target is not descended from upstream tag $upstream_tag" >&2
+                exit 1
+              fi
+
+              mode=release
+              version=${RELEASE_TAG#v}
               ;;
             *)
               echo "Unsupported event: $EVENT_NAME" >&2
