@@ -42,6 +42,7 @@ set(JNI_NATIVE_SOURCES
         rocksjni/event_listener_jnicallback.cc
         rocksjni/export_import_files_metadatajni.cc
         rocksjni/filter.cc
+        rocksjni/fluss_ttl_compactionfilterjni.cc
         rocksjni/hyper_clock_cache.cc
         rocksjni/import_column_family_options.cc
         rocksjni/ingest_external_file_options.cc
@@ -170,6 +171,7 @@ set(JAVA_MAIN_CLASSES
   src/main/java/org/fluss/rocksdb/FileOperationInfo.java
   src/main/java/org/fluss/rocksdb/Filter.java
   src/main/java/org/fluss/rocksdb/FilterPolicyType.java
+  src/main/java/org/fluss/rocksdb/FlussTtlCompactionFilter.java
   src/main/java/org/fluss/rocksdb/FlushJobInfo.java
   src/main/java/org/fluss/rocksdb/FlushOptions.java
   src/main/java/org/fluss/rocksdb/FlushReason.java
@@ -343,6 +345,7 @@ set(JAVA_TEST_CLASSES
   src/test/java/org/fluss/rocksdb/EnvOptionsTest.java
   src/test/java/org/fluss/rocksdb/EventListenerTest.java
   src/test/java/org/fluss/rocksdb/FilterTest.java
+  src/test/java/org/fluss/rocksdb/FlussTtlCompactionFilterTest.java
   src/test/java/org/fluss/rocksdb/FlushOptionsTest.java
   src/test/java/org/fluss/rocksdb/FlushTest.java
   src/test/java/org/fluss/rocksdb/HyperClockCacheTest.java
@@ -461,6 +464,7 @@ set(JAVA_TEST_RUNNING_CLASSES
   org.fluss.rocksdb.EnvOptionsTest
   org.fluss.rocksdb.EventListenerTest
   org.fluss.rocksdb.FilterTest
+  org.fluss.rocksdb.FlussTtlCompactionFilterTest
   org.fluss.rocksdb.FlushOptionsTest
   org.fluss.rocksdb.FlushTest
   org.fluss.rocksdb.HyperClockCacheTest

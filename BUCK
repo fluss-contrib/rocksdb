@@ -315,6 +315,7 @@ cpp_library_wrapper(name="rocksdb_lib", srcs=[
         "utilities/fault_injection_env.cc",
         "utilities/fault_injection_fs.cc",
         "utilities/fault_injection_secondary_cache.cc",
+        "utilities/fluss/fluss_ttl_compaction_filter.cc",
         "utilities/leveldb_options/leveldb_options.cc",
         "utilities/memory/memory_util.cc",
         "utilities/merge_operators.cc",
@@ -5221,6 +5222,12 @@ cpp_unittest_wrapper(name="filename_test",
 
 cpp_unittest_wrapper(name="flush_job_test",
             srcs=["db/flush_job_test.cc"],
+            deps=[":rocksdb_test_lib"],
+            extra_compiler_flags=[])
+
+
+cpp_unittest_wrapper(name="fluss_ttl_compaction_filter_test",
+            srcs=["utilities/fluss/fluss_ttl_compaction_filter_test.cc"],
             deps=[":rocksdb_test_lib"],
             extra_compiler_flags=[])
 
