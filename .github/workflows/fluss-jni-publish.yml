@@ -716,6 +716,7 @@ jobs:
       - name: Create or verify draft Release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
@@ -811,6 +812,7 @@ jobs:
       - name: Sign and stage Central bundle
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           GNUPGHOME: ${{ runner.temp }}/fluss-central-gnupg
           RELEASE_TAG: ${{ github.ref_name }}
           VERSION: ${{ needs.prepare.outputs.version }}
