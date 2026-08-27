@@ -17,6 +17,11 @@ directly from `fluss-main`.
 Feature branches are short-lived. Their names use lowercase letters, numbers,
 hyphens, and dots. A feature branch may be rebased before integration.
 
+Upstream upgrade branches are named `upgrade-rocksdb-X.Y.Z`, where `X.Y.Z`
+matches the selected upstream RocksDB release tag. Pushing an upgrade branch
+runs the normal source and Linux x86_64 JNI checks together with the complete
+four-platform publication preflight. The preflight does not publish artifacts.
+
 Fluss release branches are named `fluss-release-X.Y`, where `X.Y` is the major
 and minor series of the selected RocksDB release. This name is intentionally
 distinct from the Facebook/RocksDB release-branch naming scheme. RC and final
@@ -56,12 +61,15 @@ is the only operation allowed to rewrite that branch.
    `facebook/rocksdb/main` commit.
 2. Record the current `fluss-main` head and stop ordinary integration until the
    upgrade finishes.
-3. Create an upgrade branch directly from the selected upstream release tag.
+3. Create `upgrade-rocksdb-X.Y.Z` directly from the selected upstream release
+   tag `vX.Y.Z`.
 4. Replay the effective Fluss commits in their logical order. Resolve an
    upstream compatibility change inside the Fluss commit that requires it.
    Development fixups and obsolete intermediate states are not preserved.
-5. Review the complete replay under a dedicated issue and pull request. Run the
-   normal source checks and the full supported JNI platform matrix.
+5. Review the complete replay under a dedicated issue. Push the upgrade branch
+   and require the normal source checks and full supported JNI platform matrix
+   to pass. An upstream upgrade does not use a pull request because its history
+   intentionally replaces, rather than merges into, the current `fluss-main`.
 6. Confirm that every previously supported Fluss behavior is either present or
    intentionally removed by an independently approved change.
 7. Record the expected old head and the reviewed new head. Temporarily grant the
