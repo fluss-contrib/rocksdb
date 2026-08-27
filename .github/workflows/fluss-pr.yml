@@ -2,12 +2,15 @@ name: Fluss PR
 
 on:
   pull_request:
+  push:
+    branches:
+      - 'upgrade-rocksdb-*'
 
 permissions:
   contents: read
 
 concurrency:
-  group: fluss-pr-${{ github.event.pull_request.number }}
+  group: fluss-pr-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -31,12 +34,25 @@ jobs:
           clang-format --version
 
       - name: Check format
-        env:
-          FORMAT_UPSTREAM: origin/${{ github.base_ref }}
-          VERBOSE_CHECK: '1'
         run: |
-          git fetch --no-tags origin \
-            "${GITHUB_BASE_REF}:refs/remotes/origin/${GITHUB_BASE_REF}"
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
+            git fetch --no-tags origin \
+              "${GITHUB_BASE_REF}:refs/remotes/origin/${GITHUB_BASE_REF}"
+            export FORMAT_UPSTREAM="origin/$GITHUB_BASE_REF"
+          else
+            source_rocksdb_version=$(awk '
+              /#define ROCKSDB_MAJOR/ { major = $3 }
+              /#define ROCKSDB_MINOR/ { minor = $3 }
+              /#define ROCKSDB_PATCH/ { patch = $3 }
+              END { print major "." minor "." patch }
+            ' include/rocksdb/version.h)
+            upstream_tag="v$source_rocksdb_version"
+            git fetch --no-tags origin \
+              "+refs/tags/$upstream_tag:refs/tags/$upstream_tag"
+            export FORMAT_UPSTREAM="$upstream_tag"
+          fi
+          export VERBOSE_CHECK=1
           make check-format
 
       - name: Compare buckify output

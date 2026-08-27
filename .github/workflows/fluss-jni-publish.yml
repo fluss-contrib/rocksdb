@@ -9,6 +9,8 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
   push:
+    branches:
+      - 'upgrade-rocksdb-*'
     tags:
       - 'v*-fluss-*'
 
@@ -52,7 +54,11 @@ jobs:
           mode=
           version=
           should_build=true
-          case "$EVENT_NAME" in
+          workflow_event=$EVENT_NAME
+          if [[ "$EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/upgrade-rocksdb-* ]]; then
+            workflow_event=upgrade
+          fi
+          case "$workflow_event" in
             pull_request)
               mode=preflight
               version="$source_rocksdb_version-fluss-SNAPSHOT"
@@ -100,6 +106,15 @@ jobs:
                 exit 1
               fi
               mode=snapshot
+              version="$source_rocksdb_version-fluss-SNAPSHOT"
+              ;;
+            upgrade)
+              expected_branch="upgrade-rocksdb-$source_rocksdb_version"
+              if [[ "$RELEASE_TAG" != "$expected_branch" ]]; then
+                echo "Upgrade branch $RELEASE_TAG does not match source version $source_rocksdb_version" >&2
+                exit 1
+              fi
+              mode=preflight
               version="$source_rocksdb_version-fluss-SNAPSHOT"
               ;;
             push)
