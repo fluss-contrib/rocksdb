@@ -27,6 +27,54 @@ Each maintained line starts from an immutable upstream RocksDB release tag.
 Fluss-specific changes are reviewed and maintained as a clean, linear series
 on top of that baseline.
 
+## Use from Maven Central
+
+Add the Fluss RocksDB JNI artifact to your Maven project:
+
+```xml
+<dependency>
+  <groupId>io.github.fluss-contrib</groupId>
+  <artifactId>fluss-rocksdbjni</artifactId>
+  <version>11.8.1-fluss-2</version>
+</dependency>
+```
+
+The artifact contains the Java API and native libraries for Linux x86_64,
+Linux arm64, macOS x86_64, and macOS arm64. Java classes use the
+`org.fluss.rocksdb` package:
+
+```java
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.fluss.rocksdb.Options;
+import org.fluss.rocksdb.RocksDB;
+
+public final class FlussRocksDBExample {
+  public static void main(String[] args) throws Exception {
+    RocksDB.loadLibrary();
+
+    Path dbPath = Files.createTempDirectory("fluss-rocksdb");
+    try (Options options = new Options().setCreateIfMissing(true);
+        RocksDB db = RocksDB.open(options, dbPath.toString())) {
+      db.put("key".getBytes(StandardCharsets.UTF_8),
+          "value".getBytes(StandardCharsets.UTF_8));
+      byte[] value = db.get("key".getBytes(StandardCharsets.UTF_8));
+      System.out.println(new String(value, StandardCharsets.UTF_8));
+    }
+  }
+}
+```
+
+## Releases
+
+- [Changelog](CHANGELOG.md) summarizes the user-visible changes in each Fluss
+  release.
+- [GitHub Releases](https://github.com/fluss-contrib/rocksdb/releases) provides
+  release artifacts and tags.
+- [Maven Central](https://central.sonatype.com/artifact/io.github.fluss-contrib/fluss-rocksdbjni)
+  provides the published JNI components.
+
 ## Repository workflow
 
 | Branch | Purpose |
