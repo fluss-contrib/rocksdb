@@ -40,8 +40,8 @@ public class FloorSetCompactionFilterTest {
   public void filtersByFloorOrExplicitSet() throws RocksDBException {
     try (FloorSetCompactionFilter filter =
              new FloorSetCompactionFilter(TAG_OFFSET, 50, new long[] {100, 200});
-        Options options = new Options().setCreateIfMissing(true).setCompactionFilter(filter);
-        RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath())) {
+         Options options = new Options().setCreateIfMissing(true).setCompactionFilter(filter);
+         RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath())) {
       put(db, "below-floor", 30);
       put(db, "at-floor", 50);
       put(db, "above-floor", 51);
@@ -62,8 +62,8 @@ public class FloorSetCompactionFilterTest {
   public void decodesSignedBigEndianTags() throws RocksDBException {
     try (FloorSetCompactionFilter filter =
              new FloorSetCompactionFilter(TAG_OFFSET, -1, new long[] {7});
-        Options options = new Options().setCreateIfMissing(true).setCompactionFilter(filter);
-        RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath())) {
+         Options options = new Options().setCreateIfMissing(true).setCompactionFilter(filter);
+         RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath())) {
       put(db, "minimum", Long.MIN_VALUE);
       put(db, "negative", -1);
       put(db, "zero", 0);
@@ -84,8 +84,8 @@ public class FloorSetCompactionFilterTest {
   public void keepsValuesWithoutACompleteTag() throws RocksDBException {
     try (FloorSetCompactionFilter filter =
              new FloorSetCompactionFilter(TAG_OFFSET, Long.MAX_VALUE, new long[0]);
-        Options options = new Options().setCreateIfMissing(true).setCompactionFilter(filter);
-        RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath())) {
+         Options options = new Options().setCreateIfMissing(true).setCompactionFilter(filter);
+         RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath())) {
       for (int length = 0; length < TAG_OFFSET + Long.BYTES; length++) {
         db.put(bytes("short-" + length), new byte[length]);
       }
@@ -103,8 +103,8 @@ public class FloorSetCompactionFilterTest {
   @Test
   public void treatsNullExplicitSetAsEmpty() throws RocksDBException {
     try (FloorSetCompactionFilter filter = new FloorSetCompactionFilter(TAG_OFFSET, 50, null);
-        Options options = new Options().setCreateIfMissing(true).setCompactionFilter(filter);
-        RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath())) {
+         Options options = new Options().setCreateIfMissing(true).setCompactionFilter(filter);
+         RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath())) {
       put(db, "below-floor", 30);
       put(db, "above-floor", 100);
 

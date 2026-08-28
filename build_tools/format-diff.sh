@@ -167,13 +167,19 @@ fi
 if [ -n "$new_files" ]; then
   files_missing_copyright=""
 
+  has_supported_copyright() {
+    grep -Eq \
+      "Copyright \(c\) Meta Platforms, Inc\. and affiliates|Licensed to the Apache Software Foundation" \
+      "$1"
+  }
+
   for file in $new_files; do
     if [ -f "$file" ]; then
       # Check if file is missing copyright
       # For .py files, check for Python-style comment
       # For .h and .cc files, check for C++-style comment
       if [[ "$file" == *.py ]]; then
-        if ! grep -q "Copyright (c) Meta Platforms, Inc. and affiliates" "$file"; then
+        if ! has_supported_copyright "$file"; then
           files_missing_copyright="$files_missing_copyright $file"
           # Add copyright header to Python file
           temp_file=$(mktemp)
@@ -188,7 +194,7 @@ if [ -n "$new_files" ]; then
           echo "Added copyright header to $file"
         fi
       elif [[ "$file" == *.h ]] || [[ "$file" == *.cc ]]; then
-        if ! grep -q "Copyright (c) Meta Platforms, Inc. and affiliates" "$file"; then
+        if ! has_supported_copyright "$file"; then
           files_missing_copyright="$files_missing_copyright $file"
           # Add copyright header to C++ file
           temp_file=$(mktemp)
