@@ -5220,6 +5220,12 @@ cpp_unittest_wrapper(name="filename_test",
             extra_compiler_flags=[])
 
 
+cpp_unittest_wrapper(name="floor_set_compaction_filter_test",
+            srcs=["utilities/compaction_filters/floor_set_compaction_filter_test.cc"],
+            deps=[":rocksdb_test_lib"],
+            extra_compiler_flags=[])
+
+
 cpp_unittest_wrapper(name="flush_job_test",
             srcs=["db/flush_job_test.cc"],
             deps=[":rocksdb_test_lib"],

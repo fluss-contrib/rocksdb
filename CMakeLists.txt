@@ -1643,6 +1643,7 @@ if(WITH_TESTS)
         utilities/cassandra/cassandra_row_merge_test.cc
         utilities/cassandra/cassandra_serialize_test.cc
         utilities/checkpoint/checkpoint_test.cc
+        utilities/compaction_filters/floor_set_compaction_filter_test.cc
         utilities/copy_engine/copy_engine_test.cc
         utilities/sorted_run_builder/sorted_run_builder_test.cc
         utilities/env_timed_test.cc
