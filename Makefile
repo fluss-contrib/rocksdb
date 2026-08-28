@@ -1718,6 +1718,9 @@ db_compaction_filter_test: $(OBJ_DIR)/db/db_compaction_filter_test.o $(TEST_LIBR
 fluss_ttl_compaction_filter_test: $(OBJ_DIR)/utilities/fluss/fluss_ttl_compaction_filter_test.o $(TEST_LIBRARY) $(LIBRARY)
 	$(AM_LINK)
 
+floor_set_compaction_filter_test: $(OBJ_DIR)/utilities/compaction_filters/floor_set_compaction_filter_test.o $(TEST_LIBRARY) $(LIBRARY)
+	$(AM_LINK)
+
 db_compaction_test: $(OBJ_DIR)/db/db_compaction_test.o $(TEST_LIBRARY) $(LIBRARY)
 	$(AM_LINK)
 

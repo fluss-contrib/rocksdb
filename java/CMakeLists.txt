@@ -42,6 +42,7 @@ set(JNI_NATIVE_SOURCES
         rocksjni/event_listener_jnicallback.cc
         rocksjni/export_import_files_metadatajni.cc
         rocksjni/filter.cc
+        rocksjni/floor_set_compaction_filter_jni.cc
         rocksjni/fluss_ttl_compactionfilterjni.cc
         rocksjni/hyper_clock_cache.cc
         rocksjni/import_column_family_options.cc
@@ -171,6 +172,7 @@ set(JAVA_MAIN_CLASSES
   src/main/java/org/fluss/rocksdb/FileOperationInfo.java
   src/main/java/org/fluss/rocksdb/Filter.java
   src/main/java/org/fluss/rocksdb/FilterPolicyType.java
+  src/main/java/org/fluss/rocksdb/FloorSetCompactionFilter.java
   src/main/java/org/fluss/rocksdb/FlussTtlCompactionFilter.java
   src/main/java/org/fluss/rocksdb/FlushJobInfo.java
   src/main/java/org/fluss/rocksdb/FlushOptions.java
@@ -345,6 +347,7 @@ set(JAVA_TEST_CLASSES
   src/test/java/org/fluss/rocksdb/EnvOptionsTest.java
   src/test/java/org/fluss/rocksdb/EventListenerTest.java
   src/test/java/org/fluss/rocksdb/FilterTest.java
+  src/test/java/org/fluss/rocksdb/FloorSetCompactionFilterTest.java
   src/test/java/org/fluss/rocksdb/FlussTtlCompactionFilterTest.java
   src/test/java/org/fluss/rocksdb/FlushOptionsTest.java
   src/test/java/org/fluss/rocksdb/FlushTest.java
@@ -464,6 +467,7 @@ set(JAVA_TEST_RUNNING_CLASSES
   org.fluss.rocksdb.EnvOptionsTest
   org.fluss.rocksdb.EventListenerTest
   org.fluss.rocksdb.FilterTest
+  org.fluss.rocksdb.FloorSetCompactionFilterTest
   org.fluss.rocksdb.FlussTtlCompactionFilterTest
   org.fluss.rocksdb.FlushOptionsTest
   org.fluss.rocksdb.FlushTest
@@ -716,6 +720,7 @@ if(${CMAKE_VERSION} VERSION_LESS "3.11.4")
           org.fluss.rocksdb.Env
           org.fluss.rocksdb.EnvOptions
           org.fluss.rocksdb.Filter
+          org.fluss.rocksdb.FloorSetCompactionFilter
           org.fluss.rocksdb.FlushOptions
           org.fluss.rocksdb.HashLinkedListMemTableConfig
           org.fluss.rocksdb.HashSkipListMemTableConfig

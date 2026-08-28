@@ -659,6 +659,7 @@ TEST_MAIN_SOURCES =                                                     \
   utilities/cassandra/cassandra_row_merge_test.cc                       \
   utilities/cassandra/cassandra_serialize_test.cc                       \
   utilities/checkpoint/checkpoint_test.cc                               \
+  utilities/compaction_filters/floor_set_compaction_filter_test.cc      \
   utilities/copy_engine/copy_engine_test.cc                     \
   utilities/sorted_run_builder/sorted_run_builder_test.cc               \
   utilities/env_timed_test.cc                                           \
@@ -728,6 +729,7 @@ JNI_NATIVE_SOURCES =                                          \
   java/rocksjni/env_options.cc                                \
   java/rocksjni/event_listener.cc                             \
   java/rocksjni/event_listener_jnicallback.cc                 \
+  java/rocksjni/floor_set_compaction_filter_jni.cc            \
   java/rocksjni/fluss_ttl_compactionfilterjni.cc              \
   java/rocksjni/import_column_family_options.cc               \
   java/rocksjni/ingest_external_file_options.cc               \
