@@ -96,6 +96,10 @@ jobs:
   publication:
     name: Build and publish PR Snapshot
     needs: resolve
+    permissions:
+      contents: write
+      deployments: read
+      pull-requests: read
     uses: ./.github/workflows/fluss-jni-publish.yml
     with:
       publication_mode: ${{ github.event_name == 'workflow_dispatch' && 'pr-snapshot' || 'preflight' }}
