@@ -1,13 +1,26 @@
 name: Fluss JNI Publish
 
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/fluss-jni-publish.yml'
-      - 'java/pom.xml.template'
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      publication_mode:
+        required: true
+        type: string
+      pr_number:
+        required: true
+        type: string
+      source_repository:
+        required: true
+        type: string
+      source_sha:
+        required: true
+        type: string
+      rocksdb_version:
+        required: true
+        type: string
   push:
     branches:
       - 'upgrade-rocksdb-*'
@@ -17,9 +30,10 @@ on:
 permissions:
   contents: read
   deployments: read
+  pull-requests: read
 
 concurrency:
-  group: fluss-jni-publish-${{ github.ref }}
+  group: fluss-jni-publish-${{ inputs.source_sha || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -35,6 +49,9 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          persist-credentials: false
+          repository: ${{ inputs.source_repository || github.repository }}
+          ref: ${{ inputs.source_sha || github.ref }}
 
       - name: Select mode and validate version
         id: prepare
@@ -42,6 +59,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           EVENT_NAME: ${{ github.event_name }}
           RELEASE_TAG: ${{ github.ref_name }}
+          PUBLICATION_MODE: ${{ inputs.publication_mode }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          REQUESTED_ROCKSDB_VERSION: ${{ inputs.rocksdb_version }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           set -euo pipefail
           source_rocksdb_version=$(awk '
@@ -55,13 +76,37 @@ jobs:
           version=
           should_build=true
           workflow_event=$EVENT_NAME
+          if [[ -n "$PUBLICATION_MODE" ]]; then
+            workflow_event=reusable
+          fi
           if [[ "$EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/upgrade-rocksdb-* ]]; then
             workflow_event=upgrade
           fi
           case "$workflow_event" in
-            pull_request)
-              mode=preflight
-              version="$source_rocksdb_version-fluss-SNAPSHOT"
+            reusable)
+              if [[ "$PUBLICATION_MODE" != preflight && "$PUBLICATION_MODE" != pr-snapshot ]]; then
+                echo "Unsupported reusable publication mode: $PUBLICATION_MODE" >&2
+                exit 1
+              fi
+              if [[ ! "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
+                echo "Invalid pull request number: $PR_NUMBER" >&2
+                exit 1
+              fi
+              if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+                echo "Invalid pull request source SHA: $SOURCE_SHA" >&2
+                exit 1
+              fi
+              if [[ "$source_rocksdb_version" != "$REQUESTED_ROCKSDB_VERSION" ]]; then
+                echo "Pull request RocksDB version $source_rocksdb_version does not match fluss-main version $REQUESTED_ROCKSDB_VERSION" >&2
+                exit 1
+              fi
+              if [[ "$PUBLICATION_MODE" == pr-snapshot && "$GITHUB_REF" != refs/heads/fluss-main ]]; then
+                echo "PR Snapshot publication must run from fluss-main" >&2
+                exit 1
+              fi
+
+              mode=$PUBLICATION_MODE
+              version="$source_rocksdb_version-fluss-pr$PR_NUMBER-${SOURCE_SHA:0:12}-SNAPSHOT"
               ;;
             schedule)
               mode=snapshot
@@ -198,6 +243,10 @@ jobs:
             expected_architecture: 'aarch64'
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          repository: ${{ inputs.source_repository || github.repository }}
+          ref: ${{ inputs.source_sha || github.ref }}
 
       - uses: actions/setup-java@v6
         with:
@@ -302,6 +351,10 @@ jobs:
             maximum_macos_version: '11.0'
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          repository: ${{ inputs.source_repository || github.repository }}
+          ref: ${{ inputs.source_sha || github.ref }}
 
       - uses: actions/setup-java@v6
         with:
@@ -412,6 +465,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          repository: ${{ inputs.source_repository || github.repository }}
+          ref: ${{ inputs.source_sha || github.ref }}
 
       - uses: actions/download-artifact@v8
         with:
@@ -616,10 +673,62 @@ jobs:
           path: preflight-bundle/fluss-jni-preflight.zip
           if-no-files-found: error
 
+  verify_pr_snapshot:
+    name: Verify current PR source
+    needs: [prepare, package]
+    if: needs.prepare.outputs.mode == 'pr-snapshot'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          repository: ${{ github.repository }}
+          ref: ${{ github.sha }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: fluss-pr-snapshot-source
+          path: provenance
+
+      - name: Validate source identity and manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_PR_NUMBER: ${{ inputs.pr_number }}
+          ROCKSDB_VERSION: ${{ inputs.rocksdb_version }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$REQUESTED_PR_NUMBER" \
+            > "$RUNNER_TEMP/current-pr.json"
+
+          .github/scripts/prepare-pr-snapshot.sh \
+            "$RUNNER_TEMP/current-pr.json" \
+            "$ROCKSDB_VERSION" \
+            "$RUNNER_TEMP/current-outputs" \
+            "$RUNNER_TEMP/current-manifest.json"
+
+          jq --sort-keys . provenance/pr-snapshot-manifest.json \
+            > "$RUNNER_TEMP/locked-manifest.json"
+          jq --sort-keys . "$RUNNER_TEMP/current-manifest.json" \
+            > "$RUNNER_TEMP/sorted-current-manifest.json"
+          diff -u \
+            "$RUNNER_TEMP/locked-manifest.json" \
+            "$RUNNER_TEMP/sorted-current-manifest.json"
+
   publish-snapshot:
     name: Publish Snapshot
-    needs: [prepare, package]
-    if: needs.prepare.outputs.mode == 'snapshot' && needs.prepare.outputs.should-build == 'true'
+    needs: [prepare, package, verify_pr_snapshot]
+    if: >-
+      always() &&
+      needs.prepare.result == 'success' &&
+      needs.package.result == 'success' &&
+      needs.prepare.outputs.should-build == 'true' &&
+      (needs.prepare.outputs.mode == 'snapshot' ||
+       (needs.prepare.outputs.mode == 'pr-snapshot' &&
+        needs.verify_pr_snapshot.result == 'success'))
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     environment: maven-snapshots

@@ -1,0 +1,109 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: Fluss PR Snapshot
+
+on:
+  pull_request:
+    paths:
+      - '.github/scripts/prepare-pr-snapshot.sh'
+      - '.github/scripts/prepare-pr-snapshot.test.sh'
+      - '.github/workflows/fluss-jni-publish.yml'
+      - '.github/workflows/fluss-pr-snapshot.yml'
+      - 'java/pom.xml.template'
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: Pull request number to publish
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  deployments: read
+  pull-requests: read
+
+concurrency:
+  group: fluss-pr-snapshot-${{ inputs.pull_request_number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    name: Resolve PR source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      pr_number: ${{ steps.resolve.outputs.pr_number }}
+      rocksdb_version: ${{ steps.resolve.outputs.rocksdb_version }}
+      source_repository: ${{ steps.resolve.outputs.source_repository }}
+      source_sha: ${{ steps.resolve.outputs.source_sha }}
+      version: ${{ steps.resolve.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Test PR Snapshot preparation
+        run: bash .github/scripts/prepare-pr-snapshot.test.sh
+
+      - name: Resolve and validate PR source
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_PR_NUMBER: ${{ inputs.pull_request_number || github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$REQUESTED_PR_NUMBER" \
+            > "$RUNNER_TEMP/pull-request.json"
+          gh api \
+            -H 'Accept: application/vnd.github.raw+json' \
+            "repos/$GITHUB_REPOSITORY/contents/include/rocksdb/version.h?ref=fluss-main" \
+            > "$RUNNER_TEMP/fluss-main-version.h"
+
+          rocksdb_version=$(awk '
+            /#define ROCKSDB_MAJOR/ { major = $3 }
+            /#define ROCKSDB_MINOR/ { minor = $3 }
+            /#define ROCKSDB_PATCH/ { patch = $3 }
+            END { print major "." minor "." patch }
+          ' "$RUNNER_TEMP/fluss-main-version.h")
+
+          .github/scripts/prepare-pr-snapshot.sh \
+            "$RUNNER_TEMP/pull-request.json" \
+            "$rocksdb_version" \
+            "$GITHUB_OUTPUT" \
+            "$RUNNER_TEMP/pr-snapshot-manifest.json"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fluss-pr-snapshot-source
+          path: ${{ runner.temp }}/pr-snapshot-manifest.json
+          if-no-files-found: error
+
+  publication:
+    name: Build and publish PR Snapshot
+    needs: resolve
+    permissions:
+      contents: write
+      deployments: read
+      pull-requests: read
+    uses: ./.github/workflows/fluss-jni-publish.yml
+    with:
+      publication_mode: ${{ github.event_name == 'workflow_dispatch' && 'pr-snapshot' || 'preflight' }}
+      pr_number: ${{ needs.resolve.outputs.pr_number }}
+      rocksdb_version: ${{ needs.resolve.outputs.rocksdb_version }}
+      source_repository: ${{ needs.resolve.outputs.source_repository }}
+      source_sha: ${{ needs.resolve.outputs.source_sha }}
