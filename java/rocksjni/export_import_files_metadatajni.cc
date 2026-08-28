@@ -4,16 +4,16 @@
 //  COPYING file in the root directory) and Apache 2.0 License
 //  (found in the LICENSE.Apache file in the root directory).
 
-#include "include/org_fluss_rocksdb_ExportImportFilesMetaData.h"
-#include "include/org_fluss_rocksdb_LiveFileMetaData.h"
+#include "include/io_github_fluss_contrib_rocksdb_ExportImportFilesMetaData.h"
+#include "include/io_github_fluss_contrib_rocksdb_LiveFileMetaData.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_ExportImportFilesMetaData
+ * Class:     io_github_fluss_contrib_rocksdb_ExportImportFilesMetaData
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_ExportImportFilesMetaData_disposeInternal(
+void Java_io_github_fluss_1contrib_rocksdb_ExportImportFilesMetaData_disposeInternal(
     JNIEnv* /*env*/, jobject /*jopt*/, jlong jhandle) {
   auto* metadata =
       reinterpret_cast<ROCKSDB_NAMESPACE::ExportImportFilesMetaData*>(jhandle);

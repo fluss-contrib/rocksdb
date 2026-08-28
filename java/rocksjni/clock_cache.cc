@@ -10,15 +10,15 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_ClockCache.h"
+#include "include/io_github_fluss_contrib_rocksdb_ClockCache.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_fluss_rocksdb_ClockCache
+ * Class:     io_github_fluss_contrib_rocksdb_ClockCache
  * Method:    newClockCache
  * Signature: (JIZ)J
  */
-jlong Java_org_fluss_rocksdb_ClockCache_newClockCache(
+jlong Java_io_github_fluss_1contrib_rocksdb_ClockCache_newClockCache(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jcapacity, jint jnum_shard_bits,
     jboolean jstrict_capacity_limit) {
   auto* sptr_clock_cache = new std::shared_ptr<ROCKSDB_NAMESPACE::Cache>(
@@ -29,13 +29,12 @@ jlong Java_org_fluss_rocksdb_ClockCache_newClockCache(
 }
 
 /*
- * Class:     org_fluss_rocksdb_ClockCache
+ * Class:     io_github_fluss_contrib_rocksdb_ClockCache
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_ClockCache_disposeInternalJni(JNIEnv* /*env*/,
-                                                          jclass /*jcls*/,
-                                                          jlong jhandle) {
+void Java_io_github_fluss_1contrib_rocksdb_ClockCache_disposeInternalJni(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* sptr_clock_cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::Cache>*>(jhandle);
   delete sptr_clock_cache;  // delete std::shared_ptr

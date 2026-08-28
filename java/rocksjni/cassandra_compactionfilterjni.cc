@@ -5,16 +5,16 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_CassandraCompactionFilter.h"
+#include "include/io_github_fluss_contrib_rocksdb_CassandraCompactionFilter.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "utilities/cassandra/cassandra_compaction_filter.h"
 
 /*
- * Class:     org_fluss_rocksdb_CassandraCompactionFilter
+ * Class:     io_github_fluss_contrib_rocksdb_CassandraCompactionFilter
  * Method:    createNewCassandraCompactionFilter0
  * Signature: (ZI)J
  */
-jlong Java_org_fluss_rocksdb_CassandraCompactionFilter_createNewCassandraCompactionFilter0(
+jlong Java_io_github_fluss_1contrib_rocksdb_CassandraCompactionFilter_createNewCassandraCompactionFilter0(
     JNIEnv* /*env*/, jclass /*jcls*/, jboolean purge_ttl_on_expiration,
     jint gc_grace_period_in_seconds) {
   auto* compaction_filter =

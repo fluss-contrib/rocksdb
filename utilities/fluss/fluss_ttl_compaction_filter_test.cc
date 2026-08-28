@@ -143,8 +143,8 @@ void Deinit() { delete filter; }
 
 TEST(FlussStateTtlTest, CheckStateTypeEnumOrder) {  // NOLINT
   // if the order changes it also needs to be adjusted in Java client:
-  // in org.fluss.rocksdb.FlussTtlCompactionFilter
-  // and in org.fluss.rocksdb.FlussTtlCompactionFilterTest
+  // in io.github.fluss_contrib.rocksdb.FlussTtlCompactionFilter
+  // and in io.github.fluss_contrib.rocksdb.FlussTtlCompactionFilterTest
   EXPECT_EQ(DISABLED, 0);
   EXPECT_EQ(VALUE, 1);
   EXPECT_EQ(LIST, 2);

@@ -5,20 +5,20 @@
 //
 // This file implements the "bridge" between Java and C++ for MemTables.
 
-#include "include/org_fluss_rocksdb_HashLinkedListMemTableConfig.h"
-#include "include/org_fluss_rocksdb_HashSkipListMemTableConfig.h"
-#include "include/org_fluss_rocksdb_SkipListMemTableConfig.h"
-#include "include/org_fluss_rocksdb_VectorMemTableConfig.h"
+#include "include/io_github_fluss_contrib_rocksdb_HashLinkedListMemTableConfig.h"
+#include "include/io_github_fluss_contrib_rocksdb_HashSkipListMemTableConfig.h"
+#include "include/io_github_fluss_contrib_rocksdb_SkipListMemTableConfig.h"
+#include "include/io_github_fluss_contrib_rocksdb_VectorMemTableConfig.h"
 #include "rocksdb/memtablerep.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_HashSkipListMemTableConfig
+ * Class:     io_github_fluss_contrib_rocksdb_HashSkipListMemTableConfig
  * Method:    newMemTableFactoryHandle
  * Signature: (JII)J
  */
-jlong Java_org_fluss_rocksdb_HashSkipListMemTableConfig_newMemTableFactoryHandle(
+jlong Java_io_github_fluss_1contrib_rocksdb_HashSkipListMemTableConfig_newMemTableFactoryHandle(
     JNIEnv* env, jclass /*jcls*/, jlong jbucket_count, jint jheight,
     jint jbranching_factor) {
   ROCKSDB_NAMESPACE::Status s =
@@ -33,11 +33,11 @@ jlong Java_org_fluss_rocksdb_HashSkipListMemTableConfig_newMemTableFactoryHandle
 }
 
 /*
- * Class:     org_fluss_rocksdb_HashLinkedListMemTableConfig
+ * Class:     io_github_fluss_contrib_rocksdb_HashLinkedListMemTableConfig
  * Method:    newMemTableFactoryHandle
  * Signature: (JJIZI)J
  */
-jlong Java_org_fluss_rocksdb_HashLinkedListMemTableConfig_newMemTableFactoryHandle(
+jlong Java_io_github_fluss_1contrib_rocksdb_HashLinkedListMemTableConfig_newMemTableFactoryHandle(
     JNIEnv* env, jclass /*jcls*/, jlong jbucket_count,
     jlong jhuge_page_tlb_size, jint jbucket_entries_logging_threshold,
     jboolean jif_log_bucket_dist_when_flash, jint jthreshold_use_skiplist) {
@@ -60,11 +60,11 @@ jlong Java_org_fluss_rocksdb_HashLinkedListMemTableConfig_newMemTableFactoryHand
 }
 
 /*
- * Class:     org_fluss_rocksdb_VectorMemTableConfig
+ * Class:     io_github_fluss_contrib_rocksdb_VectorMemTableConfig
  * Method:    newMemTableFactoryHandle
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_VectorMemTableConfig_newMemTableFactoryHandle(
+jlong Java_io_github_fluss_1contrib_rocksdb_VectorMemTableConfig_newMemTableFactoryHandle(
     JNIEnv* env, jclass /*jcls*/, jlong jreserved_size) {
   ROCKSDB_NAMESPACE::Status s =
       ROCKSDB_NAMESPACE::JniUtil::check_if_jlong_fits_size_t(jreserved_size);
@@ -77,11 +77,11 @@ jlong Java_org_fluss_rocksdb_VectorMemTableConfig_newMemTableFactoryHandle(
 }
 
 /*
- * Class:     org_fluss_rocksdb_SkipListMemTableConfig
+ * Class:     io_github_fluss_contrib_rocksdb_SkipListMemTableConfig
  * Method:    newMemTableFactoryHandle0
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_SkipListMemTableConfig_newMemTableFactoryHandle0(
+jlong Java_io_github_fluss_1contrib_rocksdb_SkipListMemTableConfig_newMemTableFactoryHandle0(
     JNIEnv* env, jclass /*jcls*/, jlong jlookahead) {
   ROCKSDB_NAMESPACE::Status s =
       ROCKSDB_NAMESPACE::JniUtil::check_if_jlong_fits_size_t(jlookahead);

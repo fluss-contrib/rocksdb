@@ -3,13 +3,13 @@
 //  COPYING file in the root directory) and Apache 2.0 License
 //  (found in the LICENSE.Apache file in the root directory).
 
+import io.github.fluss_contrib.rocksdb.*;
+import io.github.fluss_contrib.rocksdb.util.SizeUnit;
 import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.fluss.rocksdb.*;
-import org.fluss.rocksdb.util.SizeUnit;
 
 public class RocksDBSample {
   static {

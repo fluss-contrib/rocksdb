@@ -37,10 +37,10 @@ This document provides guidance on how to add new options to RocksDB's public AP
 | `db_stress_tool/db_stress_test_base.cc` | Apply flag to `block_based_options` |
 | `tools/db_bench_tool.cc` | Add flag definition and apply to `block_based_options` |
 | `tools/db_crashtest.py` | Add randomized values |
-| `java/src/main/java/org/rocksdb/BlockBasedTableConfig.java` | Java API |
+| `java/src/main/java/io/github/fluss_contrib/rocksdb/BlockBasedTableConfig.java` | Java API |
 | `java/rocksjni/portal.h` | JNI portal for Java bindings |
 | `java/rocksjni/table.cc` | JNI implementation |
-| `java/src/test/java/org/rocksdb/BlockBasedTableConfigTest.java` | Java unit test |
+| `java/src/test/java/io/github/fluss_contrib/rocksdb/BlockBasedTableConfigTest.java` | Java unit test |
 
 ---
 
@@ -356,7 +356,7 @@ block_based_options.super_block_alignment_space_overhead_ratio =
 
 ### Step 8: Add Java API Support
 
-**File: `java/src/main/java/org/rocksdb/BlockBasedTableConfig.java`**
+**File: `java/src/main/java/io/github/fluss_contrib/rocksdb/BlockBasedTableConfig.java`**
 
 Add getter and setter methods:
 
@@ -400,7 +400,7 @@ Update `GetMethodID` signature and add fields to Java object construction.
 
 Add parameters to JNI function and apply to options.
 
-**File: `java/src/test/java/org/rocksdb/BlockBasedTableConfigTest.java`**
+**File: `java/src/test/java/io/github/fluss_contrib/rocksdb/BlockBasedTableConfigTest.java`**
 
 Add unit tests:
 

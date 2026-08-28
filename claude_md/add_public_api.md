@@ -282,7 +282,7 @@ void rocksdb_your_api_options_set_some_option(
 
 ### Step 6: Add Java Bindings
 
-**Java API:** `java/src/main/java/org/rocksdb/RocksDB.java`
+**Java API:** `java/src/main/java/io/github/fluss_contrib/rocksdb/RocksDB.java`
 
 \`\`\`java
 // Basic version
@@ -323,7 +323,7 @@ private static native void yourNewAPI(final long handle,
     final long cfHandle);
 \`\`\`
 
-**Options Class:** `java/src/main/java/org/rocksdb/YourAPIOptions.java`
+**Options Class:** `java/src/main/java/io/github/fluss_contrib/rocksdb/YourAPIOptions.java`
 
 \`\`\`java
 public class YourAPIOptions extends RocksObject {
@@ -359,7 +359,7 @@ public class YourAPIOptions extends RocksObject {
 **JNI Implementation:** `java/rocksjni/rocksjni.cc`
 
 \`\`\`cpp
-void Java_org_rocksdb_RocksDB_yourNewAPI(
+void Java_io_github_fluss_1contrib_rocksdb_RocksDB_yourNewAPI(
     JNIEnv* env, jclass,
     jlong jdb_handle, jbyteArray jbegin, jint jbegin_len,
     jbyteArray jend, jint jend_len,
@@ -419,23 +419,23 @@ void Java_org_rocksdb_RocksDB_yourNewAPI(
 **Options JNI:** `java/rocksjni/your_api_options.cc`
 
 \`\`\`cpp
-jlong Java_org_rocksdb_YourAPIOptions_newYourAPIOptions(JNIEnv*, jclass) {
+jlong Java_io_github_fluss_1contrib_rocksdb_YourAPIOptions_newYourAPIOptions(JNIEnv*, jclass) {
   auto* options = new ROCKSDB_NAMESPACE::YourAPIOptions();
   return GET_CPLUSPLUS_POINTER(options);
 }
 
-void Java_org_rocksdb_YourAPIOptions_disposeInternalJni(JNIEnv*, jclass, jlong jhandle) {
+void Java_io_github_fluss_1contrib_rocksdb_YourAPIOptions_disposeInternalJni(JNIEnv*, jclass, jlong jhandle) {
   auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::YourAPIOptions*>(jhandle);
   delete options;
 }
 
-void Java_org_rocksdb_YourAPIOptions_setSomeBooleanOption(
+void Java_io_github_fluss_1contrib_rocksdb_YourAPIOptions_setSomeBooleanOption(
     JNIEnv*, jclass, jlong jhandle, jboolean value) {
   auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::YourAPIOptions*>(jhandle);
   options->some_boolean_option = static_cast<bool>(value);
 }
 
-jboolean Java_org_rocksdb_YourAPIOptions_someBooleanOption(JNIEnv*, jclass, jlong jhandle) {
+jboolean Java_io_github_fluss_1contrib_rocksdb_YourAPIOptions_someBooleanOption(JNIEnv*, jclass, jlong jhandle) {
   auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::YourAPIOptions*>(jhandle);
   return static_cast<jboolean>(options->some_boolean_option);
 }
@@ -447,8 +447,8 @@ jboolean Java_org_rocksdb_YourAPIOptions_someBooleanOption(JNIEnv*, jclass, jlon
 
 Add your new Java source files:
 \`\`\`cmake
-src/main/java/org/rocksdb/YourAPIOptions.java
-src/test/java/org/rocksdb/YourAPIOptionsTest.java
+src/main/java/io/github/fluss_contrib/rocksdb/YourAPIOptions.java
+src/test/java/io/github/fluss_contrib/rocksdb/YourAPIOptionsTest.java
 \`\`\`
 
 ### Step 8: Add Release Notes
@@ -496,7 +496,7 @@ TEST_F(DBTest, YourNewAPIBasic) {
 }
 \`\`\`
 
-**Java Tests:** `java/src/test/java/org/rocksdb/YourAPIOptionsTest.java`
+**Java Tests:** `java/src/test/java/io/github/fluss_contrib/rocksdb/YourAPIOptionsTest.java`
 
 \`\`\`java
 public class YourAPIOptionsTest {
@@ -525,14 +525,14 @@ public class YourAPIOptionsTest {
 | Compacted DB | `db/db_impl/compacted_db_impl.h` | If not supported |
 | C API Header (manual wrappers) | `tools/c_api_gen/c_base.h` → regen → `include/rocksdb/c.h` (`@generated`) | ✓ |
 | C API Implementation (manual wrappers) | `tools/c_api_gen/c_base.cc` → regen → `db/c.cc` (`@generated`) | ✓ |
-| Java API | `java/src/main/java/org/rocksdb/RocksDB.java` | ✓ |
-| Java Options | `java/src/main/java/org/rocksdb/YourAPIOptions.java` | If needed |
+| Java API | `java/src/main/java/io/github/fluss_contrib/rocksdb/RocksDB.java` | ✓ |
+| Java Options | `java/src/main/java/io/github/fluss_contrib/rocksdb/YourAPIOptions.java` | If needed |
 | JNI Implementation | `java/rocksjni/rocksjni.cc` | ✓ |
 | JNI Options | `java/rocksjni/your_api_options.cc` | If needed |
 | Java CMake | `java/CMakeLists.txt` | If new files |
 | Changelog | `unreleased_history/*.md` | ✓ |
 | C++ Tests | `db/db_*_test.cc` | ✓ |
-| Java Tests | `java/src/test/java/org/rocksdb/*Test.java` | ✓ |
+| Java Tests | `java/src/test/java/io/github/fluss_contrib/rocksdb/*Test.java` | ✓ |
 
 ## Best Practices
 

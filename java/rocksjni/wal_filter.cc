@@ -8,16 +8,16 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_AbstractWalFilter.h"
+#include "include/io_github_fluss_contrib_rocksdb_AbstractWalFilter.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/wal_filter_jnicallback.h"
 
 /*
- * Class:     org_fluss_rocksdb_AbstractWalFilter
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractWalFilter
  * Method:    createNewWalFilter
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_AbstractWalFilter_createNewWalFilter(
+jlong Java_io_github_fluss_1contrib_rocksdb_AbstractWalFilter_createNewWalFilter(
     JNIEnv* env, jobject jobj) {
   auto* wal_filter = new ROCKSDB_NAMESPACE::WalFilterJniCallback(env, jobj);
   return GET_CPLUSPLUS_POINTER(wal_filter);

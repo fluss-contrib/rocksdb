@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "include/org_fluss_rocksdb_BackupEngineOptions.h"
+#include "include/io_github_fluss_contrib_rocksdb_BackupEngineOptions.h"
 #include "rocksdb/utilities/backup_engine.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
@@ -23,11 +23,11 @@
 // BackupDBOptions
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    newBackupEngineOptions
  * Signature: (Ljava/lang/String;)J
  */
-jlong Java_org_fluss_rocksdb_BackupEngineOptions_newBackupEngineOptions(
+jlong Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_newBackupEngineOptions(
     JNIEnv* env, jclass /*jcls*/, jstring jpath) {
   const char* cpath = env->GetStringUTFChars(jpath, nullptr);
   if (cpath == nullptr) {
@@ -40,24 +40,23 @@ jlong Java_org_fluss_rocksdb_BackupEngineOptions_newBackupEngineOptions(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    backupDir
  * Signature: (J)Ljava/lang/String;
  */
-jstring Java_org_fluss_rocksdb_BackupEngineOptions_backupDir(JNIEnv* env,
-                                                             jclass /*jcls*/,
-                                                             jlong jhandle) {
+jstring Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_backupDir(
+    JNIEnv* env, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
   return env->NewStringUTF(bopt->backup_dir.c_str());
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setBackupEnv
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setBackupEnv(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setBackupEnv(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jrocks_env_handle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -67,11 +66,11 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setBackupEnv(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setShareTableFiles
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setShareTableFiles(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setShareTableFiles(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jboolean flag) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -79,11 +78,12 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setShareTableFiles(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    shareTableFiles
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_BackupEngineOptions_shareTableFiles(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_shareTableFiles(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -91,11 +91,11 @@ jboolean Java_org_fluss_rocksdb_BackupEngineOptions_shareTableFiles(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setInfoLog
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setInfoLog(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setInfoLog(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong /*jlogger_handle*/) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -106,38 +106,35 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setInfoLog(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setSync
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setSync(JNIEnv* /*env*/,
-                                                        jclass /*jcls*/,
-                                                        jlong jhandle,
-                                                        jboolean flag) {
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setSync(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jboolean flag) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
   bopt->sync = flag;
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    sync
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_BackupEngineOptions_sync(JNIEnv* /*env*/,
-                                                         jclass /*jcls*/,
-                                                         jlong jhandle) {
+jboolean Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_sync(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
   return bopt->sync;
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setDestroyOldData
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setDestroyOldData(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setDestroyOldData(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jboolean flag) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -145,11 +142,12 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setDestroyOldData(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    destroyOldData
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_BackupEngineOptions_destroyOldData(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_destroyOldData(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -157,11 +155,11 @@ jboolean Java_org_fluss_rocksdb_BackupEngineOptions_destroyOldData(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setBackupLogFiles
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setBackupLogFiles(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setBackupLogFiles(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jboolean flag) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -169,11 +167,12 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setBackupLogFiles(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    backupLogFiles
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_BackupEngineOptions_backupLogFiles(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_backupLogFiles(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -181,11 +180,11 @@ jboolean Java_org_fluss_rocksdb_BackupEngineOptions_backupLogFiles(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setBackupRateLimit
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setBackupRateLimit(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setBackupRateLimit(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jbackup_rate_limit) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -193,11 +192,11 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setBackupRateLimit(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    backupRateLimit
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_BackupEngineOptions_backupRateLimit(
+jlong Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_backupRateLimit(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -205,11 +204,11 @@ jlong Java_org_fluss_rocksdb_BackupEngineOptions_backupRateLimit(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setBackupRateLimiter
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setBackupRateLimiter(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setBackupRateLimiter(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jrate_limiter_handle) {
   auto* bopt =
@@ -221,11 +220,11 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setBackupRateLimiter(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setRestoreRateLimit
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setRestoreRateLimit(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setRestoreRateLimit(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jrestore_rate_limit) {
   auto* bopt =
@@ -234,11 +233,11 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setRestoreRateLimit(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    restoreRateLimit
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_BackupEngineOptions_restoreRateLimit(
+jlong Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_restoreRateLimit(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -246,11 +245,11 @@ jlong Java_org_fluss_rocksdb_BackupEngineOptions_restoreRateLimit(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setRestoreRateLimiter
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setRestoreRateLimiter(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setRestoreRateLimiter(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jrate_limiter_handle) {
   auto* bopt =
@@ -262,11 +261,11 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setRestoreRateLimiter(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setShareFilesWithChecksum
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setShareFilesWithChecksum(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setShareFilesWithChecksum(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jboolean flag) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -274,11 +273,12 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setShareFilesWithChecksum(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    shareFilesWithChecksum
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_BackupEngineOptions_shareFilesWithChecksum(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_shareFilesWithChecksum(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -286,11 +286,11 @@ jboolean Java_org_fluss_rocksdb_BackupEngineOptions_shareFilesWithChecksum(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setMaxBackgroundOperations
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setMaxBackgroundOperations(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setMaxBackgroundOperations(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jint max_background_operations) {
   auto* bopt =
@@ -299,11 +299,11 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setMaxBackgroundOperations(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    maxBackgroundOperations
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_BackupEngineOptions_maxBackgroundOperations(
+jint Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_maxBackgroundOperations(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -311,11 +311,11 @@ jint Java_org_fluss_rocksdb_BackupEngineOptions_maxBackgroundOperations(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    setCallbackTriggerIntervalSize
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_setCallbackTriggerIntervalSize(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_setCallbackTriggerIntervalSize(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jcallback_trigger_interval_size) {
   auto* bopt =
@@ -325,11 +325,11 @@ void Java_org_fluss_rocksdb_BackupEngineOptions_setCallbackTriggerIntervalSize(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    callbackTriggerIntervalSize
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_BackupEngineOptions_callbackTriggerIntervalSize(
+jlong Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_callbackTriggerIntervalSize(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
@@ -337,11 +337,11 @@ jlong Java_org_fluss_rocksdb_BackupEngineOptions_callbackTriggerIntervalSize(
 }
 
 /*
- * Class:     org_fluss_rocksdb_BackupEngineOptions
+ * Class:     io_github_fluss_contrib_rocksdb_BackupEngineOptions
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_BackupEngineOptions_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_BackupEngineOptions_disposeInternalJni(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* bopt =
       reinterpret_cast<ROCKSDB_NAMESPACE::BackupEngineOptions*>(jhandle);
