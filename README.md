@@ -39,33 +39,6 @@ Add the Fluss RocksDB JNI artifact to your Maven project:
 </dependency>
 ```
 
-The artifact contains the Java API and native libraries for Linux x86_64,
-Linux arm64, macOS x86_64, and macOS arm64. Java classes use the
-`org.fluss.rocksdb` package:
-
-```java
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import org.fluss.rocksdb.Options;
-import org.fluss.rocksdb.RocksDB;
-
-public final class FlussRocksDBExample {
-  public static void main(String[] args) throws Exception {
-    RocksDB.loadLibrary();
-
-    Path dbPath = Files.createTempDirectory("fluss-rocksdb");
-    try (Options options = new Options().setCreateIfMissing(true);
-        RocksDB db = RocksDB.open(options, dbPath.toString())) {
-      db.put("key".getBytes(StandardCharsets.UTF_8),
-          "value".getBytes(StandardCharsets.UTF_8));
-      byte[] value = db.get("key".getBytes(StandardCharsets.UTF_8));
-      System.out.println(new String(value, StandardCharsets.UTF_8));
-    }
-  }
-}
-```
-
 ## Releases
 
 - [Changelog](CHANGELOG.md) summarizes engine, Java/JNI API, and runtime
