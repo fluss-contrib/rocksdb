@@ -68,8 +68,8 @@ public final class FlussRocksDBExample {
 
 ## Releases
 
-- [Changelog](CHANGELOG.md) summarizes the user-visible changes in each Fluss
-  release.
+- [Changelog](CHANGELOG.md) summarizes engine, Java/JNI API, and runtime
+  compatibility changes in each Fluss release.
 - [GitHub Releases](https://github.com/fluss-contrib/rocksdb/releases) provides
   release artifacts and tags.
 - [Maven Central](https://central.sonatype.com/artifact/io.github.fluss-contrib/fluss-rocksdbjni)
