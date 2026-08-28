@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "include/org_fluss_rocksdb_CassandraValueMergeOperator.h"
+#include "include/io_github_fluss_contrib_rocksdb_CassandraValueMergeOperator.h"
 #include "rocksdb/db.h"
 #include "rocksdb/memtablerep.h"
 #include "rocksdb/merge_operator.h"
@@ -23,11 +23,11 @@
 #include "utilities/cassandra/merge_operator.h"
 
 /*
- * Class:     org_fluss_rocksdb_CassandraValueMergeOperator
+ * Class:     io_github_fluss_contrib_rocksdb_CassandraValueMergeOperator
  * Method:    newSharedCassandraValueMergeOperator
  * Signature: (II)J
  */
-jlong Java_org_fluss_rocksdb_CassandraValueMergeOperator_newSharedCassandraValueMergeOperator(
+jlong Java_io_github_fluss_1contrib_rocksdb_CassandraValueMergeOperator_newSharedCassandraValueMergeOperator(
     JNIEnv* /*env*/, jclass /*jclazz*/, jint gcGracePeriodInSeconds,
     jint operands_limit) {
   auto* op = new std::shared_ptr<ROCKSDB_NAMESPACE::MergeOperator>(
@@ -37,11 +37,11 @@ jlong Java_org_fluss_rocksdb_CassandraValueMergeOperator_newSharedCassandraValue
 }
 
 /*
- * Class:     org_fluss_rocksdb_CassandraValueMergeOperator
+ * Class:     io_github_fluss_contrib_rocksdb_CassandraValueMergeOperator
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_CassandraValueMergeOperator_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_CassandraValueMergeOperator_disposeInternalJni(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* op =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::MergeOperator>*>(

@@ -8,17 +8,17 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_TransactionDBOptions.h"
+#include "include/io_github_fluss_contrib_rocksdb_TransactionDBOptions.h"
 #include "rocksdb/utilities/transaction_db.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    newTransactionDBOptions
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_TransactionDBOptions_newTransactionDBOptions(
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_newTransactionDBOptions(
     JNIEnv* /*env*/, jclass /*jcls*/) {
   ROCKSDB_NAMESPACE::TransactionDBOptions* opts =
       new ROCKSDB_NAMESPACE::TransactionDBOptions();
@@ -26,11 +26,11 @@ jlong Java_org_fluss_rocksdb_TransactionDBOptions_newTransactionDBOptions(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    getMaxNumLocks
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_TransactionDBOptions_getMaxNumLocks(
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_getMaxNumLocks(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
@@ -38,11 +38,11 @@ jlong Java_org_fluss_rocksdb_TransactionDBOptions_getMaxNumLocks(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    setMaxNumLocks
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_TransactionDBOptions_setMaxNumLocks(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_setMaxNumLocks(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jmax_num_locks) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
@@ -50,24 +50,23 @@ void Java_org_fluss_rocksdb_TransactionDBOptions_setMaxNumLocks(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    getNumStripes
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_TransactionDBOptions_getNumStripes(JNIEnv* /*env*/,
-                                                                jclass /*jcls*/,
-                                                                jlong jhandle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_getNumStripes(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
   return opts->num_stripes;
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    setNumStripes
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_TransactionDBOptions_setNumStripes(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_setNumStripes(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jnum_stripes) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
@@ -75,11 +74,11 @@ void Java_org_fluss_rocksdb_TransactionDBOptions_setNumStripes(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    getTransactionLockTimeout
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_TransactionDBOptions_getTransactionLockTimeout(
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_getTransactionLockTimeout(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
@@ -87,11 +86,11 @@ jlong Java_org_fluss_rocksdb_TransactionDBOptions_getTransactionLockTimeout(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    setTransactionLockTimeout
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_TransactionDBOptions_setTransactionLockTimeout(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_setTransactionLockTimeout(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jtransaction_lock_timeout) {
   auto* opts =
@@ -100,11 +99,11 @@ void Java_org_fluss_rocksdb_TransactionDBOptions_setTransactionLockTimeout(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    getDefaultLockTimeout
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_TransactionDBOptions_getDefaultLockTimeout(
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_getDefaultLockTimeout(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
@@ -112,11 +111,11 @@ jlong Java_org_fluss_rocksdb_TransactionDBOptions_getDefaultLockTimeout(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    setDefaultLockTimeout
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_TransactionDBOptions_setDefaultLockTimeout(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_setDefaultLockTimeout(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jdefault_lock_timeout) {
   auto* opts =
@@ -125,11 +124,11 @@ void Java_org_fluss_rocksdb_TransactionDBOptions_setDefaultLockTimeout(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    getWritePolicy
  * Signature: (J)B
  */
-jbyte Java_org_fluss_rocksdb_TransactionDBOptions_getWritePolicy(
+jbyte Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_getWritePolicy(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
@@ -138,11 +137,11 @@ jbyte Java_org_fluss_rocksdb_TransactionDBOptions_getWritePolicy(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    setWritePolicy
  * Signature: (JB)V
  */
-void Java_org_fluss_rocksdb_TransactionDBOptions_setWritePolicy(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_setWritePolicy(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jbyte jwrite_policy) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
@@ -152,11 +151,11 @@ void Java_org_fluss_rocksdb_TransactionDBOptions_setWritePolicy(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionDBOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionDBOptions
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_TransactionDBOptions_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionDBOptions_disposeInternalJni(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::TransactionDBOptions*>(jhandle);
 }

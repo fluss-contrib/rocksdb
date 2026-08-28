@@ -162,7 +162,7 @@ remains optional; a final release may be published directly.
 
 ## Supported artifacts
 
-The main Maven JAR contains Java 8-compatible `org.fluss.rocksdb` classes and
+The main Maven JAR contains Java 8-compatible `io.github.fluss_contrib.rocksdb` classes and
 these native libraries:
 
 ```text

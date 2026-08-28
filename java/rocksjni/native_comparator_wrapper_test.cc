@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "include/org_fluss_rocksdb_NativeComparatorWrapperTest_NativeStringComparatorWrapper.h"
+#include "include/io_github_fluss_contrib_rocksdb_NativeComparatorWrapperTest_NativeStringComparatorWrapper.h"
 #include "rocksdb/comparator.h"
 #include "rocksdb/slice.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
@@ -34,11 +34,11 @@ class NativeComparatorWrapperTestStringComparator : public Comparator {
 
 /*
  * Class:
- * org_fluss_rocksdb_NativeComparatorWrapperTest_NativeStringComparatorWrapper
+ * io_github_fluss_contrib_rocksdb_NativeComparatorWrapperTest_NativeStringComparatorWrapper
  * Method:    newStringComparator
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_NativeComparatorWrapperTest_00024NativeStringComparatorWrapper_newStringComparator(
+jlong Java_io_github_fluss_1contrib_rocksdb_NativeComparatorWrapperTest_00024NativeStringComparatorWrapper_newStringComparator(
     JNIEnv* /*env*/, jobject /*jobj*/) {
   auto* comparator =
       new ROCKSDB_NAMESPACE::NativeComparatorWrapperTestStringComparator();

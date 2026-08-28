@@ -8,27 +8,28 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_Cache.h"
+#include "include/io_github_fluss_contrib_rocksdb_Cache.h"
 #include "rocksdb/advanced_cache.h"
 
 /*
- * Class:     org_fluss_rocksdb_Cache
+ * Class:     io_github_fluss_contrib_rocksdb_Cache
  * Method:    getUsage
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_Cache_getUsage(JNIEnv*, jclass, jlong jhandle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_Cache_getUsage(JNIEnv*, jclass,
+                                                           jlong jhandle) {
   auto* sptr_cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::Cache>*>(jhandle);
   return static_cast<jlong>(sptr_cache->get()->GetUsage());
 }
 
 /*
- * Class:     org_fluss_rocksdb_Cache
+ * Class:     io_github_fluss_contrib_rocksdb_Cache
  * Method:    getPinnedUsage
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_Cache_getPinnedUsage(JNIEnv*, jclass,
-                                                  jlong jhandle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_Cache_getPinnedUsage(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* sptr_cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::Cache>*>(jhandle);
   return static_cast<jlong>(sptr_cache->get()->GetPinnedUsage());

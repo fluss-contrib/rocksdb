@@ -8,17 +8,17 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_OptimisticTransactionOptions.h"
+#include "include/io_github_fluss_contrib_rocksdb_OptimisticTransactionOptions.h"
 #include "rocksdb/comparator.h"
 #include "rocksdb/utilities/optimistic_transaction_db.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionOptions
  * Method:    newOptimisticTransactionOptions
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_OptimisticTransactionOptions_newOptimisticTransactionOptions(
+jlong Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionOptions_newOptimisticTransactionOptions(
     JNIEnv* /*env*/, jclass /*jcls*/) {
   ROCKSDB_NAMESPACE::OptimisticTransactionOptions* opts =
       new ROCKSDB_NAMESPACE::OptimisticTransactionOptions();
@@ -26,11 +26,12 @@ jlong Java_org_fluss_rocksdb_OptimisticTransactionOptions_newOptimisticTransacti
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionOptions
  * Method:    isSetSnapshot
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_OptimisticTransactionOptions_isSetSnapshot(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionOptions_isSetSnapshot(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionOptions*>(
@@ -39,11 +40,11 @@ jboolean Java_org_fluss_rocksdb_OptimisticTransactionOptions_isSetSnapshot(
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionOptions
  * Method:    setSetSnapshot
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_OptimisticTransactionOptions_setSetSnapshot(
+void Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionOptions_setSetSnapshot(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jboolean jset_snapshot) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionOptions*>(
@@ -52,11 +53,11 @@ void Java_org_fluss_rocksdb_OptimisticTransactionOptions_setSetSnapshot(
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionOptions
  * Method:    setComparator
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_OptimisticTransactionOptions_setComparator(
+void Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionOptions_setComparator(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jcomparator_handle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionOptions*>(
@@ -66,11 +67,11 @@ void Java_org_fluss_rocksdb_OptimisticTransactionOptions_setComparator(
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionOptions
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_OptimisticTransactionOptions_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionOptions_disposeInternalJni(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionOptions*>(
       jhandle);

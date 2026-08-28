@@ -8,28 +8,28 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_CompactionOptionsUniversal.h"
+#include "include/io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal.h"
 #include "rocksdb/advanced_options.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    newCompactionOptionsUniversal
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_CompactionOptionsUniversal_newCompactionOptionsUniversal(
+jlong Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_newCompactionOptionsUniversal(
     JNIEnv*, jclass) {
   const auto* opt = new ROCKSDB_NAMESPACE::CompactionOptionsUniversal();
   return GET_CPLUSPLUS_POINTER(opt);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    setSizeRatio
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setSizeRatio(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_setSizeRatio(
     JNIEnv*, jclass, jlong jhandle, jint jsize_ratio) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -37,11 +37,11 @@ void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setSizeRatio(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    sizeRatio
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_sizeRatio(
+jint Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_sizeRatio(
     JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -49,11 +49,11 @@ jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_sizeRatio(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    setMinMergeWidth
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setMinMergeWidth(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_setMinMergeWidth(
     JNIEnv*, jclass, jlong jhandle, jint jmin_merge_width) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -61,11 +61,11 @@ void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setMinMergeWidth(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    minMergeWidth
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_minMergeWidth(
+jint Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_minMergeWidth(
     JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -73,11 +73,11 @@ jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_minMergeWidth(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    setMaxMergeWidth
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setMaxMergeWidth(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_setMaxMergeWidth(
     JNIEnv*, jclass, jlong jhandle, jint jmax_merge_width) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -85,11 +85,11 @@ void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setMaxMergeWidth(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    maxMergeWidth
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_maxMergeWidth(
+jint Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_maxMergeWidth(
     JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -97,11 +97,11 @@ jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_maxMergeWidth(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    setMaxSizeAmplificationPercent
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setMaxSizeAmplificationPercent(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_setMaxSizeAmplificationPercent(
     JNIEnv*, jclass, jlong jhandle, jint jmax_size_amplification_percent) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -110,11 +110,11 @@ void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setMaxSizeAmplificationPe
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    maxSizeAmplificationPercent
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_maxSizeAmplificationPercent(
+jint Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_maxSizeAmplificationPercent(
     JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -122,11 +122,11 @@ jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_maxSizeAmplificationPerce
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    setCompressionSizePercent
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setCompressionSizePercent(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_setCompressionSizePercent(
     JNIEnv*, jclass, jlong jhandle, jint jcompression_size_percent) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -135,11 +135,11 @@ void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setCompressionSizePercent
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    compressionSizePercent
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_compressionSizePercent(
+jint Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_compressionSizePercent(
     JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -147,11 +147,11 @@ jint Java_org_fluss_rocksdb_CompactionOptionsUniversal_compressionSizePercent(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    setStopStyle
  * Signature: (JB)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setStopStyle(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_setStopStyle(
     JNIEnv*, jclass, jlong jhandle, jbyte jstop_style_value) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -161,11 +161,11 @@ void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setStopStyle(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    stopStyle
  * Signature: (J)B
  */
-jbyte Java_org_fluss_rocksdb_CompactionOptionsUniversal_stopStyle(
+jbyte Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_stopStyle(
     JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -174,11 +174,11 @@ jbyte Java_org_fluss_rocksdb_CompactionOptionsUniversal_stopStyle(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    setAllowTrivialMove
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setAllowTrivialMove(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_setAllowTrivialMove(
     JNIEnv*, jclass, jlong jhandle, jboolean jallow_trivial_move) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -186,11 +186,12 @@ void Java_org_fluss_rocksdb_CompactionOptionsUniversal_setAllowTrivialMove(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    allowTrivialMove
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_CompactionOptionsUniversal_allowTrivialMove(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_allowTrivialMove(
     JNIEnv*, jclass, jlong jhandle) {
   auto* opt =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(jhandle);
@@ -198,11 +199,11 @@ jboolean Java_org_fluss_rocksdb_CompactionOptionsUniversal_allowTrivialMove(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptionsUniversal
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptionsUniversal
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_CompactionOptionsUniversal_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptionsUniversal_disposeInternalJni(
     JNIEnv*, jclass, jlong jhandle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptionsUniversal*>(
       jhandle);

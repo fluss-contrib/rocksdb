@@ -67,7 +67,7 @@ java/out
 java/target
 java/test-libs
 java/*.log
-java/include/org_fluss_rocksdb_*.h
+java/include/io_github_fluss_contrib_rocksdb_*.h
 
 .idea/
 *.iml

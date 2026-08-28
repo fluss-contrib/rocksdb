@@ -10,18 +10,18 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_OptimisticTransactionDB.h"
+#include "include/io_github_fluss_contrib_rocksdb_OptimisticTransactionDB.h"
 #include "rocksdb/options.h"
 #include "rocksdb/utilities/transaction.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    open
  * Signature: (JLjava/lang/String;)J
  */
-jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_open__JLjava_lang_String_2(
+jlong Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_open__JLjava_lang_String_2(
     JNIEnv* env, jclass, jlong joptions_handle, jstring jdb_path) {
   const char* db_path = env->GetStringUTFChars(jdb_path, nullptr);
   if (db_path == nullptr) {
@@ -46,12 +46,12 @@ jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_open__JLjava_lang_String_2(
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    open
  * Signature: (JLjava/lang/String;[[B[J)[J
  */
 jlongArray
-Java_org_fluss_rocksdb_OptimisticTransactionDB_open__JLjava_lang_String_2_3_3B_3J(
+Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_open__JLjava_lang_String_2_3_3B_3J(
     JNIEnv* env, jclass, jlong jdb_options_handle, jstring jdb_path,
     jobjectArray jcolumn_names, jlongArray jcolumn_options_handles) {
   const char* db_path = env->GetStringUTFChars(jdb_path, nullptr);
@@ -141,11 +141,11 @@ Java_org_fluss_rocksdb_OptimisticTransactionDB_open__JLjava_lang_String_2_3_3B_3
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_OptimisticTransactionDB_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_disposeInternalJni(
     JNIEnv*, jclass, jlong jhandle) {
   auto* optimistic_txn_db =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionDB*>(jhandle);
@@ -154,11 +154,11 @@ void Java_org_fluss_rocksdb_OptimisticTransactionDB_disposeInternalJni(
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    closeDatabase
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_OptimisticTransactionDB_closeDatabase(
+void Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_closeDatabase(
     JNIEnv* env, jclass, jlong jhandle) {
   auto* optimistic_txn_db =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionDB*>(jhandle);
@@ -168,11 +168,11 @@ void Java_org_fluss_rocksdb_OptimisticTransactionDB_closeDatabase(
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    beginTransaction
  * Signature: (JJ)J
  */
-jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction__JJ(
+jlong Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_beginTransaction__JJ(
     JNIEnv*, jclass, jlong jhandle, jlong jwrite_options_handle) {
   auto* optimistic_txn_db =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionDB*>(jhandle);
@@ -184,11 +184,11 @@ jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction__JJ(
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    beginTransaction
  * Signature: (JJJ)J
  */
-jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction__JJJ(
+jlong Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_beginTransaction__JJJ(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jwrite_options_handle, jlong joptimistic_txn_options_handle) {
   auto* optimistic_txn_db =
@@ -204,11 +204,11 @@ jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction__JJJ(
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    beginTransaction_withOld
  * Signature: (JJJ)J
  */
-jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction_1withOld__JJJ(
+jlong Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_beginTransaction_1withOld__JJJ(
     JNIEnv*, jclass, jlong jhandle, jlong jwrite_options_handle,
     jlong jold_txn_handle) {
   auto* optimistic_txn_db =
@@ -230,11 +230,11 @@ jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction_1withOld__
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    beginTransaction_withOld
  * Signature: (JJJJ)J
  */
-jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction_1withOld__JJJJ(
+jlong Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_beginTransaction_1withOld__JJJJ(
     JNIEnv*, jclass, jlong jhandle, jlong jwrite_options_handle,
     jlong joptimistic_txn_options_handle, jlong jold_txn_handle) {
   auto* optimistic_txn_db =
@@ -258,12 +258,12 @@ jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_beginTransaction_1withOld__
 }
 
 /*
- * Class:     org_fluss_rocksdb_OptimisticTransactionDB
+ * Class:     io_github_fluss_contrib_rocksdb_OptimisticTransactionDB
  * Method:    getBaseDB
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_OptimisticTransactionDB_getBaseDB(JNIEnv*, jclass,
-                                                               jlong jhandle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_OptimisticTransactionDB_getBaseDB(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* optimistic_txn_db =
       reinterpret_cast<ROCKSDB_NAMESPACE::OptimisticTransactionDB*>(jhandle);
   return GET_CPLUSPLUS_POINTER(optimistic_txn_db->GetBaseDB());

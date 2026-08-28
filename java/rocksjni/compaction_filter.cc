@@ -10,16 +10,16 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_AbstractCompactionFilter.h"
+#include "include/io_github_fluss_contrib_rocksdb_AbstractCompactionFilter.h"
 
-// <editor-fold desc="org.fluss.rocksdb.AbstractCompactionFilter">
+// <editor-fold desc="io.github.fluss_contrib.rocksdb.AbstractCompactionFilter">
 
 /*
- * Class:     org_fluss_rocksdb_AbstractCompactionFilter
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractCompactionFilter
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_AbstractCompactionFilter_disposeInternal(
+void Java_io_github_fluss_1contrib_rocksdb_AbstractCompactionFilter_disposeInternal(
     JNIEnv* /*env*/, jobject /*jobj*/, jlong handle) {
   auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::CompactionFilter*>(handle);
   assert(cf != nullptr);

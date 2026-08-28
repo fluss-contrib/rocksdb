@@ -11,7 +11,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-#include "include/org_fluss_rocksdb_Logger.h"
+#include "include/io_github_fluss_contrib_rocksdb_Logger.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
@@ -223,12 +223,13 @@ LoggerJniCallback::~LoggerJniCallback() {
 }  // namespace ROCKSDB_NAMESPACE
 
 /*
- * Class:     org_fluss_rocksdb_Logger
+ * Class:     io_github_fluss_contrib_rocksdb_Logger
  * Method:    newLogger
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_Logger_newLogger(JNIEnv* env, jobject jobj,
-                                              jlong jlog_level) {
+jlong Java_io_github_fluss_1contrib_rocksdb_Logger_newLogger(JNIEnv* env,
+                                                             jobject jobj,
+                                                             jlong jlog_level) {
   auto* sptr_logger = new std::shared_ptr<ROCKSDB_NAMESPACE::LoggerJniCallback>(
       new ROCKSDB_NAMESPACE::LoggerJniCallback(env, jobj));
   auto log_level = static_cast<ROCKSDB_NAMESPACE::InfoLogLevel>(jlog_level);
@@ -237,14 +238,12 @@ jlong Java_org_fluss_rocksdb_Logger_newLogger(JNIEnv* env, jobject jobj,
 }
 
 /*
- * Class:     org_fluss_rocksdb_Logger
+ * Class:     io_github_fluss_contrib_rocksdb_Logger
  * Method:    setInfoLogLevel
  * Signature: (JB)V
  */
-void Java_org_fluss_rocksdb_Logger_setInfoLogLevel(JNIEnv* /*env*/,
-                                                   jobject /*jobj*/,
-                                                   jlong jhandle,
-                                                   jbyte jlog_level) {
+void Java_io_github_fluss_1contrib_rocksdb_Logger_setInfoLogLevel(
+    JNIEnv* /*env*/, jobject /*jobj*/, jlong jhandle, jbyte jlog_level) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::LoggerJniCallback>*>(
           jhandle);
@@ -253,13 +252,12 @@ void Java_org_fluss_rocksdb_Logger_setInfoLogLevel(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_Logger
+ * Class:     io_github_fluss_contrib_rocksdb_Logger
  * Method:    infoLogLevel
  * Signature: (J)B
  */
-jbyte Java_org_fluss_rocksdb_Logger_infoLogLevel(JNIEnv* /*env*/,
-                                                 jobject /*jobj*/,
-                                                 jlong jhandle) {
+jbyte Java_io_github_fluss_1contrib_rocksdb_Logger_infoLogLevel(
+    JNIEnv* /*env*/, jobject /*jobj*/, jlong jhandle) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::LoggerJniCallback>*>(
           jhandle);
@@ -267,13 +265,12 @@ jbyte Java_org_fluss_rocksdb_Logger_infoLogLevel(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_Logger
+ * Class:     io_github_fluss_contrib_rocksdb_Logger
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_Logger_disposeInternal(JNIEnv* /*env*/,
-                                                   jobject /*jobj*/,
-                                                   jlong jhandle) {
+void Java_io_github_fluss_1contrib_rocksdb_Logger_disposeInternal(
+    JNIEnv* /*env*/, jobject /*jobj*/, jlong jhandle) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::LoggerJniCallback>*>(
           jhandle);

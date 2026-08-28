@@ -14,7 +14,7 @@
 #include <limits>
 #include <memory>
 
-#include "include/org_fluss_rocksdb_FlussTtlCompactionFilter.h"
+#include "include/io_github_fluss_contrib_rocksdb_FlussTtlCompactionFilter.h"
 #include "rocksjni/jnicallback.h"
 #include "rocksjni/loggerjnicallback.h"
 #include "rocksjni/portal.h"
@@ -44,8 +44,10 @@ class JavaListElementFilter
  public:
   JavaListElementFilter(JNIEnv* env, jobject list_filter)
       : JniCallback(env, list_filter) {
-    jclass clazz = JavaClass::getJClass(
-        env, "org/fluss/rocksdb/FlussTtlCompactionFilter$ListElementFilter");
+    jclass clazz =
+        JavaClass::getJClass(env,
+                             "io/github/fluss_contrib/rocksdb/"
+                             "FlussTtlCompactionFilter$ListElementFilter");
     if (clazz != nullptr) {
       next_unexpired_offset_method_ =
           env->GetMethodID(clazz, "nextUnexpiredOffset", "([BJJ)I");
@@ -111,11 +113,13 @@ class JavaListElementFilterFactory
       : JniCallback(env, list_filter_factory) {
     jclass clazz = JavaClass::getJClass(
         env,
-        "org/fluss/rocksdb/FlussTtlCompactionFilter$ListElementFilterFactory");
+        "io/github/fluss_contrib/rocksdb/"
+        "FlussTtlCompactionFilter$ListElementFilterFactory");
     if (clazz != nullptr) {
-      create_filter_method_ = env->GetMethodID(
-          clazz, "createListElementFilter",
-          "()Lorg/fluss/rocksdb/FlussTtlCompactionFilter$ListElementFilter;");
+      create_filter_method_ =
+          env->GetMethodID(clazz, "createListElementFilter",
+                           "()Lio/github/fluss_contrib/rocksdb/"
+                           "FlussTtlCompactionFilter$ListElementFilter;");
     }
     if (ClearPendingException(env)) {
       create_filter_method_ = nullptr;
@@ -156,8 +160,10 @@ class JavaTimeProvider : public FlussTtlCompactionFilter::TimeProvider,
  public:
   JavaTimeProvider(JNIEnv* env, jobject time_provider)
       : JniCallback(env, time_provider) {
-    jclass clazz = JavaClass::getJClass(
-        env, "org/fluss/rocksdb/FlussTtlCompactionFilter$TimeProvider");
+    jclass clazz =
+        JavaClass::getJClass(env,
+                             "io/github/fluss_contrib/rocksdb/"
+                             "FlussTtlCompactionFilter$TimeProvider");
     if (clazz != nullptr) {
       current_timestamp_method_ =
           env->GetMethodID(clazz, "currentTimestamp", "()J");
@@ -208,7 +214,7 @@ CreateListElementFilterFactory(JNIEnv* env, jint fixed_element_length,
 
 }  // namespace
 
-jlong Java_org_fluss_rocksdb_FlussTtlCompactionFilter_createNewFlussTtlCompactionFilterConfigHolder(
+jlong Java_io_github_fluss_1contrib_rocksdb_FlussTtlCompactionFilter_createNewFlussTtlCompactionFilterConfigHolder(
     JNIEnv*, jclass) {
   auto holder = std::make_shared<FlussTtlCompactionFilter::ConfigHolder>();
   return reinterpret_cast<jlong>(
@@ -216,13 +222,13 @@ jlong Java_org_fluss_rocksdb_FlussTtlCompactionFilter_createNewFlussTtlCompactio
           std::move(holder)));
 }
 
-void Java_org_fluss_rocksdb_FlussTtlCompactionFilter_disposeFlussTtlCompactionFilterConfigHolder(
+void Java_io_github_fluss_1contrib_rocksdb_FlussTtlCompactionFilter_disposeFlussTtlCompactionFilterConfigHolder(
     JNIEnv*, jclass, jlong handle) {
   delete reinterpret_cast<
       std::shared_ptr<FlussTtlCompactionFilter::ConfigHolder>*>(handle);
 }
 
-jlong Java_org_fluss_rocksdb_FlussTtlCompactionFilter_createNewFlussTtlCompactionFilter0(
+jlong Java_io_github_fluss_1contrib_rocksdb_FlussTtlCompactionFilter_createNewFlussTtlCompactionFilter0(
     JNIEnv* env, jclass, jlong config_holder_handle, jobject time_provider,
     jlong logger_handle) {
   auto config_holder = *reinterpret_cast<
@@ -240,7 +246,7 @@ jlong Java_org_fluss_rocksdb_FlussTtlCompactionFilter_createNewFlussTtlCompactio
 }
 
 jboolean
-Java_org_fluss_rocksdb_FlussTtlCompactionFilter_configureFlussTtlCompactionFilter(
+Java_io_github_fluss_1contrib_rocksdb_FlussTtlCompactionFilter_configureFlussTtlCompactionFilter(
     JNIEnv* env, jclass, jlong handle, jint state_type, jint timestamp_offset,
     jlong ttl, jlong query_time_after_num_entries, jint fixed_element_length,
     jobject list_filter_factory) {

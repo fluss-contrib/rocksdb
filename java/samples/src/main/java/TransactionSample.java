@@ -5,7 +5,7 @@
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import org.fluss.rocksdb.*;
+import io.github.fluss_contrib.rocksdb.*;
 
 /**
  * Demonstrates using Transactions on a TransactionDB with

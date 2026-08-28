@@ -8,27 +8,27 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_TransactionOptions.h"
+#include "include/io_github_fluss_contrib_rocksdb_TransactionOptions.h"
 #include "rocksdb/utilities/transaction_db.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    newTransactionOptions
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_TransactionOptions_newTransactionOptions(
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_newTransactionOptions(
     JNIEnv* /*env*/, jclass /*jcls*/) {
   auto* opts = new ROCKSDB_NAMESPACE::TransactionOptions();
   return GET_CPLUSPLUS_POINTER(opts);
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    isSetSnapshot
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_TransactionOptions_isSetSnapshot(
+jboolean Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_isSetSnapshot(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
@@ -36,11 +36,11 @@ jboolean Java_org_fluss_rocksdb_TransactionOptions_isSetSnapshot(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    setSetSnapshot
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_TransactionOptions_setSetSnapshot(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_setSetSnapshot(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jboolean jset_snapshot) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
@@ -48,11 +48,12 @@ void Java_org_fluss_rocksdb_TransactionOptions_setSetSnapshot(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    isDeadlockDetect
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_TransactionOptions_isDeadlockDetect(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_isDeadlockDetect(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
@@ -60,11 +61,11 @@ jboolean Java_org_fluss_rocksdb_TransactionOptions_isDeadlockDetect(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    setDeadlockDetect
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_TransactionOptions_setDeadlockDetect(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_setDeadlockDetect(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jboolean jdeadlock_detect) {
   auto* opts =
@@ -73,24 +74,23 @@ void Java_org_fluss_rocksdb_TransactionOptions_setDeadlockDetect(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    getLockTimeout
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_TransactionOptions_getLockTimeout(JNIEnv* /*env*/,
-                                                               jclass /*jcls*/,
-                                                               jlong jhandle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_getLockTimeout(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
   return opts->lock_timeout;
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    setLockTimeout
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_TransactionOptions_setLockTimeout(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_setLockTimeout(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jlock_timeout) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
@@ -98,24 +98,23 @@ void Java_org_fluss_rocksdb_TransactionOptions_setLockTimeout(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    getExpiration
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_TransactionOptions_getExpiration(JNIEnv* /*env*/,
-                                                              jclass /*jcls*/,
-                                                              jlong jhandle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_getExpiration(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
   return opts->expiration;
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    setExpiration
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_TransactionOptions_setExpiration(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_setExpiration(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle, jlong jexpiration) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
@@ -123,11 +122,11 @@ void Java_org_fluss_rocksdb_TransactionOptions_setExpiration(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    getDeadlockDetectDepth
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_TransactionOptions_getDeadlockDetectDepth(
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_getDeadlockDetectDepth(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
@@ -135,11 +134,11 @@ jlong Java_org_fluss_rocksdb_TransactionOptions_getDeadlockDetectDepth(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    setDeadlockDetectDepth
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_TransactionOptions_setDeadlockDetectDepth(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_setDeadlockDetectDepth(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jdeadlock_detect_depth) {
   auto* opts =
@@ -148,11 +147,11 @@ void Java_org_fluss_rocksdb_TransactionOptions_setDeadlockDetectDepth(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    getMaxWriteBatchSize
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_TransactionOptions_getMaxWriteBatchSize(
+jlong Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_getMaxWriteBatchSize(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
@@ -160,11 +159,11 @@ jlong Java_org_fluss_rocksdb_TransactionOptions_getMaxWriteBatchSize(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    setMaxWriteBatchSize
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_TransactionOptions_setMaxWriteBatchSize(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_setMaxWriteBatchSize(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle,
     jlong jmax_write_batch_size) {
   auto* opts =
@@ -173,11 +172,11 @@ void Java_org_fluss_rocksdb_TransactionOptions_setMaxWriteBatchSize(
 }
 
 /*
- * Class:     org_fluss_rocksdb_TransactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_TransactionOptions
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_TransactionOptions_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_TransactionOptions_disposeInternalJni(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::TransactionOptions*>(jhandle);
 }

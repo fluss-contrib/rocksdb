@@ -32,10 +32,10 @@ case "$(uname -s)" in
     ;;
 esac
 
-awk '!/^Java_org_fluss_rocksdb_/ && $0 != "JNI_OnLoad" && $0 != "JNI_OnUnload"' \
+awk '!/^Java_io_github_fluss_1contrib_rocksdb_/ && $0 != "JNI_OnLoad" && $0 != "JNI_OnUnload"' \
   "$symbols_file" > "$unexpected_file"
 
-if ! grep -q '^Java_org_fluss_rocksdb_' "$symbols_file"; then
+if ! grep -q '^Java_io_github_fluss_1contrib_rocksdb_' "$symbols_file"; then
   echo "No relocated Fluss JNI entry points are exported by $library" >&2
   exit 1
 fi

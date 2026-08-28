@@ -294,7 +294,7 @@ jobs:
             exit 1
           fi
 
-          jar tf "$jar_file" | grep -qx 'org/fluss/rocksdb/RocksDB.class'
+          jar tf "$jar_file" | grep -qx 'io/github/fluss_contrib/rocksdb/RocksDB.class'
           jar tf "$jar_file" | grep -qx "$EXPECTED_LIBRARY"
           if jar tf "$jar_file" | grep -q '^org/rocksdb/'; then
             echo "Upstream Java package found in JNI artifact" >&2
@@ -434,7 +434,7 @@ jobs:
             exit 1
           fi
 
-          jar tf "$jar_file" | grep -qx 'org/fluss/rocksdb/RocksDB.class'
+          jar tf "$jar_file" | grep -qx 'io/github/fluss_contrib/rocksdb/RocksDB.class'
           jar tf "$jar_file" | grep -qx "$EXPECTED_LIBRARY"
           if jar tf "$jar_file" | grep -q '^org/rocksdb/'; then
             echo "Upstream Java package found in JNI artifact" >&2
@@ -512,12 +512,12 @@ jobs:
             | sort > actual-libraries.txt
           diff -u expected-libraries.txt actual-libraries.txt
 
-          jar tf "$fat_jar" | grep -qx 'org/fluss/rocksdb/RocksDB.class'
+          jar tf "$fat_jar" | grep -qx 'io/github/fluss_contrib/rocksdb/RocksDB.class'
           if jar tf "$fat_jar" | grep -q '^org/rocksdb/'; then
             echo "Upstream Java package found in fat JAR" >&2
             exit 1
           fi
-          javap -verbose -classpath "$fat_jar" org.fluss.rocksdb.RocksDB \
+          javap -verbose -classpath "$fat_jar" io.github.fluss_contrib.rocksdb.RocksDB \
             | grep -q 'major version: 52'
 
           make -C java javadocs
