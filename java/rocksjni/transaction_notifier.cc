@@ -8,16 +8,16 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_AbstractTransactionNotifier.h"
+#include "include/io_github_fluss_contrib_rocksdb_AbstractTransactionNotifier.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/transaction_notifier_jnicallback.h"
 
 /*
- * Class:     org_fluss_rocksdb_AbstractTransactionNotifier
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractTransactionNotifier
  * Method:    createNewTransactionNotifier
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_AbstractTransactionNotifier_createNewTransactionNotifier(
+jlong Java_io_github_fluss_1contrib_rocksdb_AbstractTransactionNotifier_createNewTransactionNotifier(
     JNIEnv* env, jobject jobj) {
   auto* transaction_notifier =
       new ROCKSDB_NAMESPACE::TransactionNotifierJniCallback(env, jobj);
@@ -28,11 +28,11 @@ jlong Java_org_fluss_rocksdb_AbstractTransactionNotifier_createNewTransactionNot
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractTransactionNotifier
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractTransactionNotifier
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_AbstractTransactionNotifier_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_AbstractTransactionNotifier_disposeInternalJni(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   // TODO(AR) refactor to use JniCallback::JniCallback
   // when https://github.com/facebook/rocksdb/pull/1241/ is merged

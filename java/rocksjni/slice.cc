@@ -14,20 +14,20 @@
 
 #include <string>
 
-#include "include/org_fluss_rocksdb_AbstractSlice.h"
-#include "include/org_fluss_rocksdb_DirectSlice.h"
-#include "include/org_fluss_rocksdb_Slice.h"
+#include "include/io_github_fluss_contrib_rocksdb_AbstractSlice.h"
+#include "include/io_github_fluss_contrib_rocksdb_DirectSlice.h"
+#include "include/io_github_fluss_contrib_rocksdb_Slice.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
-// <editor-fold desc="org.fluss.rocksdb.AbstractSlice>
+// <editor-fold desc="io.github.fluss_contrib.rocksdb.AbstractSlice>
 
 /*
- * Class:     org_fluss_rocksdb_AbstractSlice
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractSlice
  * Method:    createNewSliceFromString
  * Signature: (Ljava/lang/String;)J
  */
-jlong Java_org_fluss_rocksdb_AbstractSlice_createNewSliceFromString(
+jlong Java_io_github_fluss_1contrib_rocksdb_AbstractSlice_createNewSliceFromString(
     JNIEnv* env, jclass /*jcls*/, jstring jstr) {
   const auto* str = env->GetStringUTFChars(jstr, nullptr);
   if (str == nullptr) {
@@ -38,8 +38,9 @@ jlong Java_org_fluss_rocksdb_AbstractSlice_createNewSliceFromString(
   const size_t len = strlen(str);
 
   // NOTE: buf will be deleted in the
-  // Java_org_fluss_rocksdb_Slice_disposeInternalBuf or
-  // or Java_org_fluss_rocksdb_DirectSlice_disposeInternalBuf methods
+  // Java_io_github_fluss_1contrib_rocksdb_Slice_disposeInternalBuf or
+  // or Java_io_github_fluss_1contrib_rocksdb_DirectSlice_disposeInternalBuf
+  // methods
   char* buf = new char[len + 1];
   memcpy(buf, str, len);
   buf[len] = 0;
@@ -50,51 +51,47 @@ jlong Java_org_fluss_rocksdb_AbstractSlice_createNewSliceFromString(
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractSlice
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractSlice
  * Method:    size0
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_AbstractSlice_size0(JNIEnv* /*env*/,
-                                                jclass /*jcls*/, jlong handle) {
+jint Java_io_github_fluss_1contrib_rocksdb_AbstractSlice_size0(JNIEnv* /*env*/,
+                                                               jclass /*jcls*/,
+                                                               jlong handle) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   return static_cast<jint>(slice->size());
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractSlice
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractSlice
  * Method:    empty0
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_AbstractSlice_empty0(JNIEnv* /*env*/,
-                                                     jclass /*jcls*/,
-                                                     jlong handle) {
+jboolean Java_io_github_fluss_1contrib_rocksdb_AbstractSlice_empty0(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   return slice->empty();
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractSlice
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractSlice
  * Method:    toString0
  * Signature: (JZ)Ljava/lang/String;
  */
-jstring Java_org_fluss_rocksdb_AbstractSlice_toString0(JNIEnv* env,
-                                                       jclass /*jobj*/,
-                                                       jlong handle,
-                                                       jboolean hex) {
+jstring Java_io_github_fluss_1contrib_rocksdb_AbstractSlice_toString0(
+    JNIEnv* env, jclass /*jobj*/, jlong handle, jboolean hex) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   const std::string s = slice->ToString(hex);
   return env->NewStringUTF(s.c_str());
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractSlice
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractSlice
  * Method:    compare0
  * Signature: (JJ)I;
  */
-jint Java_org_fluss_rocksdb_AbstractSlice_compare0(JNIEnv* /*env*/,
-                                                   jclass /*jcls*/,
-                                                   jlong handle,
-                                                   jlong otherHandle) {
+jint Java_io_github_fluss_1contrib_rocksdb_AbstractSlice_compare0(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle, jlong otherHandle) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   const auto* otherSlice =
       reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(otherHandle);
@@ -102,14 +99,12 @@ jint Java_org_fluss_rocksdb_AbstractSlice_compare0(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractSlice
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractSlice
  * Method:    startsWith0
  * Signature: (JJ)Z;
  */
-jboolean Java_org_fluss_rocksdb_AbstractSlice_startsWith0(JNIEnv* /*env*/,
-                                                          jclass /*jcls*/,
-                                                          jlong handle,
-                                                          jlong otherHandle) {
+jboolean Java_io_github_fluss_1contrib_rocksdb_AbstractSlice_startsWith0(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle, jlong otherHandle) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   const auto* otherSlice =
       reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(otherHandle);
@@ -117,33 +112,31 @@ jboolean Java_org_fluss_rocksdb_AbstractSlice_startsWith0(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractSlice
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractSlice
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_AbstractSlice_disposeInternalJni(JNIEnv* /*env*/,
-                                                             jclass /*jcls*/,
-                                                             jlong handle) {
+void Java_io_github_fluss_1contrib_rocksdb_AbstractSlice_disposeInternalJni(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle) {
   delete reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
 }
 
 // </editor-fold>
 
-// <editor-fold desc="org.fluss.rocksdb.Slice>
+// <editor-fold desc="io.github.fluss_contrib.rocksdb.Slice>
 
 /*
- * Class:     org_fluss_rocksdb_Slice
+ * Class:     io_github_fluss_contrib_rocksdb_Slice
  * Method:    createNewSlice0
  * Signature: ([BI)J
  */
-jlong Java_org_fluss_rocksdb_Slice_createNewSlice0(JNIEnv* env, jclass /*jcls*/,
-                                                   jbyteArray data,
-                                                   jint offset) {
+jlong Java_io_github_fluss_1contrib_rocksdb_Slice_createNewSlice0(
+    JNIEnv* env, jclass /*jcls*/, jbyteArray data, jint offset) {
   const jsize dataSize = env->GetArrayLength(data);
   const int len = dataSize - offset;
 
   // NOTE: buf will be deleted in the
-  // Java_org_fluss_rocksdb_Slice_disposeInternalBuf method
+  // Java_io_github_fluss_1contrib_rocksdb_Slice_disposeInternalBuf method
   jbyte* buf = new jbyte[len];
   env->GetByteArrayRegion(data, offset, len, buf);
   if (env->ExceptionCheck()) {
@@ -156,12 +149,12 @@ jlong Java_org_fluss_rocksdb_Slice_createNewSlice0(JNIEnv* env, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_Slice
+ * Class:     io_github_fluss_contrib_rocksdb_Slice
  * Method:    createNewSlice1
  * Signature: ([B)J
  */
-jlong Java_org_fluss_rocksdb_Slice_createNewSlice1(JNIEnv* env, jclass /*jcls*/,
-                                                   jbyteArray data) {
+jlong Java_io_github_fluss_1contrib_rocksdb_Slice_createNewSlice1(
+    JNIEnv* env, jclass /*jcls*/, jbyteArray data) {
   jbyte* ptrData = env->GetByteArrayElements(data, nullptr);
   if (ptrData == nullptr) {
     // exception thrown: OutOfMemoryError
@@ -170,7 +163,7 @@ jlong Java_org_fluss_rocksdb_Slice_createNewSlice1(JNIEnv* env, jclass /*jcls*/,
   const int len = env->GetArrayLength(data) + 1;
 
   // NOTE: buf will be deleted in the
-  // Java_org_fluss_rocksdb_Slice_disposeInternalBuf method
+  // Java_io_github_fluss_1contrib_rocksdb_Slice_disposeInternalBuf method
   char* buf = new char[len];
   memcpy(buf, ptrData, len - 1);
   buf[len - 1] = '\0';
@@ -183,12 +176,13 @@ jlong Java_org_fluss_rocksdb_Slice_createNewSlice1(JNIEnv* env, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_Slice
+ * Class:     io_github_fluss_contrib_rocksdb_Slice
  * Method:    data0
  * Signature: (J)[B
  */
-jbyteArray Java_org_fluss_rocksdb_Slice_data0(JNIEnv* env, jobject /*jobj*/,
-                                              jlong handle) {
+jbyteArray Java_io_github_fluss_1contrib_rocksdb_Slice_data0(JNIEnv* env,
+                                                             jobject /*jobj*/,
+                                                             jlong handle) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   const jsize len = static_cast<jsize>(slice->size());
   const jbyteArray data = env->NewByteArray(len);
@@ -210,13 +204,13 @@ jbyteArray Java_org_fluss_rocksdb_Slice_data0(JNIEnv* env, jobject /*jobj*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_Slice
+ * Class:     io_github_fluss_contrib_rocksdb_Slice
  * Method:    clear0
  * Signature: (JZJ)V
  */
-void Java_org_fluss_rocksdb_Slice_clear0(JNIEnv* /*env*/, jclass /*jcls*/,
-                                         jlong handle, jboolean shouldRelease,
-                                         jlong internalBufferOffset) {
+void Java_io_github_fluss_1contrib_rocksdb_Slice_clear0(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle, jboolean shouldRelease,
+    jlong internalBufferOffset) {
   auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   if (shouldRelease == JNI_TRUE) {
     const char* buf = slice->data_ - internalBufferOffset;
@@ -226,35 +220,35 @@ void Java_org_fluss_rocksdb_Slice_clear0(JNIEnv* /*env*/, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_Slice
+ * Class:     io_github_fluss_contrib_rocksdb_Slice
  * Method:    removePrefix0
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_Slice_removePrefix0(JNIEnv* /*env*/,
-                                                jclass /*jcls*/, jlong handle,
-                                                jint length) {
+void Java_io_github_fluss_1contrib_rocksdb_Slice_removePrefix0(JNIEnv* /*env*/,
+                                                               jclass /*jcls*/,
+                                                               jlong handle,
+                                                               jint length) {
   auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   slice->remove_prefix(length);
 }
 
 /*
- * Class:     org_fluss_rocksdb_DirectSlice
+ * Class:     io_github_fluss_contrib_rocksdb_DirectSlice
  * Method:    setLength0
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_DirectSlice_setLength0(JNIEnv* /*env*/,
-                                                   jclass /*jcls*/,
-                                                   jlong handle, jint length) {
+void Java_io_github_fluss_1contrib_rocksdb_DirectSlice_setLength0(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle, jint length) {
   auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   slice->size_ = length;
 }
 
 /*
- * Class:     org_fluss_rocksdb_Slice
+ * Class:     io_github_fluss_contrib_rocksdb_Slice
  * Method:    disposeInternalBuf
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_Slice_disposeInternalBuf(
+void Java_io_github_fluss_1contrib_rocksdb_Slice_disposeInternalBuf(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong handle,
     jlong internalBufferOffset) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
@@ -264,17 +258,15 @@ void Java_org_fluss_rocksdb_Slice_disposeInternalBuf(
 
 // </editor-fold>
 
-// <editor-fold desc="org.fluss.rocksdb.DirectSlice>
+// <editor-fold desc="io.github.fluss_contrib.rocksdb.DirectSlice>
 
 /*
- * Class:     org_fluss_rocksdb_DirectSlice
+ * Class:     io_github_fluss_contrib_rocksdb_DirectSlice
  * Method:    createNewDirectSlice0
  * Signature: (Ljava/nio/ByteBuffer;I)J
  */
-jlong Java_org_fluss_rocksdb_DirectSlice_createNewDirectSlice0(JNIEnv* env,
-                                                               jclass /*jcls*/,
-                                                               jobject data,
-                                                               jint length) {
+jlong Java_io_github_fluss_1contrib_rocksdb_DirectSlice_createNewDirectSlice0(
+    JNIEnv* env, jclass /*jcls*/, jobject data, jint length) {
   assert(data != nullptr);
   void* data_addr = env->GetDirectBufferAddress(data);
   if (data_addr == nullptr) {
@@ -292,13 +284,12 @@ jlong Java_org_fluss_rocksdb_DirectSlice_createNewDirectSlice0(JNIEnv* env,
 }
 
 /*
- * Class:     org_fluss_rocksdb_DirectSlice
+ * Class:     io_github_fluss_contrib_rocksdb_DirectSlice
  * Method:    createNewDirectSlice1
  * Signature: (Ljava/nio/ByteBuffer;)J
  */
-jlong Java_org_fluss_rocksdb_DirectSlice_createNewDirectSlice1(JNIEnv* env,
-                                                               jclass /*jcls*/,
-                                                               jobject data) {
+jlong Java_io_github_fluss_1contrib_rocksdb_DirectSlice_createNewDirectSlice1(
+    JNIEnv* env, jclass /*jcls*/, jobject data) {
   void* data_addr = env->GetDirectBufferAddress(data);
   if (data_addr == nullptr) {
     // error: memory region is undefined, given object is not a direct
@@ -315,37 +306,38 @@ jlong Java_org_fluss_rocksdb_DirectSlice_createNewDirectSlice1(JNIEnv* env,
 }
 
 /*
- * Class:     org_fluss_rocksdb_DirectSlice
+ * Class:     io_github_fluss_contrib_rocksdb_DirectSlice
  * Method:    data0
  * Signature: (J)Ljava/lang/Object;
  */
-jobject Java_org_fluss_rocksdb_DirectSlice_data0(JNIEnv* env, jobject /*jobj*/,
-                                                 jlong handle) {
+jobject Java_io_github_fluss_1contrib_rocksdb_DirectSlice_data0(
+    JNIEnv* env, jobject /*jobj*/, jlong handle) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   return env->NewDirectByteBuffer(const_cast<char*>(slice->data()),
                                   slice->size());
 }
 
 /*
- * Class:     org_fluss_rocksdb_DirectSlice
+ * Class:     io_github_fluss_contrib_rocksdb_DirectSlice
  * Method:    get0
  * Signature: (JI)B
  */
-jbyte Java_org_fluss_rocksdb_DirectSlice_get0(JNIEnv* /*env*/, jclass /*jcls*/,
-                                              jlong handle, jint offset) {
+jbyte Java_io_github_fluss_1contrib_rocksdb_DirectSlice_get0(JNIEnv* /*env*/,
+                                                             jclass /*jcls*/,
+                                                             jlong handle,
+                                                             jint offset) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   return (*slice)[offset];
 }
 
 /*
- * Class:     org_fluss_rocksdb_DirectSlice
+ * Class:     io_github_fluss_contrib_rocksdb_DirectSlice
  * Method:    clear0
  * Signature: (JZJ)V
  */
-void Java_org_fluss_rocksdb_DirectSlice_clear0(JNIEnv* /*env*/, jclass /*jcls*/,
-                                               jlong handle,
-                                               jboolean shouldRelease,
-                                               jlong internalBufferOffset) {
+void Java_io_github_fluss_1contrib_rocksdb_DirectSlice_clear0(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle, jboolean shouldRelease,
+    jlong internalBufferOffset) {
   auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   if (shouldRelease == JNI_TRUE) {
     const char* buf = slice->data_ - internalBufferOffset;
@@ -355,24 +347,22 @@ void Java_org_fluss_rocksdb_DirectSlice_clear0(JNIEnv* /*env*/, jclass /*jcls*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_DirectSlice
+ * Class:     io_github_fluss_contrib_rocksdb_DirectSlice
  * Method:    removePrefix0
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_DirectSlice_removePrefix0(JNIEnv* /*env*/,
-                                                      jclass /*jcls*/,
-                                                      jlong handle,
-                                                      jint length) {
+void Java_io_github_fluss_1contrib_rocksdb_DirectSlice_removePrefix0(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle, jint length) {
   auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);
   slice->remove_prefix(length);
 }
 
 /*
- * Class:     org_fluss_rocksdb_DirectSlice
+ * Class:     io_github_fluss_contrib_rocksdb_DirectSlice
  * Method:    disposeInternalBuf
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_DirectSlice_disposeInternalBuf(
+void Java_io_github_fluss_1contrib_rocksdb_DirectSlice_disposeInternalBuf(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong handle,
     jlong internalBufferOffset) {
   const auto* slice = reinterpret_cast<ROCKSDB_NAMESPACE::Slice*>(handle);

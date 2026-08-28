@@ -12,17 +12,17 @@
 
 #include <string>
 
-#include "include/org_fluss_rocksdb_PersistentCache.h"
+#include "include/io_github_fluss_contrib_rocksdb_PersistentCache.h"
 #include "loggerjnicallback.h"
 #include "portal.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 
 /*
- * Class:     org_fluss_rocksdb_PersistentCache
+ * Class:     io_github_fluss_contrib_rocksdb_PersistentCache
  * Method:    newPersistentCache
  * Signature: (JLjava/lang/String;JJZ)J
  */
-jlong Java_org_fluss_rocksdb_PersistentCache_newPersistentCache(
+jlong Java_io_github_fluss_1contrib_rocksdb_PersistentCache_newPersistentCache(
     JNIEnv* env, jclass, jlong jenv_handle, jstring jpath, jlong jsz,
     jlong jlogger_handle, jboolean joptimized_for_nvm) {
   auto* rocks_env = reinterpret_cast<ROCKSDB_NAMESPACE::Env*>(jenv_handle);
@@ -47,12 +47,12 @@ jlong Java_org_fluss_rocksdb_PersistentCache_newPersistentCache(
 }
 
 /*
- * Class:     org_fluss_rocksdb_PersistentCache
+ * Class:     io_github_fluss_contrib_rocksdb_PersistentCache
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_PersistentCache_disposeInternalJni(JNIEnv*, jclass,
-                                                               jlong jhandle) {
+void Java_io_github_fluss_1contrib_rocksdb_PersistentCache_disposeInternalJni(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* cache =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::PersistentCache>*>(
           jhandle);

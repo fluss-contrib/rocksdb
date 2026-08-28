@@ -3,9 +3,9 @@
 //  COPYING file in the root directory) and Apache 2.0 License
 //  (found in the LICENSE.Apache file in the root directory).
 
+import io.github.fluss_contrib.rocksdb.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.fluss.rocksdb.*;
 
 public class RocksDBColumnFamilySample {
   static {

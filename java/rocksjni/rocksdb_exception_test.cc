@@ -5,50 +5,50 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_RocksDBExceptionTest.h"
+#include "include/io_github_fluss_contrib_rocksdb_RocksDBExceptionTest.h"
 #include "rocksdb/slice.h"
 #include "rocksdb/status.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_RocksDBExceptionTest
+ * Class:     io_github_fluss_contrib_rocksdb_RocksDBExceptionTest
  * Method:    raiseException
  * Signature: ()V
  */
-void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseException(
+void Java_io_github_fluss_1contrib_rocksdb_RocksDBExceptionTest_raiseException(
     JNIEnv* env, jobject /*jobj*/) {
   ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(env,
                                                    std::string("test message"));
 }
 
 /*
- * Class:     org_fluss_rocksdb_RocksDBExceptionTest
+ * Class:     io_github_fluss_contrib_rocksdb_RocksDBExceptionTest
  * Method:    raiseExceptionWithStatusCode
  * Signature: ()V
  */
-void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseExceptionWithStatusCode(
+void Java_io_github_fluss_1contrib_rocksdb_RocksDBExceptionTest_raiseExceptionWithStatusCode(
     JNIEnv* env, jobject /*jobj*/) {
   ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
       env, "test message", ROCKSDB_NAMESPACE::Status::NotSupported());
 }
 
 /*
- * Class:     org_fluss_rocksdb_RocksDBExceptionTest
+ * Class:     io_github_fluss_contrib_rocksdb_RocksDBExceptionTest
  * Method:    raiseExceptionNoMsgWithStatusCode
  * Signature: ()V
  */
-void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseExceptionNoMsgWithStatusCode(
+void Java_io_github_fluss_1contrib_rocksdb_RocksDBExceptionTest_raiseExceptionNoMsgWithStatusCode(
     JNIEnv* env, jobject /*jobj*/) {
   ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
       env, ROCKSDB_NAMESPACE::Status::NotSupported());
 }
 
 /*
- * Class:     org_fluss_rocksdb_RocksDBExceptionTest
+ * Class:     io_github_fluss_contrib_rocksdb_RocksDBExceptionTest
  * Method:    raiseExceptionWithStatusCodeSubCode
  * Signature: ()V
  */
-void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseExceptionWithStatusCodeSubCode(
+void Java_io_github_fluss_1contrib_rocksdb_RocksDBExceptionTest_raiseExceptionWithStatusCodeSubCode(
     JNIEnv* env, jobject /*jobj*/) {
   ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
       env, "test message",
@@ -57,11 +57,11 @@ void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseExceptionWithStatusCodeSub
 }
 
 /*
- * Class:     org_fluss_rocksdb_RocksDBExceptionTest
+ * Class:     io_github_fluss_contrib_rocksdb_RocksDBExceptionTest
  * Method:    raiseExceptionNoMsgWithStatusCodeSubCode
  * Signature: ()V
  */
-void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseExceptionNoMsgWithStatusCodeSubCode(
+void Java_io_github_fluss_1contrib_rocksdb_RocksDBExceptionTest_raiseExceptionNoMsgWithStatusCodeSubCode(
     JNIEnv* env, jobject /*jobj*/) {
   ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
       env, ROCKSDB_NAMESPACE::Status::TimedOut(
@@ -69,11 +69,11 @@ void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseExceptionNoMsgWithStatusCo
 }
 
 /*
- * Class:     org_fluss_rocksdb_RocksDBExceptionTest
+ * Class:     io_github_fluss_contrib_rocksdb_RocksDBExceptionTest
  * Method:    raiseExceptionWithStatusCodeState
  * Signature: ()V
  */
-void Java_org_fluss_rocksdb_RocksDBExceptionTest_raiseExceptionWithStatusCodeState(
+void Java_io_github_fluss_1contrib_rocksdb_RocksDBExceptionTest_raiseExceptionWithStatusCodeState(
     JNIEnv* env, jobject /*jobj*/) {
   ROCKSDB_NAMESPACE::Slice state("test state");
   ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(

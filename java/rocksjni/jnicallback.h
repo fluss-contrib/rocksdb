@@ -5,7 +5,7 @@
 //
 // This file implements the callback "bridge" between Java and C++ for
 // JNI Callbacks from C++ to sub-classes or
-// org.fluss.rocksdb.RocksCallbackObject
+// io.github.fluss_contrib.rocksdb.RocksCallbackObject
 
 #ifndef JAVA_ROCKSJNI_JNICALLBACK_H_
 #define JAVA_ROCKSJNI_JNICALLBACK_H_

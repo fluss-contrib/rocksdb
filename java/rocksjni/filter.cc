@@ -12,18 +12,18 @@
 
 #include <string>
 
-#include "include/org_fluss_rocksdb_BloomFilter.h"
-#include "include/org_fluss_rocksdb_Filter.h"
+#include "include/io_github_fluss_contrib_rocksdb_BloomFilter.h"
+#include "include/io_github_fluss_contrib_rocksdb_Filter.h"
 #include "rocksdb/filter_policy.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_BloomFilter
+ * Class:     io_github_fluss_contrib_rocksdb_BloomFilter
  * Method:    createBloomFilter
  * Signature: (DZ)J
  */
-jlong Java_org_fluss_rocksdb_BloomFilter_createNewBloomFilter(
+jlong Java_io_github_fluss_1contrib_rocksdb_BloomFilter_createNewBloomFilter(
     JNIEnv* /*env*/, jclass /*jcls*/, jdouble bits_per_key) {
   auto* sptr_filter =
       new std::shared_ptr<const ROCKSDB_NAMESPACE::FilterPolicy>(
@@ -32,13 +32,12 @@ jlong Java_org_fluss_rocksdb_BloomFilter_createNewBloomFilter(
 }
 
 /*
- * Class:     org_fluss_rocksdb_Filter
+ * Class:     io_github_fluss_contrib_rocksdb_Filter
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_Filter_disposeInternalJni(JNIEnv* /*env*/,
-                                                      jclass /*jcls*/,
-                                                      jlong jhandle) {
+void Java_io_github_fluss_1contrib_rocksdb_Filter_disposeInternalJni(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<const ROCKSDB_NAMESPACE::FilterPolicy>*>(
           jhandle);

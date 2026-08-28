@@ -8,7 +8,7 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_CompactRangeOptions.h"
+#include "include/io_github_fluss_contrib_rocksdb_CompactRangeOptions.h"
 #include "rocksdb/options.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
@@ -23,7 +23,7 @@
  * maintain the lifetime of these parameters (`full_history_ts_low`, `canceled`)
  * by including their values in this class.
  */
-class Java_org_fluss_rocksdb_CompactRangeOptions {
+class Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions {
  public:
   ROCKSDB_NAMESPACE::CompactRangeOptions compactRangeOptions;
 
@@ -64,220 +64,221 @@ class Java_org_fluss_rocksdb_CompactRangeOptions {
 };
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    newCompactRangeOptions
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_CompactRangeOptions_newCompactRangeOptions(
+jlong Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_newCompactRangeOptions(
     JNIEnv* /*env*/, jclass /*jclazz*/) {
-  auto* options = new Java_org_fluss_rocksdb_CompactRangeOptions();
+  auto* options =
+      new Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions();
   return GET_CPLUSPLUS_POINTER(&options->compactRangeOptions);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    exclusiveManualCompaction
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_CompactRangeOptions_exclusiveManualCompaction(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_exclusiveManualCompaction(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   return static_cast<jboolean>(
       options->compactRangeOptions.exclusive_manual_compaction);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setExclusiveManualCompaction
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setExclusiveManualCompaction(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setExclusiveManualCompaction(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle,
     jboolean exclusive_manual_compaction) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->compactRangeOptions.exclusive_manual_compaction =
       static_cast<bool>(exclusive_manual_compaction);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    bottommostLevelCompaction
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactRangeOptions_bottommostLevelCompaction(
+jint Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_bottommostLevelCompaction(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   return ROCKSDB_NAMESPACE::BottommostLevelCompactionJni::
       toJavaBottommostLevelCompaction(
           options->compactRangeOptions.bottommost_level_compaction);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setBottommostLevelCompaction
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setBottommostLevelCompaction(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setBottommostLevelCompaction(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle,
     jint bottommost_level_compaction) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->compactRangeOptions.bottommost_level_compaction =
       ROCKSDB_NAMESPACE::BottommostLevelCompactionJni::
           toCppBottommostLevelCompaction(bottommost_level_compaction);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    changeLevel
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_CompactRangeOptions_changeLevel(JNIEnv* /*env*/,
-                                                                jclass /*jobj*/,
-                                                                jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+jboolean Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_changeLevel(
+    JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   return static_cast<jboolean>(options->compactRangeOptions.change_level);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setChangeLevel
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setChangeLevel(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setChangeLevel(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle, jboolean change_level) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->compactRangeOptions.change_level = static_cast<bool>(change_level);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    targetLevel
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactRangeOptions_targetLevel(JNIEnv* /*env*/,
-                                                            jclass /*jobj*/,
-                                                            jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+jint Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_targetLevel(
+    JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   return static_cast<jint>(options->compactRangeOptions.target_level);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setTargetLevel
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setTargetLevel(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setTargetLevel(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle, jint target_level) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->compactRangeOptions.target_level = static_cast<int>(target_level);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    targetPathId
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactRangeOptions_targetPathId(JNIEnv* /*env*/,
-                                                             jclass /*jobj*/,
-                                                             jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+jint Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_targetPathId(
+    JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   return static_cast<jint>(options->compactRangeOptions.target_path_id);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setTargetPathId
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setTargetPathId(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setTargetPathId(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle, jint target_path_id) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->compactRangeOptions.target_path_id =
       static_cast<uint32_t>(target_path_id);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    allowWriteStall
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_CompactRangeOptions_allowWriteStall(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_allowWriteStall(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   return static_cast<jboolean>(options->compactRangeOptions.allow_write_stall);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setAllowWriteStall
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setAllowWriteStall(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setAllowWriteStall(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle,
     jboolean allow_write_stall) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->compactRangeOptions.allow_write_stall =
       static_cast<bool>(allow_write_stall);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    maxSubcompactions
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactRangeOptions_maxSubcompactions(
+jint Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_maxSubcompactions(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   return static_cast<jint>(options->compactRangeOptions.max_subcompactions);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setMaxSubcompactions
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setMaxSubcompactions(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setMaxSubcompactions(
     JNIEnv* /*env*/, jclass /*jobj*/, jlong jhandle, jint max_subcompactions) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->compactRangeOptions.max_subcompactions =
       static_cast<uint32_t>(max_subcompactions);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setFullHistoryTSLow
  * Signature: (JJJ)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setFullHistoryTSLow(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setFullHistoryTSLow(
     JNIEnv*, jclass, jlong jhandle, jlong start, jlong range) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->set_full_history_ts_low(start, range);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    fullHistoryTSLow
- * Signature: (J)Lorg/fluss/rocksdb/CompactRangeOptions/Timestamp;
+ * Signature: (J)Lio/github/fluss_contrib/rocksdb/CompactRangeOptions/Timestamp;
  */
-jobject Java_org_fluss_rocksdb_CompactRangeOptions_fullHistoryTSLow(
+jobject
+Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_fullHistoryTSLow(
     JNIEnv* env, jclass, jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   uint64_t start;
   uint64_t range;
   jobject result = nullptr;
@@ -291,37 +292,37 @@ jobject Java_org_fluss_rocksdb_CompactRangeOptions_fullHistoryTSLow(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    setCanceled
  * Signature: (JZ)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_setCanceled(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setCanceled(
     JNIEnv*, jclass, jlong jhandle, jboolean jcanceled) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   options->set_canceled(jcanceled);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    canceled
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_CompactRangeOptions_canceled(JNIEnv*, jclass,
-                                                             jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+jboolean Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_canceled(
+    JNIEnv*, jclass, jlong jhandle) {
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   return options->get_canceled();
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactRangeOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_CompactRangeOptions_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_disposeInternalJni(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
-  auto* options =
-      reinterpret_cast<Java_org_fluss_rocksdb_CompactRangeOptions*>(jhandle);
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
   delete options;
 }

@@ -120,7 +120,11 @@ jobs:
             exit 1
           fi
 
-          jar tf "$jar_file" | grep -qx 'org/fluss/rocksdb/RocksDB.class'
+          jar tf "$jar_file" | grep -qx 'io/github/fluss_contrib/rocksdb/RocksDB.class'
+          if jar tf "$jar_file" | grep -q '^org/fluss/rocksdb/'; then
+            echo "Obsolete Java package found in JNI artifact" >&2
+            exit 1
+          fi
           jar tf "$jar_file" | grep -qx 'libflussrocksdbjni-linux64.so'
           if jar tf "$jar_file" | grep -q '^org/rocksdb/'; then
             echo "Upstream Java package found in JNI artifact" >&2

@@ -1,105 +1,105 @@
 NATIVE_JAVA_CLASSES = \
-	org.fluss.rocksdb.AbstractCompactionFilter\
-	org.fluss.rocksdb.AbstractCompactionFilterFactory\
-	org.fluss.rocksdb.AbstractComparator\
-	org.fluss.rocksdb.AbstractEventListener\
-	org.fluss.rocksdb.AbstractSlice\
-	org.fluss.rocksdb.AbstractTableFilter\
-	org.fluss.rocksdb.AbstractTraceWriter\
-	org.fluss.rocksdb.AbstractTransactionNotifier\
-	org.fluss.rocksdb.AbstractWalFilter\
-	org.fluss.rocksdb.BackupEngine\
-	org.fluss.rocksdb.BackupEngineOptions\
-	org.fluss.rocksdb.BlockBasedTableConfig\
-	org.fluss.rocksdb.BloomFilter\
-	org.fluss.rocksdb.Checkpoint\
-	org.fluss.rocksdb.ClockCache\
-	org.fluss.rocksdb.Cache\
-	org.fluss.rocksdb.CassandraCompactionFilter\
-	org.fluss.rocksdb.CassandraValueMergeOperator\
-	org.fluss.rocksdb.ColumnFamilyHandle\
-	org.fluss.rocksdb.ColumnFamilyOptions\
-	org.fluss.rocksdb.CompactionJobInfo\
-	org.fluss.rocksdb.CompactionJobStats\
-	org.fluss.rocksdb.CompactionOptions\
-	org.fluss.rocksdb.CompactionOptionsFIFO\
-	org.fluss.rocksdb.CompactionOptionsUniversal\
-	org.fluss.rocksdb.CompactRangeOptions\
-	org.fluss.rocksdb.ComparatorOptions\
-	org.fluss.rocksdb.CompressionOptions\
-	org.fluss.rocksdb.ConfigOptions\
-	org.fluss.rocksdb.DBOptions\
-	org.fluss.rocksdb.DirectSlice\
-	org.fluss.rocksdb.Env\
-	org.fluss.rocksdb.EnvOptions\
-	org.fluss.rocksdb.FlushOptions\
-	org.fluss.rocksdb.Filter\
-	org.fluss.rocksdb.FloorSetCompactionFilter\
-	org.fluss.rocksdb.FlussTtlCompactionFilter\
-	org.fluss.rocksdb.IngestExternalFileOptions\
-	org.fluss.rocksdb.HashLinkedListMemTableConfig\
-	org.fluss.rocksdb.HashSkipListMemTableConfig\
-	org.fluss.rocksdb.ConcurrentTaskLimiter\
-	org.fluss.rocksdb.ConcurrentTaskLimiterImpl\
-	org.fluss.rocksdb.KeyMayExist\
-	org.fluss.rocksdb.Logger\
-	org.fluss.rocksdb.LRUCache\
-	org.fluss.rocksdb.MemoryUsageType\
-	org.fluss.rocksdb.MemoryUtil\
-	org.fluss.rocksdb.MergeOperator\
-	org.fluss.rocksdb.NativeComparatorWrapper\
-	org.fluss.rocksdb.OptimisticTransactionDB\
-	org.fluss.rocksdb.OptimisticTransactionOptions\
-	org.fluss.rocksdb.Options\
-	org.fluss.rocksdb.OptionsUtil\
-	org.fluss.rocksdb.PersistentCache\
-	org.fluss.rocksdb.PerfContext\
-	org.fluss.rocksdb.PerfLevel\
-	org.fluss.rocksdb.PlainTableConfig\
-	org.fluss.rocksdb.RateLimiter\
-	org.fluss.rocksdb.ReadOptions\
-	org.fluss.rocksdb.RemoveEmptyValueCompactionFilter\
-	org.fluss.rocksdb.RestoreOptions\
-	org.fluss.rocksdb.RocksCallbackObject\
-	org.fluss.rocksdb.RocksDB\
-	org.fluss.rocksdb.RocksEnv\
-	org.fluss.rocksdb.RocksIterator\
-	org.fluss.rocksdb.RocksMemEnv\
-	org.fluss.rocksdb.SkipListMemTableConfig\
-	org.fluss.rocksdb.Slice\
-	org.fluss.rocksdb.SstFileManager\
-	org.fluss.rocksdb.SstFileWriter\
-	org.fluss.rocksdb.SstFileReader\
-	org.fluss.rocksdb.SstFileReaderIterator\
-	org.fluss.rocksdb.SstPartitionerFactory\
-	org.fluss.rocksdb.SstPartitionerFixedPrefixFactory\
-	org.fluss.rocksdb.Statistics\
-	org.fluss.rocksdb.ThreadStatus\
-	org.fluss.rocksdb.TimedEnv\
-	org.fluss.rocksdb.Transaction\
-	org.fluss.rocksdb.TransactionDB\
-	org.fluss.rocksdb.TransactionDBOptions\
-	org.fluss.rocksdb.TransactionOptions\
-	org.fluss.rocksdb.TransactionLogIterator\
-	org.fluss.rocksdb.TtlDB\
-	org.fluss.rocksdb.VectorMemTableConfig\
-	org.fluss.rocksdb.Snapshot\
-	org.fluss.rocksdb.StringAppendOperator\
-	org.fluss.rocksdb.UInt64AddOperator\
-	org.fluss.rocksdb.WriteBatch\
-	org.fluss.rocksdb.WriteBatch.Handler\
-	org.fluss.rocksdb.WriteOptions\
-	org.fluss.rocksdb.WriteBatchWithIndex\
-	org.fluss.rocksdb.WriteBufferManager\
-	org.fluss.rocksdb.WBWIRocksIterator\
-	org.fluss.rocksdb.util.StdErrLogger
+	io.github.fluss_contrib.rocksdb.AbstractCompactionFilter\
+	io.github.fluss_contrib.rocksdb.AbstractCompactionFilterFactory\
+	io.github.fluss_contrib.rocksdb.AbstractComparator\
+	io.github.fluss_contrib.rocksdb.AbstractEventListener\
+	io.github.fluss_contrib.rocksdb.AbstractSlice\
+	io.github.fluss_contrib.rocksdb.AbstractTableFilter\
+	io.github.fluss_contrib.rocksdb.AbstractTraceWriter\
+	io.github.fluss_contrib.rocksdb.AbstractTransactionNotifier\
+	io.github.fluss_contrib.rocksdb.AbstractWalFilter\
+	io.github.fluss_contrib.rocksdb.BackupEngine\
+	io.github.fluss_contrib.rocksdb.BackupEngineOptions\
+	io.github.fluss_contrib.rocksdb.BlockBasedTableConfig\
+	io.github.fluss_contrib.rocksdb.BloomFilter\
+	io.github.fluss_contrib.rocksdb.Checkpoint\
+	io.github.fluss_contrib.rocksdb.ClockCache\
+	io.github.fluss_contrib.rocksdb.Cache\
+	io.github.fluss_contrib.rocksdb.CassandraCompactionFilter\
+	io.github.fluss_contrib.rocksdb.CassandraValueMergeOperator\
+	io.github.fluss_contrib.rocksdb.ColumnFamilyHandle\
+	io.github.fluss_contrib.rocksdb.ColumnFamilyOptions\
+	io.github.fluss_contrib.rocksdb.CompactionJobInfo\
+	io.github.fluss_contrib.rocksdb.CompactionJobStats\
+	io.github.fluss_contrib.rocksdb.CompactionOptions\
+	io.github.fluss_contrib.rocksdb.CompactionOptionsFIFO\
+	io.github.fluss_contrib.rocksdb.CompactionOptionsUniversal\
+	io.github.fluss_contrib.rocksdb.CompactRangeOptions\
+	io.github.fluss_contrib.rocksdb.ComparatorOptions\
+	io.github.fluss_contrib.rocksdb.CompressionOptions\
+	io.github.fluss_contrib.rocksdb.ConfigOptions\
+	io.github.fluss_contrib.rocksdb.DBOptions\
+	io.github.fluss_contrib.rocksdb.DirectSlice\
+	io.github.fluss_contrib.rocksdb.Env\
+	io.github.fluss_contrib.rocksdb.EnvOptions\
+	io.github.fluss_contrib.rocksdb.FlushOptions\
+	io.github.fluss_contrib.rocksdb.Filter\
+	io.github.fluss_contrib.rocksdb.FloorSetCompactionFilter\
+	io.github.fluss_contrib.rocksdb.FlussTtlCompactionFilter\
+	io.github.fluss_contrib.rocksdb.IngestExternalFileOptions\
+	io.github.fluss_contrib.rocksdb.HashLinkedListMemTableConfig\
+	io.github.fluss_contrib.rocksdb.HashSkipListMemTableConfig\
+	io.github.fluss_contrib.rocksdb.ConcurrentTaskLimiter\
+	io.github.fluss_contrib.rocksdb.ConcurrentTaskLimiterImpl\
+	io.github.fluss_contrib.rocksdb.KeyMayExist\
+	io.github.fluss_contrib.rocksdb.Logger\
+	io.github.fluss_contrib.rocksdb.LRUCache\
+	io.github.fluss_contrib.rocksdb.MemoryUsageType\
+	io.github.fluss_contrib.rocksdb.MemoryUtil\
+	io.github.fluss_contrib.rocksdb.MergeOperator\
+	io.github.fluss_contrib.rocksdb.NativeComparatorWrapper\
+	io.github.fluss_contrib.rocksdb.OptimisticTransactionDB\
+	io.github.fluss_contrib.rocksdb.OptimisticTransactionOptions\
+	io.github.fluss_contrib.rocksdb.Options\
+	io.github.fluss_contrib.rocksdb.OptionsUtil\
+	io.github.fluss_contrib.rocksdb.PersistentCache\
+	io.github.fluss_contrib.rocksdb.PerfContext\
+	io.github.fluss_contrib.rocksdb.PerfLevel\
+	io.github.fluss_contrib.rocksdb.PlainTableConfig\
+	io.github.fluss_contrib.rocksdb.RateLimiter\
+	io.github.fluss_contrib.rocksdb.ReadOptions\
+	io.github.fluss_contrib.rocksdb.RemoveEmptyValueCompactionFilter\
+	io.github.fluss_contrib.rocksdb.RestoreOptions\
+	io.github.fluss_contrib.rocksdb.RocksCallbackObject\
+	io.github.fluss_contrib.rocksdb.RocksDB\
+	io.github.fluss_contrib.rocksdb.RocksEnv\
+	io.github.fluss_contrib.rocksdb.RocksIterator\
+	io.github.fluss_contrib.rocksdb.RocksMemEnv\
+	io.github.fluss_contrib.rocksdb.SkipListMemTableConfig\
+	io.github.fluss_contrib.rocksdb.Slice\
+	io.github.fluss_contrib.rocksdb.SstFileManager\
+	io.github.fluss_contrib.rocksdb.SstFileWriter\
+	io.github.fluss_contrib.rocksdb.SstFileReader\
+	io.github.fluss_contrib.rocksdb.SstFileReaderIterator\
+	io.github.fluss_contrib.rocksdb.SstPartitionerFactory\
+	io.github.fluss_contrib.rocksdb.SstPartitionerFixedPrefixFactory\
+	io.github.fluss_contrib.rocksdb.Statistics\
+	io.github.fluss_contrib.rocksdb.ThreadStatus\
+	io.github.fluss_contrib.rocksdb.TimedEnv\
+	io.github.fluss_contrib.rocksdb.Transaction\
+	io.github.fluss_contrib.rocksdb.TransactionDB\
+	io.github.fluss_contrib.rocksdb.TransactionDBOptions\
+	io.github.fluss_contrib.rocksdb.TransactionOptions\
+	io.github.fluss_contrib.rocksdb.TransactionLogIterator\
+	io.github.fluss_contrib.rocksdb.TtlDB\
+	io.github.fluss_contrib.rocksdb.VectorMemTableConfig\
+	io.github.fluss_contrib.rocksdb.Snapshot\
+	io.github.fluss_contrib.rocksdb.StringAppendOperator\
+	io.github.fluss_contrib.rocksdb.UInt64AddOperator\
+	io.github.fluss_contrib.rocksdb.WriteBatch\
+	io.github.fluss_contrib.rocksdb.WriteBatch.Handler\
+	io.github.fluss_contrib.rocksdb.WriteOptions\
+	io.github.fluss_contrib.rocksdb.WriteBatchWithIndex\
+	io.github.fluss_contrib.rocksdb.WriteBufferManager\
+	io.github.fluss_contrib.rocksdb.WBWIRocksIterator\
+	io.github.fluss_contrib.rocksdb.util.StdErrLogger
 
 NATIVE_JAVA_TEST_CLASSES = \
-    org.fluss.rocksdb.RocksDBExceptionTest\
-    org.fluss.rocksdb.test.TestableEventListener\
-    org.fluss.rocksdb.NativeComparatorWrapperTest.NativeStringComparatorWrapper\
-    org.fluss.rocksdb.WriteBatchTest\
-    org.fluss.rocksdb.WriteBatchTestInternalHelper
+    io.github.fluss_contrib.rocksdb.RocksDBExceptionTest\
+    io.github.fluss_contrib.rocksdb.test.TestableEventListener\
+    io.github.fluss_contrib.rocksdb.NativeComparatorWrapperTest.NativeStringComparatorWrapper\
+    io.github.fluss_contrib.rocksdb.WriteBatchTest\
+    io.github.fluss_contrib.rocksdb.WriteBatchTestInternalHelper
 
 ROCKSDB_MAJOR = $(shell grep -E "ROCKSDB_MAJOR.[0-9]" ../include/rocksdb/version.h | cut -d ' ' -f 3)
 ROCKSDB_MINOR = $(shell grep -E "ROCKSDB_MINOR.[0-9]" ../include/rocksdb/version.h | cut -d ' ' -f 3)
@@ -110,109 +110,109 @@ ARCH := $(shell getconf LONG_BIT)
 SHA256_CMD ?= sha256sum
 
 JAVA_TESTS = \
-	org.fluss.rocksdb.BackupEngineOptionsTest\
-	org.fluss.rocksdb.BackupEngineTest\
-	org.fluss.rocksdb.BlobOptionsTest\
-	org.fluss.rocksdb.BlockBasedTableConfigTest\
-	org.fluss.rocksdb.BuiltinComparatorTest\
-	org.fluss.rocksdb.ByteBufferUnsupportedOperationTest\
-	org.fluss.rocksdb.BytewiseComparatorRegressionTest\
-	org.fluss.rocksdb.util.BytewiseComparatorTest\
-	org.fluss.rocksdb.util.BytewiseComparatorIntTest\
-	org.fluss.rocksdb.CheckPointTest\
-	org.fluss.rocksdb.ClockCacheTest\
-	org.fluss.rocksdb.ColumnFamilyOptionsTest\
-	org.fluss.rocksdb.ColumnFamilyTest\
-	org.fluss.rocksdb.CompactionFilterFactoryTest\
-	org.fluss.rocksdb.CompactionJobInfoTest\
-	org.fluss.rocksdb.CompactionJobStatsTest\
-	org.fluss.rocksdb.CompactionOptionsTest\
-	org.fluss.rocksdb.CompactionOptionsFIFOTest\
-	org.fluss.rocksdb.CompactionOptionsUniversalTest\
-	org.fluss.rocksdb.CompactionPriorityTest\
-	org.fluss.rocksdb.CompactionStopStyleTest\
-	org.fluss.rocksdb.ComparatorOptionsTest\
-	org.fluss.rocksdb.CompressionOptionsTest\
-	org.fluss.rocksdb.CompressionTypesTest\
-	org.fluss.rocksdb.DBOptionsTest\
-	org.fluss.rocksdb.DirectSliceTest\
-	org.fluss.rocksdb.util.EnvironmentTest\
-	org.fluss.rocksdb.EnvOptionsTest\
-	org.fluss.rocksdb.EventListenerTest\
-	org.fluss.rocksdb.IngestExternalFileOptionsTest\
-	org.fluss.rocksdb.util.IntComparatorTest\
-	org.fluss.rocksdb.util.JNIComparatorTest\
-	org.fluss.rocksdb.FilterTest\
-	org.fluss.rocksdb.FloorSetCompactionFilterTest\
-	org.fluss.rocksdb.FlussTtlCompactionFilterTest\
-	org.fluss.rocksdb.FlushTest\
-	org.fluss.rocksdb.ImportColumnFamilyTest\
-	org.fluss.rocksdb.InfoLogLevelTest\
-	org.fluss.rocksdb.KeyExistsTest \
-	org.fluss.rocksdb.KeyMayExistTest\
-	org.fluss.rocksdb.ConcurrentTaskLimiterTest\
-	org.fluss.rocksdb.LoggerTest\
-	org.fluss.rocksdb.LRUCacheTest\
-	org.fluss.rocksdb.MemoryUtilTest\
-	org.fluss.rocksdb.MemTableTest\
-	org.fluss.rocksdb.MergeCFVariantsTest\
-	org.fluss.rocksdb.MergeTest\
-	org.fluss.rocksdb.MergeVariantsTest\
-	org.fluss.rocksdb.MultiColumnRegressionTest \
-	org.fluss.rocksdb.MultiGetManyKeysTest\
-	org.fluss.rocksdb.MultiGetTest\
-	org.fluss.rocksdb.MixedOptionsTest\
-	org.fluss.rocksdb.MutableColumnFamilyOptionsTest\
-	org.fluss.rocksdb.MutableDBOptionsTest\
-	org.fluss.rocksdb.MutableOptionsGetSetTest \
-	org.fluss.rocksdb.NativeComparatorWrapperTest\
-	org.fluss.rocksdb.NativeLibraryLoaderTest\
-	org.fluss.rocksdb.OptimisticTransactionTest\
-	org.fluss.rocksdb.OptimisticTransactionDBTest\
-	org.fluss.rocksdb.OptimisticTransactionOptionsTest\
-	org.fluss.rocksdb.OptionsUtilTest\
-	org.fluss.rocksdb.OptionsTest\
-	org.fluss.rocksdb.PerfLevelTest \
-	org.fluss.rocksdb.PerfContextTest \
-	org.fluss.rocksdb.PutCFVariantsTest\
-	org.fluss.rocksdb.PutVariantsTest\
-	org.fluss.rocksdb.PlainTableConfigTest\
-	org.fluss.rocksdb.RateLimiterTest\
-	org.fluss.rocksdb.ReadOnlyTest\
-	org.fluss.rocksdb.ReadOptionsTest\
-	org.fluss.rocksdb.util.ReverseBytewiseComparatorIntTest\
-	org.fluss.rocksdb.RocksDBTest\
-	org.fluss.rocksdb.RocksDBExceptionTest\
-	org.fluss.rocksdb.DefaultEnvTest\
-	org.fluss.rocksdb.RocksIteratorTest\
-	org.fluss.rocksdb.RocksMemEnvTest\
-	org.fluss.rocksdb.util.SizeUnitTest\
-	org.fluss.rocksdb.SecondaryDBTest\
-	org.fluss.rocksdb.SliceTest\
-	org.fluss.rocksdb.SnapshotTest\
-	org.fluss.rocksdb.SstFileManagerTest\
-	org.fluss.rocksdb.SstFileWriterTest\
-	org.fluss.rocksdb.SstFileReaderTest\
-	org.fluss.rocksdb.SstPartitionerTest\
-	org.fluss.rocksdb.TableFilterTest\
-	org.fluss.rocksdb.TimedEnvTest\
-	org.fluss.rocksdb.TransactionTest\
-	org.fluss.rocksdb.TransactionDBTest\
-	org.fluss.rocksdb.TransactionOptionsTest\
-	org.fluss.rocksdb.TransactionDBOptionsTest\
-	org.fluss.rocksdb.TransactionLogIteratorTest\
-	org.fluss.rocksdb.TtlDBTest\
-	org.fluss.rocksdb.StatisticsTest\
-	org.fluss.rocksdb.StatisticsCollectorTest\
-	org.fluss.rocksdb.VerifyChecksumsTest\
-	org.fluss.rocksdb.WalFilterTest\
-	org.fluss.rocksdb.WALRecoveryModeTest\
-	org.fluss.rocksdb.WriteBatchHandlerTest\
-	org.fluss.rocksdb.WriteBatchTest\
-	org.fluss.rocksdb.WriteBatchThreadedTest\
-	org.fluss.rocksdb.WriteOptionsTest\
-	org.fluss.rocksdb.WriteBatchWithIndexTest\
-	org.fluss.rocksdb.util.StdErrLoggerTest
+	io.github.fluss_contrib.rocksdb.BackupEngineOptionsTest\
+	io.github.fluss_contrib.rocksdb.BackupEngineTest\
+	io.github.fluss_contrib.rocksdb.BlobOptionsTest\
+	io.github.fluss_contrib.rocksdb.BlockBasedTableConfigTest\
+	io.github.fluss_contrib.rocksdb.BuiltinComparatorTest\
+	io.github.fluss_contrib.rocksdb.ByteBufferUnsupportedOperationTest\
+	io.github.fluss_contrib.rocksdb.BytewiseComparatorRegressionTest\
+	io.github.fluss_contrib.rocksdb.util.BytewiseComparatorTest\
+	io.github.fluss_contrib.rocksdb.util.BytewiseComparatorIntTest\
+	io.github.fluss_contrib.rocksdb.CheckPointTest\
+	io.github.fluss_contrib.rocksdb.ClockCacheTest\
+	io.github.fluss_contrib.rocksdb.ColumnFamilyOptionsTest\
+	io.github.fluss_contrib.rocksdb.ColumnFamilyTest\
+	io.github.fluss_contrib.rocksdb.CompactionFilterFactoryTest\
+	io.github.fluss_contrib.rocksdb.CompactionJobInfoTest\
+	io.github.fluss_contrib.rocksdb.CompactionJobStatsTest\
+	io.github.fluss_contrib.rocksdb.CompactionOptionsTest\
+	io.github.fluss_contrib.rocksdb.CompactionOptionsFIFOTest\
+	io.github.fluss_contrib.rocksdb.CompactionOptionsUniversalTest\
+	io.github.fluss_contrib.rocksdb.CompactionPriorityTest\
+	io.github.fluss_contrib.rocksdb.CompactionStopStyleTest\
+	io.github.fluss_contrib.rocksdb.ComparatorOptionsTest\
+	io.github.fluss_contrib.rocksdb.CompressionOptionsTest\
+	io.github.fluss_contrib.rocksdb.CompressionTypesTest\
+	io.github.fluss_contrib.rocksdb.DBOptionsTest\
+	io.github.fluss_contrib.rocksdb.DirectSliceTest\
+	io.github.fluss_contrib.rocksdb.util.EnvironmentTest\
+	io.github.fluss_contrib.rocksdb.EnvOptionsTest\
+	io.github.fluss_contrib.rocksdb.EventListenerTest\
+	io.github.fluss_contrib.rocksdb.IngestExternalFileOptionsTest\
+	io.github.fluss_contrib.rocksdb.util.IntComparatorTest\
+	io.github.fluss_contrib.rocksdb.util.JNIComparatorTest\
+	io.github.fluss_contrib.rocksdb.FilterTest\
+	io.github.fluss_contrib.rocksdb.FloorSetCompactionFilterTest\
+	io.github.fluss_contrib.rocksdb.FlussTtlCompactionFilterTest\
+	io.github.fluss_contrib.rocksdb.FlushTest\
+	io.github.fluss_contrib.rocksdb.ImportColumnFamilyTest\
+	io.github.fluss_contrib.rocksdb.InfoLogLevelTest\
+	io.github.fluss_contrib.rocksdb.KeyExistsTest \
+	io.github.fluss_contrib.rocksdb.KeyMayExistTest\
+	io.github.fluss_contrib.rocksdb.ConcurrentTaskLimiterTest\
+	io.github.fluss_contrib.rocksdb.LoggerTest\
+	io.github.fluss_contrib.rocksdb.LRUCacheTest\
+	io.github.fluss_contrib.rocksdb.MemoryUtilTest\
+	io.github.fluss_contrib.rocksdb.MemTableTest\
+	io.github.fluss_contrib.rocksdb.MergeCFVariantsTest\
+	io.github.fluss_contrib.rocksdb.MergeTest\
+	io.github.fluss_contrib.rocksdb.MergeVariantsTest\
+	io.github.fluss_contrib.rocksdb.MultiColumnRegressionTest \
+	io.github.fluss_contrib.rocksdb.MultiGetManyKeysTest\
+	io.github.fluss_contrib.rocksdb.MultiGetTest\
+	io.github.fluss_contrib.rocksdb.MixedOptionsTest\
+	io.github.fluss_contrib.rocksdb.MutableColumnFamilyOptionsTest\
+	io.github.fluss_contrib.rocksdb.MutableDBOptionsTest\
+	io.github.fluss_contrib.rocksdb.MutableOptionsGetSetTest \
+	io.github.fluss_contrib.rocksdb.NativeComparatorWrapperTest\
+	io.github.fluss_contrib.rocksdb.NativeLibraryLoaderTest\
+	io.github.fluss_contrib.rocksdb.OptimisticTransactionTest\
+	io.github.fluss_contrib.rocksdb.OptimisticTransactionDBTest\
+	io.github.fluss_contrib.rocksdb.OptimisticTransactionOptionsTest\
+	io.github.fluss_contrib.rocksdb.OptionsUtilTest\
+	io.github.fluss_contrib.rocksdb.OptionsTest\
+	io.github.fluss_contrib.rocksdb.PerfLevelTest \
+	io.github.fluss_contrib.rocksdb.PerfContextTest \
+	io.github.fluss_contrib.rocksdb.PutCFVariantsTest\
+	io.github.fluss_contrib.rocksdb.PutVariantsTest\
+	io.github.fluss_contrib.rocksdb.PlainTableConfigTest\
+	io.github.fluss_contrib.rocksdb.RateLimiterTest\
+	io.github.fluss_contrib.rocksdb.ReadOnlyTest\
+	io.github.fluss_contrib.rocksdb.ReadOptionsTest\
+	io.github.fluss_contrib.rocksdb.util.ReverseBytewiseComparatorIntTest\
+	io.github.fluss_contrib.rocksdb.RocksDBTest\
+	io.github.fluss_contrib.rocksdb.RocksDBExceptionTest\
+	io.github.fluss_contrib.rocksdb.DefaultEnvTest\
+	io.github.fluss_contrib.rocksdb.RocksIteratorTest\
+	io.github.fluss_contrib.rocksdb.RocksMemEnvTest\
+	io.github.fluss_contrib.rocksdb.util.SizeUnitTest\
+	io.github.fluss_contrib.rocksdb.SecondaryDBTest\
+	io.github.fluss_contrib.rocksdb.SliceTest\
+	io.github.fluss_contrib.rocksdb.SnapshotTest\
+	io.github.fluss_contrib.rocksdb.SstFileManagerTest\
+	io.github.fluss_contrib.rocksdb.SstFileWriterTest\
+	io.github.fluss_contrib.rocksdb.SstFileReaderTest\
+	io.github.fluss_contrib.rocksdb.SstPartitionerTest\
+	io.github.fluss_contrib.rocksdb.TableFilterTest\
+	io.github.fluss_contrib.rocksdb.TimedEnvTest\
+	io.github.fluss_contrib.rocksdb.TransactionTest\
+	io.github.fluss_contrib.rocksdb.TransactionDBTest\
+	io.github.fluss_contrib.rocksdb.TransactionOptionsTest\
+	io.github.fluss_contrib.rocksdb.TransactionDBOptionsTest\
+	io.github.fluss_contrib.rocksdb.TransactionLogIteratorTest\
+	io.github.fluss_contrib.rocksdb.TtlDBTest\
+	io.github.fluss_contrib.rocksdb.StatisticsTest\
+	io.github.fluss_contrib.rocksdb.StatisticsCollectorTest\
+	io.github.fluss_contrib.rocksdb.VerifyChecksumsTest\
+	io.github.fluss_contrib.rocksdb.WalFilterTest\
+	io.github.fluss_contrib.rocksdb.WALRecoveryModeTest\
+	io.github.fluss_contrib.rocksdb.WriteBatchHandlerTest\
+	io.github.fluss_contrib.rocksdb.WriteBatchTest\
+	io.github.fluss_contrib.rocksdb.WriteBatchThreadedTest\
+	io.github.fluss_contrib.rocksdb.WriteOptionsTest\
+	io.github.fluss_contrib.rocksdb.WriteBatchWithIndexTest\
+	io.github.fluss_contrib.rocksdb.util.StdErrLoggerTest
 
 MAIN_SRC = src/main/java
 TEST_SRC = src/test/java
@@ -304,11 +304,11 @@ include $(ROCKSDB_PLUGIN_MKS)
 
 # Add paths to Java sources in plugins
 ROCKSDB_PLUGIN_JAVA_ROOTS = $(foreach plugin, $(ROCKSDB_PLUGINS), $(PLUGIN_PATH)/$(plugin)/java)
-PLUGIN_SOURCES = $(foreach root, $(ROCKSDB_PLUGIN_JAVA_ROOTS), $(foreach pkg, org/fluss/rocksdb/util org/fluss/rocksdb, $(root)/$(MAIN_SRC)/$(pkg)/*.java))
-CORE_SOURCES = $(foreach pkg, org/fluss/rocksdb/util org/fluss/rocksdb, $(MAIN_SRC)/$(pkg)/*.java)
+PLUGIN_SOURCES = $(foreach root, $(ROCKSDB_PLUGIN_JAVA_ROOTS), $(foreach pkg, io/github/fluss_contrib/rocksdb/util io/github/fluss_contrib/rocksdb, $(root)/$(MAIN_SRC)/$(pkg)/*.java))
+CORE_SOURCES = $(foreach pkg, io/github/fluss_contrib/rocksdb/util io/github/fluss_contrib/rocksdb, $(MAIN_SRC)/$(pkg)/*.java)
 SOURCES = $(wildcard $(CORE_SOURCES) $(PLUGIN_SOURCES))
-PLUGIN_TEST_SOURCES = $(foreach root, $(ROCKSDB_PLUGIN_JAVA_ROOTS), $(foreach pkg, org/fluss/rocksdb/test org/fluss/rocksdb/util org/fluss/rocksdb, $(root)/$(TEST_SRC)/$(pkg)/*.java))
-CORE_TEST_SOURCES = $(foreach pkg, org/fluss/rocksdb/test org/fluss/rocksdb/util org/fluss/rocksdb, $(TEST_SRC)/$(pkg)/*.java)
+PLUGIN_TEST_SOURCES = $(foreach root, $(ROCKSDB_PLUGIN_JAVA_ROOTS), $(foreach pkg, io/github/fluss_contrib/rocksdb/test io/github/fluss_contrib/rocksdb/util io/github/fluss_contrib/rocksdb, $(root)/$(TEST_SRC)/$(pkg)/*.java))
+CORE_TEST_SOURCES = $(foreach pkg, io/github/fluss_contrib/rocksdb/test io/github/fluss_contrib/rocksdb/util io/github/fluss_contrib/rocksdb, $(TEST_SRC)/$(pkg)/*.java)
 TEST_SOURCES = $(wildcard $(CORE_TEST_SOURCES) $(PLUGIN_TEST_SOURCES))
 
 # Configure the plugin tests and java classes
@@ -344,7 +344,7 @@ clean-downloaded:
 
 javadocs: java
 	$(AM_V_GEN)mkdir -p $(JAVADOC)
-	$(AM_V_at)$(JAVADOC_CMD) -d $(JAVADOC) -sourcepath $(MAIN_SRC) -subpackages org
+	$(AM_V_at)$(JAVADOC_CMD) -d $(JAVADOC) -sourcepath $(MAIN_SRC) -subpackages io
 
 javalib: java java_test javadocs
 
@@ -458,15 +458,15 @@ test: java java_test
 	$(MAKE) run_test
 
 run_test:
-	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.fluss.rocksdb.test.RocksJunitRunner $(ALL_JAVA_TESTS)
-	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.fluss.rocksdb.test.RocksJunitRunner org.fluss.rocksdb.StatisticsTest
+	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" io.github.fluss_contrib.rocksdb.test.RocksJunitRunner $(ALL_JAVA_TESTS)
+	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" io.github.fluss_contrib.rocksdb.test.RocksJunitRunner io.github.fluss_contrib.rocksdb.StatisticsTest
 
 run_plugin_test:
-	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" org.fluss.rocksdb.test.RocksJunitRunner $(ROCKSDB_PLUGIN_JAVA_TESTS)
+	$(JAVA_CMD) $(JAVA_ARGS) -Djava.library.path=target -cp "$(MAIN_CLASSES):$(TEST_CLASSES):$(JAVA_TESTCLASSPATH):target/*" io.github.fluss_contrib.rocksdb.test.RocksJunitRunner $(ROCKSDB_PLUGIN_JAVA_TESTS)
 
 db_bench: java
 	$(AM_V_GEN)mkdir -p $(BENCHMARK_MAIN_CLASSES)
-	$(AM_V_at)$(JAVAC_CMD) $(JAVAC_ARGS) -cp $(MAIN_CLASSES) -d $(BENCHMARK_MAIN_CLASSES) $(BENCHMARK_MAIN_SRC)/org/fluss/rocksdb/benchmark/*.java
+	$(AM_V_at)$(JAVAC_CMD) $(JAVAC_ARGS) -cp $(MAIN_CLASSES) -d $(BENCHMARK_MAIN_CLASSES) $(BENCHMARK_MAIN_SRC)/io/github/fluss_contrib/rocksdb/benchmark/*.java
 
 pmd:
 	$(MAVEN_CMD) pmd:pmd pmd:cpd pmd:check

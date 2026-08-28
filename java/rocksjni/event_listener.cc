@@ -10,17 +10,17 @@
 
 #include <memory>
 
-#include "include/org_fluss_rocksdb_AbstractEventListener.h"
+#include "include/io_github_fluss_contrib_rocksdb_AbstractEventListener.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/event_listener_jnicallback.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_AbstractEventListener
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractEventListener
  * Method:    createNewEventListener
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_AbstractEventListener_createNewEventListener(
+jlong Java_io_github_fluss_1contrib_rocksdb_AbstractEventListener_createNewEventListener(
     JNIEnv* env, jobject jobj, jlong jenabled_event_callback_values) {
   auto enabled_event_callbacks =
       ROCKSDB_NAMESPACE::EnabledEventCallbackJni::toCppEnabledEventCallbacks(
@@ -33,11 +33,11 @@ jlong Java_org_fluss_rocksdb_AbstractEventListener_createNewEventListener(
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractEventListener
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractEventListener
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_AbstractEventListener_disposeInternal(
+void Java_io_github_fluss_1contrib_rocksdb_AbstractEventListener_disposeInternal(
     JNIEnv*, jobject, jlong jhandle) {
   delete reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::EventListener>*>(
       jhandle);

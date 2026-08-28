@@ -5,17 +5,17 @@
 //
 // This file implements the "bridge" between Java and C++ for RateLimiter.
 
-#include "include/org_fluss_rocksdb_RateLimiter.h"
+#include "include/io_github_fluss_contrib_rocksdb_RateLimiter.h"
 #include "rocksdb/rate_limiter.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_RateLimiter
+ * Class:     io_github_fluss_contrib_rocksdb_RateLimiter
  * Method:    newRateLimiterHandle
  * Signature: (JJIBZ)J
  */
-jlong Java_org_fluss_rocksdb_RateLimiter_newRateLimiterHandle(
+jlong Java_io_github_fluss_1contrib_rocksdb_RateLimiter_newRateLimiterHandle(
     JNIEnv* /*env*/, jclass /*jclazz*/, jlong jrate_bytes_per_second,
     jlong jrefill_period_micros, jint jfairness, jbyte jrate_limiter_mode,
     jboolean jauto_tune) {
@@ -32,13 +32,12 @@ jlong Java_org_fluss_rocksdb_RateLimiter_newRateLimiterHandle(
 }
 
 /*
- * Class:     org_fluss_rocksdb_RateLimiter
+ * Class:     io_github_fluss_contrib_rocksdb_RateLimiter
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_RateLimiter_disposeInternalJni(JNIEnv* /*env*/,
-                                                           jclass /*jcls*/,
-                                                           jlong jhandle) {
+void Java_io_github_fluss_1contrib_rocksdb_RateLimiter_disposeInternalJni(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong jhandle) {
   auto* handle =
       reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
           jhandle);
@@ -46,11 +45,11 @@ void Java_org_fluss_rocksdb_RateLimiter_disposeInternalJni(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_RateLimiter
+ * Class:     io_github_fluss_contrib_rocksdb_RateLimiter
  * Method:    setBytesPerSecond
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_RateLimiter_setBytesPerSecond(
+void Java_io_github_fluss_1contrib_rocksdb_RateLimiter_setBytesPerSecond(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong handle, jlong jbytes_per_second) {
   reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(handle)
       ->get()
@@ -58,13 +57,12 @@ void Java_org_fluss_rocksdb_RateLimiter_setBytesPerSecond(
 }
 
 /*
- * Class:     org_fluss_rocksdb_RateLimiter
+ * Class:     io_github_fluss_contrib_rocksdb_RateLimiter
  * Method:    getBytesPerSecond
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_RateLimiter_getBytesPerSecond(JNIEnv* /*env*/,
-                                                           jclass /*jcls*/,
-                                                           jlong handle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_RateLimiter_getBytesPerSecond(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle) {
   return reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
              handle)
       ->get()
@@ -72,26 +70,26 @@ jlong Java_org_fluss_rocksdb_RateLimiter_getBytesPerSecond(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_RateLimiter
+ * Class:     io_github_fluss_contrib_rocksdb_RateLimiter
  * Method:    request
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_RateLimiter_request(JNIEnv* /*env*/,
-                                                jclass /*jcls*/, jlong handle,
-                                                jlong jbytes) {
+void Java_io_github_fluss_1contrib_rocksdb_RateLimiter_request(JNIEnv* /*env*/,
+                                                               jclass /*jcls*/,
+                                                               jlong handle,
+                                                               jlong jbytes) {
   reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(handle)
       ->get()
       ->Request(jbytes, ROCKSDB_NAMESPACE::Env::IO_TOTAL);
 }
 
 /*
- * Class:     org_fluss_rocksdb_RateLimiter
+ * Class:     io_github_fluss_contrib_rocksdb_RateLimiter
  * Method:    getSingleBurstBytes
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_RateLimiter_getSingleBurstBytes(JNIEnv* /*env*/,
-                                                             jclass /*jcls*/,
-                                                             jlong handle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_RateLimiter_getSingleBurstBytes(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle) {
   return reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
              handle)
       ->get()
@@ -99,13 +97,12 @@ jlong Java_org_fluss_rocksdb_RateLimiter_getSingleBurstBytes(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_RateLimiter
+ * Class:     io_github_fluss_contrib_rocksdb_RateLimiter
  * Method:    getTotalBytesThrough
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_RateLimiter_getTotalBytesThrough(JNIEnv* /*env*/,
-                                                              jclass /*jcls*/,
-                                                              jlong handle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_RateLimiter_getTotalBytesThrough(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle) {
   return reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
              handle)
       ->get()
@@ -113,13 +110,12 @@ jlong Java_org_fluss_rocksdb_RateLimiter_getTotalBytesThrough(JNIEnv* /*env*/,
 }
 
 /*
- * Class:     org_fluss_rocksdb_RateLimiter
+ * Class:     io_github_fluss_contrib_rocksdb_RateLimiter
  * Method:    getTotalRequests
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_RateLimiter_getTotalRequests(JNIEnv* /*env*/,
-                                                          jclass /*jcls*/,
-                                                          jlong handle) {
+jlong Java_io_github_fluss_1contrib_rocksdb_RateLimiter_getTotalRequests(
+    JNIEnv* /*env*/, jclass /*jcls*/, jlong handle) {
   return reinterpret_cast<std::shared_ptr<ROCKSDB_NAMESPACE::RateLimiter>*>(
              handle)
       ->get()

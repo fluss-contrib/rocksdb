@@ -11,7 +11,7 @@ Based on upstream RocksDB
 
 ### Added
 
-- Relocated the Java API and JNI entry points to `org.fluss.rocksdb` and gave
+- Relocated the Java API and JNI entry points to `io.github.fluss_contrib.rocksdb` and gave
   the native library the Fluss-specific `flussrocksdbjni` identity so it can
   coexist with the upstream RocksDB JNI library
   ([#2](https://github.com/fluss-contrib/rocksdb/pull/2)).

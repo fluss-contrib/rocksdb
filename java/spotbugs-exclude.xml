@@ -3,136 +3,136 @@
     <!-- The set failing checks when spotbugs was set up were added to this file, as a baseline -->
     <!-- These exclusions should each be justified or removed and fixed AP (2023-02-09) -->
     <Match>
-        <Class name="org.fluss.rocksdb.SstFileWriter"/>
+        <Class name="io.github.fluss_contrib.rocksdb.SstFileWriter"/>
         <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.AbstractTransactionNotifier"/>
+        <Class name="io.github.fluss_contrib.rocksdb.AbstractTransactionNotifier"/>
         <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.Env"/>
+        <Class name="io.github.fluss_contrib.rocksdb.Env"/>
         <Bug pattern="MS_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.BackupEngineOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.BackupEngineOptions"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.BackupEngineOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.BackupEngineOptions"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.Transaction$WaitingTransactions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.Transaction$WaitingTransactions"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.TransactionDB$KeyLockInfo"/>
+        <Class name="io.github.fluss_contrib.rocksdb.TransactionDB$KeyLockInfo"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.Options"/>
+        <Class name="io.github.fluss_contrib.rocksdb.Options"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.ColumnFamilyDescriptor"/>
+        <Class name="io.github.fluss_contrib.rocksdb.ColumnFamilyDescriptor"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.ColumnFamilyOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.ColumnFamilyOptions"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.DBOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.DBOptions"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.EnvOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.EnvOptions"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.LiveFileMetaData"/>
+        <Class name="io.github.fluss_contrib.rocksdb.LiveFileMetaData"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.SstFileMetaData"/>
+        <Class name="io.github.fluss_contrib.rocksdb.SstFileMetaData"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.StatsCollectorInput"/>
+        <Class name="io.github.fluss_contrib.rocksdb.StatsCollectorInput"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.ThreadStatus"/>
+        <Class name="io.github.fluss_contrib.rocksdb.ThreadStatus"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.ColumnFamilyMetaData"/>
+        <Class name="io.github.fluss_contrib.rocksdb.ColumnFamilyMetaData"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.TransactionLogIterator$BatchResult"/>
+        <Class name="io.github.fluss_contrib.rocksdb.TransactionLogIterator$BatchResult"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.WBWIRocksIterator$WriteEntry"/>
+        <Class name="io.github.fluss_contrib.rocksdb.WBWIRocksIterator$WriteEntry"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.TableProperties"/>
+        <Class name="io.github.fluss_contrib.rocksdb.TableProperties"/>
         <Bug pattern="EI_EXPOSE_REP" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.WBWIRocksIterator$WriteEntry"/>
+        <Class name="io.github.fluss_contrib.rocksdb.WBWIRocksIterator$WriteEntry"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.TransactionDB$DeadlockPath"/>
+        <Class name="io.github.fluss_contrib.rocksdb.TransactionDB$DeadlockPath"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.StatisticsCollector"/>
+        <Class name="io.github.fluss_contrib.rocksdb.StatisticsCollector"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.ReadOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.ReadOptions"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.Range"/>
+        <Class name="io.github.fluss_contrib.rocksdb.Range"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.Options"/>
+        <Class name="io.github.fluss_contrib.rocksdb.Options"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.StatsCollectorInput"/>
+        <Class name="io.github.fluss_contrib.rocksdb.StatsCollectorInput"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.EnvOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.EnvOptions"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.DBOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.DBOptions"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.ColumnFamilyOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.ColumnFamilyOptions"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.ColumnFamilyDescriptor"/>
+        <Class name="io.github.fluss_contrib.rocksdb.ColumnFamilyDescriptor"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.BackupEngineOptions"/>
+        <Class name="io.github.fluss_contrib.rocksdb.BackupEngineOptions"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     <!-- comment out a single exclusion to test that CI reports the consequent spotbugs [Error]
     <Match>
-        <Class name="org.fluss.rocksdb.TransactionDB$KeyLockInfo"/>
+        <Class name="io.github.fluss_contrib.rocksdb.TransactionDB$KeyLockInfo"/>
         <Bug pattern="EI_EXPOSE_REP2" />
     </Match>
     -->
@@ -146,6 +146,6 @@
         <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME" />
     </Match>
     <Match>
-        <Class name="org.fluss.rocksdb.AbstractCompactionFilterFactory" />
+        <Class name="io.github.fluss_contrib.rocksdb.AbstractCompactionFilterFactory" />
     </Match>
 </FindBugsFilter>

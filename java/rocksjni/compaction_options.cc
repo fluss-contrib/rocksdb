@@ -8,28 +8,28 @@
 
 #include <jni.h>
 
-#include "include/org_fluss_rocksdb_CompactionOptions.h"
+#include "include/io_github_fluss_contrib_rocksdb_CompactionOptions.h"
 #include "rocksdb/options.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptions
  * Method:    newCompactionOptions
  * Signature: ()J
  */
-jlong Java_org_fluss_rocksdb_CompactionOptions_newCompactionOptions(JNIEnv*,
-                                                                    jclass) {
+jlong Java_io_github_fluss_1contrib_rocksdb_CompactionOptions_newCompactionOptions(
+    JNIEnv*, jclass) {
   auto* compact_opts = new ROCKSDB_NAMESPACE::CompactionOptions();
   return GET_CPLUSPLUS_POINTER(compact_opts);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptions
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_CompactionOptions_disposeInternalJni(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptions_disposeInternalJni(
     JNIEnv*, jclass, jlong jhandle) {
   auto* compact_opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptions*>(jhandle);
@@ -37,12 +37,12 @@ void Java_org_fluss_rocksdb_CompactionOptions_disposeInternalJni(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptions
  * Method:    compression
  * Signature: (J)B
  */
-jbyte Java_org_fluss_rocksdb_CompactionOptions_compression(JNIEnv*, jclass,
-                                                           jlong jhandle) {
+jbyte Java_io_github_fluss_1contrib_rocksdb_CompactionOptions_compression(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* compact_opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptions*>(jhandle);
   return ROCKSDB_NAMESPACE::CompressionTypeJni::toJavaCompressionType(
@@ -50,11 +50,11 @@ jbyte Java_org_fluss_rocksdb_CompactionOptions_compression(JNIEnv*, jclass,
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptions
  * Method:    setCompression
  * Signature: (JB)V
  */
-void Java_org_fluss_rocksdb_CompactionOptions_setCompression(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptions_setCompression(
     JNIEnv*, jclass, jlong jhandle, jbyte jcompression_type_value) {
   auto* compact_opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptions*>(jhandle);
@@ -64,11 +64,11 @@ void Java_org_fluss_rocksdb_CompactionOptions_setCompression(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptions
  * Method:    outputFileSizeLimit
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_CompactionOptions_outputFileSizeLimit(
+jlong Java_io_github_fluss_1contrib_rocksdb_CompactionOptions_outputFileSizeLimit(
     JNIEnv*, jclass, jlong jhandle) {
   auto* compact_opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptions*>(jhandle);
@@ -76,11 +76,11 @@ jlong Java_org_fluss_rocksdb_CompactionOptions_outputFileSizeLimit(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptions
  * Method:    setOutputFileSizeLimit
  * Signature: (JJ)V
  */
-void Java_org_fluss_rocksdb_CompactionOptions_setOutputFileSizeLimit(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptions_setOutputFileSizeLimit(
     JNIEnv*, jclass, jlong jhandle, jlong joutput_file_size_limit) {
   auto* compact_opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptions*>(jhandle);
@@ -89,23 +89,23 @@ void Java_org_fluss_rocksdb_CompactionOptions_setOutputFileSizeLimit(
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptions
  * Method:    maxSubcompactions
  * Signature: (J)I
  */
-jint Java_org_fluss_rocksdb_CompactionOptions_maxSubcompactions(JNIEnv*, jclass,
-                                                                jlong jhandle) {
+jint Java_io_github_fluss_1contrib_rocksdb_CompactionOptions_maxSubcompactions(
+    JNIEnv*, jclass, jlong jhandle) {
   auto* compact_opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptions*>(jhandle);
   return static_cast<jint>(compact_opts->max_subcompactions);
 }
 
 /*
- * Class:     org_fluss_rocksdb_CompactionOptions
+ * Class:     io_github_fluss_contrib_rocksdb_CompactionOptions
  * Method:    setMaxSubcompactions
  * Signature: (JI)V
  */
-void Java_org_fluss_rocksdb_CompactionOptions_setMaxSubcompactions(
+void Java_io_github_fluss_1contrib_rocksdb_CompactionOptions_setMaxSubcompactions(
     JNIEnv*, jclass, jlong jhandle, jint jmax_subcompactions) {
   auto* compact_opts =
       reinterpret_cast<ROCKSDB_NAMESPACE::CompactionOptions*>(jhandle);

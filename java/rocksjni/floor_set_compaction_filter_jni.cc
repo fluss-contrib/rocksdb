@@ -22,11 +22,11 @@
 #include <unordered_set>
 #include <utility>
 
-#include "include/org_fluss_rocksdb_FloorSetCompactionFilter.h"
+#include "include/io_github_fluss_contrib_rocksdb_FloorSetCompactionFilter.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "utilities/compaction_filters/floor_set_compaction_filter.h"
 
-jlong Java_org_fluss_rocksdb_FloorSetCompactionFilter_createNative(
+jlong Java_io_github_fluss_1contrib_rocksdb_FloorSetCompactionFilter_createNative(
     JNIEnv* env, jclass, jint tag_offset, jlong floor,
     jlongArray explicit_set_array) {
   std::unordered_set<int64_t> explicit_set;

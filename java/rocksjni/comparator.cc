@@ -13,18 +13,18 @@
 #include <functional>
 #include <string>
 
-#include "include/org_fluss_rocksdb_AbstractComparator.h"
-#include "include/org_fluss_rocksdb_NativeComparatorWrapper.h"
+#include "include/io_github_fluss_contrib_rocksdb_AbstractComparator.h"
+#include "include/io_github_fluss_contrib_rocksdb_NativeComparatorWrapper.h"
 #include "rocksjni/comparatorjnicallback.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
 #include "rocksjni/portal.h"
 
 /*
- * Class:     org_fluss_rocksdb_AbstractComparator
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractComparator
  * Method:    createNewComparator
  * Signature: (J)J
  */
-jlong Java_org_fluss_rocksdb_AbstractComparator_createNewComparator(
+jlong Java_io_github_fluss_1contrib_rocksdb_AbstractComparator_createNewComparator(
     JNIEnv* env, jobject jcomparator, jlong copt_handle) {
   auto* copt =
       reinterpret_cast<ROCKSDB_NAMESPACE::ComparatorJniCallbackOptions*>(
@@ -35,11 +35,12 @@ jlong Java_org_fluss_rocksdb_AbstractComparator_createNewComparator(
 }
 
 /*
- * Class:     org_fluss_rocksdb_AbstractComparator
+ * Class:     io_github_fluss_contrib_rocksdb_AbstractComparator
  * Method:    usingDirectBuffers
  * Signature: (J)Z
  */
-jboolean Java_org_fluss_rocksdb_AbstractComparator_usingDirectBuffers(
+jboolean
+Java_io_github_fluss_1contrib_rocksdb_AbstractComparator_usingDirectBuffers(
     JNIEnv*, jclass, jlong jhandle) {
   auto* c =
       reinterpret_cast<ROCKSDB_NAMESPACE::ComparatorJniCallback*>(jhandle);
@@ -47,11 +48,11 @@ jboolean Java_org_fluss_rocksdb_AbstractComparator_usingDirectBuffers(
 }
 
 /*
- * Class:     org_fluss_rocksdb_NativeComparatorWrapper
+ * Class:     io_github_fluss_contrib_rocksdb_NativeComparatorWrapper
  * Method:    disposeInternal
  * Signature: (J)V
  */
-void Java_org_fluss_rocksdb_NativeComparatorWrapper_disposeInternal(
+void Java_io_github_fluss_1contrib_rocksdb_NativeComparatorWrapper_disposeInternal(
     JNIEnv* /*env*/, jclass /*jcls*/, jlong jcomparator_handle) {
   auto* comparator =
       reinterpret_cast<ROCKSDB_NAMESPACE::Comparator*>(jcomparator_handle);
