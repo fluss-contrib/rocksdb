@@ -107,3 +107,4 @@ jobs:
       rocksdb_version: ${{ needs.resolve.outputs.rocksdb_version }}
       source_repository: ${{ needs.resolve.outputs.source_repository }}
       source_sha: ${{ needs.resolve.outputs.source_sha }}
+    secrets: inherit
