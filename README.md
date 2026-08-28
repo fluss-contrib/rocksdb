@@ -27,6 +27,27 @@ Each maintained line starts from an immutable upstream RocksDB release tag.
 Fluss-specific changes are reviewed and maintained as a clean, linear series
 on top of that baseline.
 
+## Use from Maven Central
+
+Add the Fluss RocksDB JNI artifact to your Maven project:
+
+```xml
+<dependency>
+  <groupId>io.github.fluss-contrib</groupId>
+  <artifactId>fluss-rocksdbjni</artifactId>
+  <version>11.8.1-fluss-2</version>
+</dependency>
+```
+
+## Releases
+
+- [Changelog](CHANGELOG.md) summarizes engine, Java/JNI API, and runtime
+  compatibility changes in each Fluss release.
+- [GitHub Releases](https://github.com/fluss-contrib/rocksdb/releases) provides
+  release artifacts and tags.
+- [Maven Central](https://central.sonatype.com/artifact/io.github.fluss-contrib/fluss-rocksdbjni)
+  provides the published JNI components.
+
 ## Repository workflow
 
 | Branch | Purpose |
