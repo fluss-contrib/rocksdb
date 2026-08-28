@@ -33,6 +33,14 @@ Each change is driven by a GitHub issue with a coherent scope and explicit
 acceptance criteria. Its pull request links the issue and includes verification
 evidence.
 
+Contributors normally create changes in forks and open pull requests against
+`fluss-main`; they do not need permission to create branches in this
+repository. When cross-repository testing requires a published Maven artifact,
+a maintainer may manually publish a PR-specific Snapshot from the exact pull
+request head SHA. The workflow retains the source identity as repository-owned
+Actions artifacts and does not mirror the contributor branch into this
+repository.
+
 Pull requests are squash-merged. The squash commit describes the resulting
 change rather than the development process. Merge commits and GitHub rebase
 merges are disabled. Ordinary feature and fix integration never force-pushes or

@@ -20,6 +20,12 @@ The current development Snapshot is:
 <rocksdb-version>-fluss-SNAPSHOT
 ```
 
+A pull-request Snapshot is:
+
+```text
+<rocksdb-version>-fluss-pr<pull-request>-<head-sha-12>-SNAPSHOT
+```
+
 A release candidate is:
 
 ```text
@@ -37,6 +43,7 @@ baseline, the corresponding examples are:
 
 ```text
 Snapshot: 11.8.1-fluss-SNAPSHOT
+PR Snapshot: 11.8.1-fluss-pr42-a1b2c3d4e5f6-SNAPSHOT
 RC tag:   v11.8.1-fluss-1-rc1
 RC Maven: 11.8.1-fluss-1-rc1
 Tag:      v11.8.1-fluss-1
@@ -66,10 +73,44 @@ publication build without external side effects:
 The preflight receives neither Central credentials nor the production signing
 key. It does not publish a Snapshot, create a tag, or create a GitHub Release.
 
+### Pull-request Snapshots
+
+Most pull requests use only the ordinary validation workflows. When a change
+needs cross-repository integration testing, a repository maintainer can run
+the `Fluss PR Snapshot` workflow from `fluss-main` and supply the open pull
+request number. GitHub requires write access to dispatch the workflow, so a
+contributor cannot publish directly from a fork.
+
+The workflow resolves the pull request through the GitHub API and locks its
+source repository and complete head commit SHA. It rejects a pull request that
+is closed, targets a repository or branch other than
+`fluss-contrib/rocksdb:fluss-main`, has no accessible source repository, or no
+longer has the locked head SHA when publication begins. It does not create a
+temporary branch, Git tag, or GitHub Release.
+
+The trusted workflow runs from `fluss-main`, while its secretless build jobs
+check out the exact pull-request head SHA with persisted checkout credentials
+disabled. The publication job does not check out or execute pull-request
+source. It verifies the retained source manifest and current pull-request
+identity before receiving the existing `maven-snapshots` Environment
+credentials and publishing the assembled component.
+
+The version includes the target RocksDB version, pull request number, and the
+first 12 lowercase hexadecimal characters of the locked head SHA:
+
+```text
+<rocksdb-version>-fluss-pr<pull-request>-<head-sha-12>-SNAPSHOT
+```
+
+The retained manifest records the target repository and branch, pull request
+number, source repository, complete head SHA, RocksDB version, and Maven
+version. A new pull-request head therefore produces a new Maven version.
+Repeated publication of the same head remains a normal timestamped Maven
+Snapshot deployment.
+
 ### Development Snapshots
 
-Snapshot publication is the only publication mode that runs directly from
-`fluss-main`.
+The development Snapshot builds the source tree directly from `fluss-main`.
 
 A scheduled job checks the current `fluss-main` head daily. It publishes only
 when that head differs from the commit associated with the latest successful
@@ -150,8 +191,10 @@ retaining the applicable RocksDB licenses and upstream attribution.
 
 ## Credentials and environments
 
-Snapshot publication uses the `maven-snapshots` GitHub Environment, restricted
-to `fluss-main` without a manual approval gate.
+Development and pull-request Snapshot publication use the `maven-snapshots`
+GitHub Environment, restricted to workflows running from `fluss-main` without
+a separate manual approval gate. Starting the pull-request Snapshot workflow
+is its single maintainer approval.
 
 RC and final publication use the `maven-central` GitHub Environment, restricted
 to Fluss release tags and protected by a required reviewer.
