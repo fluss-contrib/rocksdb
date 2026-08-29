@@ -820,6 +820,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - uses: actions/download-artifact@v8
         with:
@@ -934,7 +936,6 @@ jobs:
           name: fluss-jni-release-component
           path: release-component/*
           if-no-files-found: error
-          retention-days: 1
 
   publish-central:
     name: Publish Maven Central release
@@ -945,13 +946,10 @@ jobs:
     environment: maven-central
     permissions:
       contents: read
-    env:
-      CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-      CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
-      MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
-      MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - uses: actions/download-artifact@v8
         with:
@@ -966,11 +964,11 @@ jobs:
       - name: Sign and stage Central bundle
         env:
           GNUPGHOME: ${{ runner.temp }}/fluss-central-gnupg
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
-          printf '::add-mask::%s\n' "$CENTRAL_USERNAME"
-          printf '::add-mask::%s\n' "$CENTRAL_TOKEN"
           printf '::add-mask::%s\n' "$MAVEN_GPG_PASSPHRASE"
 
           mkdir -p "$GNUPGHOME"
@@ -1066,6 +1064,8 @@ jobs:
       - name: Upload, validate, and publish Central deployment
         if: steps.central-existence.outputs.publish-required == 'true'
         env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
           DEPLOYMENT_NAME: fluss-rocksdbjni-${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
@@ -1161,12 +1161,22 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: fluss-jni-release-component
+          path: release-component
+
       - name: Publish the draft after Central
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_ID: ${{ needs.draft-release.outputs.release-id }}
           RELEASE_TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
           if [[ ! "$RELEASE_ID" =~ ^[1-9][0-9]*$ ]]; then
@@ -1177,6 +1187,44 @@ jobs:
             "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")
           if [[ "$(jq -r '.tag_name' <<<"$release_json")" != "$RELEASE_TAG" ]]; then
             echo "GitHub Release tag does not match $RELEASE_TAG" >&2
+            exit 1
+          fi
+          if [[ "$(jq '.assets | length' <<<"$release_json")" -ne 4 ]]; then
+            echo "GitHub Release must contain exactly four primary assets" >&2
+            exit 1
+          fi
+
+          artifact="fluss-rocksdbjni-$VERSION"
+          mkdir -p current-release-assets
+          for suffix in .jar -sources.jar -javadoc.jar .pom; do
+            filename="$artifact$suffix"
+            asset_matches=$(jq --arg name "$filename" \
+              '[.assets[] | select(.name == $name)]' <<<"$release_json")
+            if [[ "$(jq 'length' <<<"$asset_matches")" -ne 1 ]]; then
+              echo "Expected exactly one GitHub Release asset named $filename" >&2
+              exit 1
+            fi
+            asset_url=$(jq -r '.[0].url' <<<"$asset_matches")
+            gh api -H 'Accept: application/octet-stream' "$asset_url" \
+              > "current-release-assets/$filename"
+          done
+          .github/scripts/verify-release-component.sh \
+            "$VERSION" release-component current-release-assets
+
+          verified_assets=$(jq -c \
+            '[.assets[] | {id, name, size, digest}] | sort_by(.name)' \
+            <<<"$release_json")
+          release_json=$(gh api \
+            "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")
+          if [[ "$(jq -r '.tag_name' <<<"$release_json")" != "$RELEASE_TAG" ]]; then
+            echo "GitHub Release tag changed during final verification" >&2
+            exit 1
+          fi
+          current_assets=$(jq -c \
+            '[.assets[] | {id, name, size, digest}] | sort_by(.name)' \
+            <<<"$release_json")
+          if [[ "$current_assets" != "$verified_assets" ]]; then
+            echo "GitHub Release assets changed during final verification" >&2
             exit 1
           fi
           if [[ "$RELEASE_TAG" =~ -rc[1-9][0-9]*$ ]]; then
