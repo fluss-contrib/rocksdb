@@ -22,6 +22,9 @@ on:
     paths:
       - '.github/scripts/prepare-pr-snapshot.sh'
       - '.github/scripts/prepare-pr-snapshot.test.sh'
+      - '.github/scripts/prepare-release-component.sh'
+      - '.github/scripts/prepare-release-component.test.sh'
+      - '.github/scripts/verify-release-component.sh'
       - '.github/workflows/fluss-jni-publish.yml'
       - '.github/workflows/fluss-pr-snapshot.yml'
       - 'java/pom.xml.template'
@@ -59,6 +62,9 @@ jobs:
 
       - name: Test PR Snapshot preparation
         run: bash .github/scripts/prepare-pr-snapshot.test.sh
+
+      - name: Test release component recovery
+        run: bash .github/scripts/prepare-release-component.test.sh
 
       - name: Resolve and validate PR source
         id: resolve
