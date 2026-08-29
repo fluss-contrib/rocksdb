@@ -819,10 +819,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v6
+
       - uses: actions/download-artifact@v8
         with:
           name: fluss-jni-component
-          path: component
+          path: built-component
 
       - name: Create or verify draft Release
         id: release
@@ -841,7 +843,9 @@ jobs:
 
           matching_releases=$(find_release)
           if [[ "$(jq 'length' <<<"$matching_releases")" -eq 0 ]]; then
-            gh release create "$RELEASE_TAG" component/* \
+            .github/scripts/prepare-release-component.sh \
+              "$VERSION" built-component - release-component
+            gh release create "$RELEASE_TAG" release-component/* \
               --draft \
               --verify-tag \
               --title "$RELEASE_TAG" \
@@ -866,9 +870,9 @@ jobs:
             echo "GitHub Release must contain exactly four primary assets" >&2
             exit 1
           fi
-          mkdir -p published-assets
-          for component_file in component/*; do
-            filename=$(basename "$component_file")
+          mkdir -p draft-assets
+          for suffix in .jar -sources.jar -javadoc.jar .pom; do
+            filename="$artifact$suffix"
             asset_matches=$(jq --arg name "$filename" \
               '[.assets[] | select(.name == $name)]' <<<"$release_json")
             if [[ "$(jq 'length' <<<"$asset_matches")" -ne 1 ]]; then
@@ -877,9 +881,15 @@ jobs:
             fi
             asset_url=$(jq -r '.[0].url' <<<"$asset_matches")
             gh api -H 'Accept: application/octet-stream' "$asset_url" \
-              > "published-assets/$filename"
-            cmp "$component_file" "published-assets/$filename"
+              > "draft-assets/$filename"
           done
+
+          if [[ ! -d release-component ]]; then
+            .github/scripts/prepare-release-component.sh \
+              "$VERSION" built-component draft-assets release-component
+          fi
+          .github/scripts/verify-release-component.sh \
+            "$VERSION" release-component draft-assets
 
           if [[ "$(jq -r '.draft' <<<"$release_json")" == false ]]; then
             base_url="https://repo1.maven.org/maven2/io/github/fluss-contrib/fluss-rocksdbjni/$VERSION"
@@ -914,14 +924,17 @@ jobs:
               curl --silent --show-error --fail --location \
                 --output "published-central/$filename" \
                 "$base_url/$filename"
-              expected_sha=$(sha256sum "component/$filename" | awk '{print $1}')
-              published_sha=$(sha256sum "published-central/$filename" | awk '{print $1}')
-              if [[ "$expected_sha" != "$published_sha" ]]; then
-                echo "Published Central payload differs before existing public Release: $filename" >&2
-                exit 1
-              fi
             done
+            .github/scripts/verify-release-component.sh \
+              "$VERSION" release-component published-central
           fi
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fluss-jni-release-component
+          path: release-component/*
+          if-no-files-found: error
+          retention-days: 1
 
   publish-central:
     name: Publish Maven Central release
@@ -938,9 +951,11 @@ jobs:
       MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
       MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
     steps:
+      - uses: actions/checkout@v6
+
       - uses: actions/download-artifact@v8
         with:
-          name: fluss-jni-component
+          name: fluss-jni-release-component
           path: component
 
       - uses: actions/setup-java@v6
@@ -1038,13 +1053,9 @@ jobs:
               curl --silent --show-error --fail --location \
                 --output "published-component/$filename" \
                 "$base_url/$filename"
-              expected_sha=$(sha256sum "component/$filename" | awk '{print $1}')
-              published_sha=$(sha256sum "published-component/$filename" | awk '{print $1}')
-              if [[ "$expected_sha" != "$published_sha" ]]; then
-                echo "Published Central payload differs: $filename" >&2
-                exit 1
-              fi
             done
+            .github/scripts/verify-release-component.sh \
+              "$VERSION" component published-component
             echo 'publish-required=false' >> "$GITHUB_OUTPUT"
             echo "Identical Maven component is already published"
           else
