@@ -35,7 +35,7 @@ Add the Fluss RocksDB JNI artifact to your Maven project:
 <dependency>
   <groupId>io.github.fluss-contrib</groupId>
   <artifactId>fluss-rocksdbjni</artifactId>
-  <version>11.8.1-fluss-2</version>
+  <version>11.8.1-fluss-3</version>
 </dependency>
 ```
 
