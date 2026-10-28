@@ -31,8 +31,7 @@ Status status = SliceTransform::CreateFromString(
 The native execution plan coalesces adjacent fixed-width components while
 preserving the serialized identity. Varint skip operations validate boundaries
 without reconstructing numeric values; only length-prefixed payloads decode a
-length. SST iterators check prefix filters before materializing readahead
-prefixes and reuse the prefix string's capacity across seeks.
+length.
 
 The versioned ID contains an ordered, comma-separated component list:
 

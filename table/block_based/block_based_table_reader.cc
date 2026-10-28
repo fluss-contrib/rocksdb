@@ -2525,7 +2525,10 @@ bool BlockBasedTable::PrefixRangeMayMatch(
   auto ts_sz = rep_->internal_comparator.user_comparator()->timestamp_size();
   auto user_key_without_ts =
       ExtractUserKeyAndStripTimestamp(internal_key, ts_sz);
-  // RangeMayExist checks the extractor domain before extracting the prefix.
+  if (!prefix_extractor->InDomain(user_key_without_ts)) {
+    return true;
+  }
+
   bool may_match = true;
 
   FilterBlockReader* const filter = rep_->filter.get();

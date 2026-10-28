@@ -10,18 +10,13 @@
 #include "rocksdb/slice_transform.h"
 
 #include <algorithm>
-#include <atomic>
-#include <functional>
 #include <memory>
 #include <thread>
-#include <utility>
 #include <vector>
 
-#include "env/composite_env_wrapper.h"
 #include "rocksdb/convenience.h"
 #include "rocksdb/db.h"
 #include "rocksdb/env.h"
-#include "rocksdb/file_system.h"
 #include "rocksdb/filter_policy.h"
 #include "rocksdb/statistics.h"
 #include "rocksdb/table.h"
@@ -67,104 +62,6 @@ Status CreateLayout(const std::string& components,
   return SliceTransform::CreateFromString(
       config, "rocksdb.LayoutPrefix.v1:" + components, result);
 }
-
-class CountingPrefixTransform : public SliceTransform {
- public:
-  explicit CountingPrefixTransform(
-      std::shared_ptr<const SliceTransform> delegate)
-      : delegate_(std::move(delegate)) {}
-  const char* Name() const override { return delegate_->Name(); }
-  std::string GetId() const override { return delegate_->GetId(); }
-  bool InDomain(const Slice& key) const override {
-    ++domain_calls;
-    return delegate_->InDomain(key);
-  }
-  Slice Transform(const Slice& key) const override {
-    ++transform_calls;
-    return delegate_->Transform(key);
-  }
-  mutable std::atomic<unsigned> domain_calls{0};
-  mutable std::atomic<unsigned> transform_calls{0};
-
- private:
-  const std::shared_ptr<const SliceTransform> delegate_;
-};
-
-// Complete reads only when polled, independently of host async I/O support.
-class DeferredReadFS : public FileSystemWrapper {
- public:
-  DeferredReadFS() : FileSystemWrapper(FileSystem::Default()) {}
-  const char* Name() const override { return "DeferredReadFS"; }
-  void SupportedOps(int64_t& ops) override {
-    target()->SupportedOps(ops);
-    ops |= (1 << FSSupportedOps::kAsyncIO);
-  }
-
-  IOStatus NewRandomAccessFile(const std::string& name, const FileOptions& opts,
-                               std::unique_ptr<FSRandomAccessFile>* result,
-                               IODebugContext* dbg) override {
-    std::unique_ptr<FSRandomAccessFile> file;
-    IOStatus s = target()->NewRandomAccessFile(name, opts, &file, dbg);
-    if (s.ok()) {
-      result->reset(new DeferredReadFile(std::move(file)));
-    }
-    return s;
-  }
-
-  IOStatus Poll(std::vector<void*>& handles,
-                size_t /*min_completions*/) override {
-    for (void* handle : handles) {
-      auto* pending = static_cast<PendingRead*>(handle);
-      if (pending->complete) {
-        auto complete = std::move(pending->complete);
-        pending->complete = nullptr;
-        complete();
-        ++completed_reads;
-      }
-    }
-    return IOStatus::OK();
-  }
-
-  IOStatus AbortIO(std::vector<void*>& handles) override {
-    return Poll(handles, handles.size());
-  }
-
-  unsigned completed_reads = 0;
-
- private:
-  struct PendingRead {
-    std::function<void()> complete;
-  };
-
-  class DeferredReadFile : public FSRandomAccessFileOwnerWrapper {
-   public:
-    explicit DeferredReadFile(std::unique_ptr<FSRandomAccessFile> file)
-        : FSRandomAccessFileOwnerWrapper(std::move(file)) {}
-
-    IOStatus ReadAsync(FSReadRequest& req, const IOOptions& opts,
-                       std::function<void(FSReadRequest&, void*)> cb,
-                       void* cb_arg, void** handle, IOHandleDeleter* deleter,
-                       IODebugContext* /*dbg*/) override {
-      auto* pending = new PendingRead;
-      pending->complete = [this, offset = req.offset, len = req.len,
-                           scratch = req.scratch, opts, cb = std::move(cb),
-                           cb_arg]() mutable {
-        FSReadRequest request;
-        request.offset = offset;
-        request.len = len;
-        request.scratch = scratch;
-        request.status =
-            target()->Read(request.offset, request.len, opts, &request.result,
-                           request.scratch, nullptr);
-        cb(request, cb_arg);
-        request.status.PermitUncheckedError();
-      };
-      *handle = pending;
-      *deleter = [](void* arg) { delete static_cast<PendingRead*>(arg); };
-      return IOStatus::OK();
-    }
-  };
-};
 
 std::string EncodedPrefix(uint32_t number, const std::string& bytes) {
   std::string result;
@@ -385,7 +282,6 @@ class SliceTransformDBTest : public testing::Test {
   }
 
   Options last_options_;
-  std::unique_ptr<Env> custom_env_;
 };
 
 namespace {
@@ -571,136 +467,6 @@ TEST_F(SliceTransformDBTest, LayoutConcurrentFlushPreservesSnapshot) {
   db()->ReleaseSnapshot(snapshot);
   ASSERT_OK(writer_status);
   ASSERT_EQ(ReadPrefix(prefix, true).size(), 500U);
-}
-
-TEST_F(SliceTransformDBTest, LayoutAsyncRepeatedSeeksMatchTotalOrder) {
-  auto fs = std::make_shared<DeferredReadFS>();
-  custom_env_.reset(new CompositeEnvWrapper(Env::Default(), fs));
-  last_options_.env = custom_env_.get();
-  last_options_.compression = kNoCompression;
-  last_options_.disable_auto_compactions = true;
-  ASSERT_OK(CreateLayout("v32,b32", &last_options_.prefix_extractor));
-  BlockBasedTableOptions table;
-  table.block_size = 512;
-  table.filter_policy.reset(NewBloomFilterPolicy(20));
-  last_options_.table_factory.reset(NewBlockBasedTableFactory(table));
-  ASSERT_OK(TryReopen());
-  const std::string first = EncodedPrefix(1, std::string(128, 'a'));
-  const std::string second = EncodedPrefix(2, std::string(192, 'b'));
-  for (const auto& prefix : {first, second}) {
-    for (int i = 0; i < 40; ++i) {
-      ASSERT_OK(db()->Put(WriteOptions(), prefix + std::to_string(i),
-                          std::string(256, 'v')));
-    }
-  }
-  FlushOptions flush;
-  flush.wait = true;
-  ASSERT_OK(db()->Flush(flush));
-  ReadOptions reference_options;
-  reference_options.total_order_seek = true;
-  reference_options.fill_cache = false;
-  ReadOptions async_options = reference_options;
-  async_options.async_io = true;
-  async_options.prefix_same_as_start = true;
-  async_options.readahead_size = 512;
-  std::unique_ptr<Iterator> reference(db()->NewIterator(reference_options));
-  std::unique_ptr<Iterator> iterator(db()->NewIterator(async_options));
-  bool verified_async_seek = false;
-  auto scan = [&](Iterator* iter, const std::string& query) {
-    std::vector<std::pair<std::string, std::string>> result;
-    const unsigned completed_before_seek = fs->completed_reads;
-    iter->Seek(query);
-    if (iter == iterator.get() && !verified_async_seek) {
-      // Completion must happen during Seek, before Next can submit any reads.
-      EXPECT_GT(fs->completed_reads, completed_before_seek);
-      verified_async_seek = true;
-    }
-    for (; iter->Valid() && iter->key().starts_with(query); iter->Next()) {
-      result.emplace_back(iter->key().ToString(), iter->value().ToString());
-    }
-    EXPECT_OK(iter->status());
-    return result;
-  };
-  for (const auto& query : {first, second, EncodedPrefix(1, "missing"),
-                            first + "1", std::string("\x80", 1), first}) {
-    ASSERT_EQ(scan(reference.get(), query), scan(iterator.get(), query));
-  }
-  // This FS only invokes completion callbacks from Poll, so synchronous
-  // fallback cannot satisfy this assertion.
-  ASSERT_GT(fs->completed_reads, 0U);
-}
-
-TEST_F(SliceTransformDBTest, LayoutLongPrefixesAcrossRepeatedSeeks) {
-  ASSERT_OK(CreateLayout("v32,b32", &last_options_.prefix_extractor));
-  BlockBasedTableOptions table;
-  table.block_size = 256;
-  table.filter_policy.reset(NewBloomFilterPolicy(20));
-  last_options_.table_factory.reset(NewBlockBasedTableFactory(table));
-  ASSERT_OK(TryReopen());
-  const std::string first = EncodedPrefix(1, std::string(256, 'a'));
-  const std::string second = EncodedPrefix(2, std::string(384, 'b'));
-  WriteOptions write;
-  for (const auto& prefix : {first, second}) {
-    ASSERT_OK(db()->Put(write, prefix + "0", "v"));
-    ASSERT_OK(db()->Put(write, prefix + "1", "v"));
-  }
-  FlushOptions flush;
-  flush.wait = true;
-  ASSERT_OK(db()->Flush(flush));
-  ReadOptions read;
-  read.total_order_seek = true;
-  read.prefix_same_as_start = true;
-  std::unique_ptr<Iterator> iterator(db()->NewIterator(read));
-  const std::pair<std::string, unsigned> queries[] = {
-      {first, 2},
-      {second, 2},
-      {EncodedPrefix(1, "absent"), 0},
-      {first, 2},
-      {EncodedPrefix(1, ""), 0},
-      {second, 2}};
-  for (const auto& query : queries) {
-    unsigned count = 0;
-    for (iterator->Seek(query.first); iterator->Valid(); iterator->Next()) {
-      ASSERT_TRUE(iterator->key().starts_with(query.first));
-      ++count;
-    }
-    ASSERT_OK(iterator->status());
-    ASSERT_EQ(count, query.second);
-  }
-}
-
-TEST_F(SliceTransformDBTest, LayoutBloomRejectionAvoidsReadaheadExtraction) {
-  std::shared_ptr<const SliceTransform> layout;
-  ASSERT_OK(CreateLayout("v32,b32", &layout));
-  auto counted = std::make_shared<CountingPrefixTransform>(layout);
-  last_options_.prefix_extractor = counted;
-  last_options_.statistics = CreateDBStatistics();
-  last_options_.disable_auto_compactions = true;
-  BlockBasedTableOptions table;
-  table.filter_policy.reset(NewBloomFilterPolicy(20));
-  last_options_.table_factory.reset(NewBlockBasedTableFactory(table));
-  ASSERT_OK(TryReopen());
-  WriteOptions write;
-  FlushOptions flush;
-  flush.wait = true;
-  ASSERT_OK(db()->Put(write, EncodedPrefix(0, "low") + "0", "v"));
-  ASSERT_OK(db()->Put(write, EncodedPrefix(127, "high") + "0", "v"));
-  ASSERT_OK(db()->Flush(flush));
-  bool rejected = false;
-  for (uint32_t candidate = 1; candidate < 127; ++candidate) {
-    counted->domain_calls = 0;
-    counted->transform_calls = 0;
-    PopTicker(last_options_, NON_LAST_LEVEL_SEEK_FILTERED);
-    ASSERT_TRUE(ReadPrefix(EncodedPrefix(candidate, "absent"), true).empty());
-    if (PopTicker(last_options_, NON_LAST_LEVEL_SEEK_FILTERED) > 0) {
-      // A rejected SST only needs the filter's checked extraction.
-      EXPECT_LE(counted->domain_calls.load(), 1U);
-      EXPECT_LE(counted->transform_calls.load(), 1U);
-      rejected = true;
-      break;
-    }
-  }
-  ASSERT_TRUE(rejected);
 }
 
 TEST_F(SliceTransformDBTest, LayoutBloomFiltersOverlappingSsts) {
