@@ -1,0 +1,1 @@
+A native layout-based prefix extractor supports fixed-width, unsigned base128 varint, and length-prefixed byte components through `SliceTransform::CreateFromString` and the Java `PrefixLayout` interface, without per-key Java callbacks or changes to stored keys.

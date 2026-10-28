@@ -22,6 +22,9 @@ RocksDB serves reads through a layered search path: memtables, then SST files or
 | 10. Prefetching and Async I/O | [10_prefetching_and_async_io.md](10_prefetching_and_async_io.md) | FilePrefetchBuffer, auto-readahead for scans, adaptive readahead, async I/O integration, and MultiGet I/O coalescing. |
 | 11. ReadOptions and Tuning | [11_read_options_and_tuning.md](11_read_options_and_tuning.md) | Key ReadOptions fields, prefix seek modes, iterator bounds, read tiers, performance characteristics, and common read patterns. |
 
+See also [Layout-based prefix extraction](layout_prefix_extractor.md) for native
+extraction of variable-length composite prefixes and its Java interface.
+
 ## Key Characteristics
 
 - **Layered search**: Mutable memtable, immutable memtables (newest first), then SST files level by level (L0 all files, L1+ binary search)
