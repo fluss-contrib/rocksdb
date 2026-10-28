@@ -36,7 +36,7 @@ public class PrefixLayoutTest {
     assertThatThrownBy(() -> PrefixLayout.of((PrefixLayout.Step) null))
         .isInstanceOf(NullPointerException.class);
     try (final Options options = new Options();
-        final ColumnFamilyOptions cf = new ColumnFamilyOptions()) {
+         final ColumnFamilyOptions cf = new ColumnFamilyOptions()) {
       assertThatThrownBy(() -> options.useLayoutPrefixExtractor(null))
           .isInstanceOf(NullPointerException.class);
       assertThatThrownBy(() -> cf.useLayoutPrefixExtractor(null))
@@ -65,8 +65,8 @@ public class PrefixLayoutTest {
   @Test
   public void columnFamilyOptionsEntryPoint() throws Exception {
     try (final DBOptions options = new DBOptions().setCreateIfMissing(true);
-        final ColumnFamilyOptions cf = new ColumnFamilyOptions().useLayoutPrefixExtractor(
-            PrefixLayout.of(PrefixLayout.varint32(), PrefixLayout.bytesVarint32()))) {
+         final ColumnFamilyOptions cf = new ColumnFamilyOptions().useLayoutPrefixExtractor(
+             PrefixLayout.of(PrefixLayout.varint32(), PrefixLayout.bytesVarint32()))) {
       final List<ColumnFamilyHandle> handles = new ArrayList<>();
       final List<ColumnFamilyDescriptor> descriptors =
           Collections.singletonList(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, cf));
@@ -90,7 +90,7 @@ public class PrefixLayoutTest {
     properties.setProperty("prefix_extractor", "rocksdb.LayoutPrefix.v1:v32,b32");
     try (final ColumnFamilyOptions cf =
              ColumnFamilyOptions.getColumnFamilyOptionsFromProps(properties);
-        final DBOptions options = new DBOptions().setCreateIfMissing(true)) {
+         final DBOptions options = new DBOptions().setCreateIfMissing(true)) {
       assertThat(cf).isNotNull();
       final List<ColumnFamilyHandle> handles = new ArrayList<>();
       try (final RocksDB db = RocksDB.open(options, folder.getRoot().getAbsolutePath(),
@@ -111,17 +111,18 @@ public class PrefixLayoutTest {
   @Test
   public void bloomFiltersAreUsedWithExplicitPrefixMode() throws Exception {
     try (final BloomFilter bloom = new BloomFilter(10);
-        final Statistics statistics = new Statistics();
-        final Options options = new Options()
-            .setCreateIfMissing(true)
-            .setDisableAutoCompactions(true)
-            .setStatistics(statistics)
-            .setTableFormatConfig(
-                new BlockBasedTableConfig().setFilterPolicy(bloom).setWholeKeyFiltering(true))
-            .useLayoutPrefixExtractor(
-                PrefixLayout.of(PrefixLayout.varint32(), PrefixLayout.bytesVarint32()));
-        final RocksDB db = RocksDB.open(options, folder.getRoot().getAbsolutePath());
-        final FlushOptions flush = new FlushOptions().setWaitForFlush(true)) {
+         final Statistics statistics = new Statistics();
+         final Options options =
+             new Options()
+                 .setCreateIfMissing(true)
+                 .setDisableAutoCompactions(true)
+                 .setStatistics(statistics)
+                 .setTableFormatConfig(
+                     new BlockBasedTableConfig().setFilterPolicy(bloom).setWholeKeyFiltering(true))
+                 .useLayoutPrefixExtractor(
+                     PrefixLayout.of(PrefixLayout.varint32(), PrefixLayout.bytesVarint32()));
+         final RocksDB db = RocksDB.open(options, folder.getRoot().getAbsolutePath());
+         final FlushOptions flush = new FlushOptions().setWaitForFlush(true)) {
       for (int file = 1; file <= 8; ++file) {
         db.put(prefix(0, "low", "0"), new byte[] {0});
         db.put(prefix(file, "group", "0"), new byte[] {1});
@@ -146,7 +147,7 @@ public class PrefixLayoutTest {
     for (final PrefixLayout layout : layouts) {
       try (final Options options =
                new Options().setCreateIfMissing(true).useLayoutPrefixExtractor(layout);
-          final RocksDB db = RocksDB.open(options, folder.newFolder().getAbsolutePath())) {
+           final RocksDB db = RocksDB.open(options, folder.newFolder().getAbsolutePath())) {
         db.put(key, new byte[] {7});
         assertThat(read(db, Arrays.copyOf(key, 2), true)).hasSize(1);
         assertThat(read(db, new byte[] {(byte) 0x80}, true))
@@ -194,8 +195,8 @@ public class PrefixLayoutTest {
       ++upper[end - 1];
     }
     try (final Slice upperSlice = new Slice(upper);
-        final ReadOptions options =
-            new ReadOptions().setTotalOrderSeek(true).setPrefixSameAsStart(prefixMode)) {
+         final ReadOptions options =
+             new ReadOptions().setTotalOrderSeek(true).setPrefixSameAsStart(prefixMode)) {
       if (end > 0) {
         options.setIterateUpperBound(upperSlice);
       }
