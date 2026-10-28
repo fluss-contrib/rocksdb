@@ -40,6 +40,16 @@ class SliceTransform : public Customizable {
   static const char* Type() { return "SliceTransform"; }
 
   // Creates and configures a new SliceTransform from the input options and id.
+  // A sequential byte layout can be specified as
+  // "rocksdb.LayoutPrefix.v1:v32,b32,f4,v64". Components are unsigned base128
+  // varint32 (v32), varint64 (v64), varint32-length-prefixed bytes (b32), and
+  // a positive fixed byte count (fN, N <= INT32_MAX). Payloads may be empty.
+  // Malformed or incomplete components are out of domain. Extra trailing
+  // bytes do not affect the prefix. All-fixed layouts use FixedPrefix.
+  // Layouts require contiguous prefix groups under the comparator, as provided
+  // by bytewise ordering. Install an appropriate filter policy and choose an
+  // explicit prefix iteration mode to use prefix Bloom filtering.
+
   static Status CreateFromString(const ConfigOptions& config_options,
                                  const std::string& id,
                                  std::shared_ptr<const SliceTransform>* result);

@@ -122,6 +122,7 @@ JAVA_TESTS = \
 	io.github.fluss_contrib.rocksdb.CheckPointTest\
 	io.github.fluss_contrib.rocksdb.ClockCacheTest\
 	io.github.fluss_contrib.rocksdb.ColumnFamilyOptionsTest\
+	io.github.fluss_contrib.rocksdb.PrefixLayoutTest\
 	io.github.fluss_contrib.rocksdb.ColumnFamilyTest\
 	io.github.fluss_contrib.rocksdb.CompactionFilterFactoryTest\
 	io.github.fluss_contrib.rocksdb.CompactionJobInfoTest\

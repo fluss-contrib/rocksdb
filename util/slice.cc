@@ -10,7 +10,9 @@
 #include "rocksdb/slice.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
+#include <limits>
 
 #include "rocksdb/convenience.h"
 #include "rocksdb/slice_transform.h"
@@ -117,6 +119,191 @@ class CappedPrefixTransform : public SliceTransform {
   }
 };
 
+// Each component has a boundary independent of the bytes following it.
+// Consequently, successful parsing remains unchanged when a suffix is appended.
+class LayoutPrefixTransform : public SliceTransform {
+ public:
+  static const char* kClassName() { return "rocksdb.LayoutPrefix"; }
+  const char* Name() const override { return kClassName(); }
+  std::string GetId() const override { return id_; }
+
+  static const SliceTransform* Create(
+      const std::string& uri, std::unique_ptr<const SliceTransform>* guard,
+      std::string* errmsg) {
+    const std::string prefix = std::string(kClassName()) + ".v1:";
+    if (!StartsWith(uri, prefix) || uri.size() == prefix.size()) {
+      *errmsg = "Expected rocksdb.LayoutPrefix.v1:<components>";
+      return nullptr;
+    }
+    std::vector<Component> components;
+    std::string id = prefix;
+    size_t fixed_length = 0;
+    bool all_fixed = true;
+    size_t start = prefix.size();
+    while (start < uri.size()) {
+      const size_t comma = uri.find(',', start);
+      const size_t end = comma == std::string::npos ? uri.size() : comma;
+      const std::string token = uri.substr(start, end - start);
+      Component component;
+      if (token == "v32") {
+        component = {Kind::kVarint32, 0};
+      } else if (token == "v64") {
+        component = {Kind::kVarint64, 0};
+      } else if (token == "b32") {
+        component = {Kind::kBytesVarint32, 0};
+      } else if (token.size() > 1 && token[0] == 'f') {
+        size_t length = 0;
+        for (size_t i = 1; i < token.size(); ++i) {
+          if (token[i] < '0' || token[i] > '9') {
+            *errmsg = "Invalid fixed-length component: " + token;
+            return nullptr;
+          }
+          const size_t digit = token[i] - '0';
+          if (length > (std::numeric_limits<int32_t>::max() - digit) / 10) {
+            *errmsg = "Fixed-length component exceeds int32: " + token;
+            return nullptr;
+          }
+          length = length * 10 + digit;
+        }
+        if (length == 0 ||
+            length > std::numeric_limits<size_t>::max() - fixed_length) {
+          *errmsg = "Invalid total fixed length";
+          return nullptr;
+        }
+        fixed_length += length;
+        component = {Kind::kFixed, length};
+      } else {
+        *errmsg = "Unknown layout component: " + token;
+        return nullptr;
+      }
+      all_fixed &= component.kind == Kind::kFixed;
+      if (!components.empty()) {
+        id += ',';
+      }
+      id += component.kind == Kind::kFixed
+                ? "f" + std::to_string(component.length)
+                : token;
+      // Normalize the execution plan without changing the persisted identity.
+      if (component.kind == Kind::kFixed && !components.empty() &&
+          components.back().kind == Kind::kFixed) {
+        components.back().length += component.length;
+      } else {
+        components.push_back(component);
+      }
+      if (comma == std::string::npos) {
+        break;
+      }
+      start = comma + 1;
+      if (start == uri.size()) {
+        *errmsg = "Empty layout component";
+        return nullptr;
+      }
+    }
+    if (all_fixed) {
+      guard->reset(NewFixedPrefixTransform(fixed_length));
+    } else {
+      guard->reset(
+          new LayoutPrefixTransform(std::move(components), std::move(id)));
+    }
+    return guard->get();
+  }
+
+  bool InDomain(const Slice& key) const override {
+    size_t end;
+    return FindPrefixEnd(key, &end);
+  }
+
+  Slice Transform(const Slice& key) const override {
+    size_t end = 0;
+    const bool valid = FindPrefixEnd(key, &end);
+    assert(valid);
+    return Slice(key.data(), valid ? end : 0);
+  }
+
+  bool SameResultWhenAppended(const Slice& key) const override {
+    return InDomain(key);
+  }
+
+ private:
+  enum class Kind { kFixed, kVarint32, kVarint64, kBytesVarint32 };
+  struct Component {
+    Kind kind;
+    size_t length;
+  };
+
+  LayoutPrefixTransform(std::vector<Component> components, std::string id)
+      : components_(std::move(components)), id_(std::move(id)) {}
+
+  template <unsigned Width, bool DecodeLength = false>
+  static bool ConsumeVarint(const Slice& key, size_t* position,
+                            uint32_t* length = nullptr) noexcept {
+    static_assert(Width == 5 || Width == 10);
+    static_assert(!DecodeLength || Width == 5);
+    if (*position == key.size()) {
+      return false;
+    }
+    unsigned char byte = key[(*position)++];
+    if (byte < 0x80) {
+      if constexpr (DecodeLength) {
+        *length = byte;
+      }
+      return true;
+    }
+    [[maybe_unused]] uint32_t result = byte & 0x7f;
+    for (unsigned i = 1; i < Width; ++i) {
+      if (*position == key.size()) {
+        return false;
+      }
+      byte = key[(*position)++];
+      if (i == Width - 1 && byte > (Width == 5 ? 0x0f : 0x01)) {
+        return false;
+      }
+      if constexpr (DecodeLength) {
+        const uint32_t payload = byte & 0x7f;
+        result |= payload << (7 * i);
+      }
+      if (byte < 0x80) {
+        if constexpr (DecodeLength) {
+          *length = result;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool FindPrefixEnd(const Slice& key, size_t* end) const noexcept {
+    size_t position = 0;
+    for (const auto& component : components_) {
+      if (component.kind == Kind::kFixed) {
+        if (component.length > key.size() - position) {
+          return false;
+        }
+        position += component.length;
+      } else if (component.kind == Kind::kBytesVarint32) {
+        uint32_t length;
+        if (!ConsumeVarint<5, true>(key, &position, &length) ||
+            length > key.size() - position) {
+          return false;
+        }
+        position += length;
+      } else {
+        const bool valid = component.kind == Kind::kVarint64
+                               ? ConsumeVarint<10>(key, &position)
+                               : ConsumeVarint<5>(key, &position);
+        if (!valid) {
+          return false;
+        }
+      }
+    }
+    *end = position;
+    return true;
+  }
+
+  const std::vector<Component> components_;
+  const std::string id_;
+};
+
 class NoopTransform : public SliceTransform {
  public:
   explicit NoopTransform() = default;
@@ -157,6 +344,10 @@ static int RegisterBuiltinSliceTransform(ObjectLibrary& library,
         guard->reset(NewNoopTransform());
         return guard->get();
       });
+  library.AddFactory<const SliceTransform>(
+      ObjectLibrary::PatternEntry(LayoutPrefixTransform::kClassName())
+          .AddSeparator(".", false),
+      LayoutPrefixTransform::Create);
   library.AddFactory<const SliceTransform>(
       ObjectLibrary::PatternEntry(FixedPrefixTransform::kNickName(), false)
           .AddNumber(":"),

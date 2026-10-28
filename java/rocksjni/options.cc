@@ -41,6 +41,27 @@
 #include "util/stderr_logger.h"
 #include "utilities/merge_operators.h"
 
+namespace {
+void InstallLayoutPrefixExtractor(
+    JNIEnv* env, jstring jlayout,
+    std::shared_ptr<const ROCKSDB_NAMESPACE::SliceTransform>* extractor) {
+  jboolean has_exception = JNI_FALSE;
+  const std::string layout =
+      ROCKSDB_NAMESPACE::JniUtil::copyStdString(env, jlayout, &has_exception);
+  if (has_exception) {
+    return;
+  }
+  std::shared_ptr<const ROCKSDB_NAMESPACE::SliceTransform> parsed;
+  const auto status = ROCKSDB_NAMESPACE::SliceTransform::CreateFromString(
+      ROCKSDB_NAMESPACE::ConfigOptions(), layout, &parsed);
+  if (!status.ok()) {
+    ROCKSDB_NAMESPACE::IllegalArgumentExceptionJni::ThrowNew(env, status);
+    return;
+  }
+  *extractor = std::move(parsed);
+}
+}  // namespace
+
 /*
  * Class:     io_github_fluss_contrib_rocksdb_Options
  * Method:    newOptions
@@ -1201,6 +1222,18 @@ void Java_io_github_fluss_1contrib_rocksdb_Options_useCappedPrefixExtractor(
   reinterpret_cast<ROCKSDB_NAMESPACE::Options*>(jhandle)
       ->prefix_extractor.reset(ROCKSDB_NAMESPACE::NewCappedPrefixTransform(
           static_cast<int>(jprefix_length)));
+}
+
+/*
+ * Method:    useLayoutPrefixExtractor
+ * Signature: (JLjava/lang/String;)V
+ */
+void Java_io_github_fluss_1contrib_rocksdb_Options_useLayoutPrefixExtractor(
+    JNIEnv* env, jclass, jlong jhandle, jstring jlayout) {
+  InstallLayoutPrefixExtractor(
+      env, jlayout,
+      &reinterpret_cast<ROCKSDB_NAMESPACE::Options*>(jhandle)
+           ->prefix_extractor);
 }
 
 /*
@@ -4413,6 +4446,18 @@ void Java_io_github_fluss_1contrib_rocksdb_ColumnFamilyOptions_useCappedPrefixEx
   reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyOptions*>(jhandle)
       ->prefix_extractor.reset(ROCKSDB_NAMESPACE::NewCappedPrefixTransform(
           static_cast<int>(jprefix_length)));
+}
+
+/*
+ * Method:    useLayoutPrefixExtractor
+ * Signature: (JLjava/lang/String;)V
+ */
+void Java_io_github_fluss_1contrib_rocksdb_ColumnFamilyOptions_useLayoutPrefixExtractor(
+    JNIEnv* env, jclass, jlong jhandle, jstring jlayout) {
+  InstallLayoutPrefixExtractor(
+      env, jlayout,
+      &reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyOptions*>(jhandle)
+           ->prefix_extractor);
 }
 
 /*

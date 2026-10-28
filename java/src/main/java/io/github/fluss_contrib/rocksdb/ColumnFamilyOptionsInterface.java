@@ -249,6 +249,25 @@ public interface ColumnFamilyOptionsInterface<T extends ColumnFamilyOptionsInter
   T useCappedPrefixExtractor(int n);
 
   /**
+   * Installs a native prefix extractor for consecutive encoded components.
+   * The layout is copied during this call; extraction never calls Java.
+   * This does not change the stored keys or enable a Bloom filter policy.
+   *
+   * <p>Use a compatible filter policy and an explicit prefix read mode such as
+   * {@link ReadOptions#setPrefixSameAsStart(boolean)} for prefix iteration.
+   * Other scans should explicitly use total-order seeking. Existing SSTs do
+   * not gain prefix filters until rewritten. Whole-key filtering can remain
+   * enabled for point lookups.
+   *
+   * @param layout the immutable prefix layout
+   * @return this option instance
+   * @throws NullPointerException if layout is null
+   * @throws IllegalArgumentException if native layout validation fails
+   * @see PrefixLayout
+   */
+  T useLayoutPrefixExtractor(PrefixLayout layout);
+
+  /**
    * Number of files to trigger level-0 compaction. A value &lt; 0 means that
    * level-0 compaction will not be triggered by number of files at all.
    * Default: 4
