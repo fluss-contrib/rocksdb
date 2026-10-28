@@ -60,7 +60,9 @@ within a revision.
 
 An ordinary pull request runs the Linux x86_64 test workflow. A pull request
 that changes publication-related files additionally exercises the complete
-publication build without external side effects:
+publication build without external side effects. This preflight accepts pull
+requests targeting `fluss-main` or the matching `fluss-release-X.Y` branch and
+reads the RocksDB baseline from the pull request's base commit:
 
 - build and smoke-test every supported platform;
 - assemble the four-platform JNI JAR;

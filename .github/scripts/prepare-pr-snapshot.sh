@@ -72,7 +72,11 @@ fi
 
 base_repository=$(jq -er '.base.repo.full_name' "$pull_request_json")
 base_ref=$(jq -er '.base.ref' "$pull_request_json")
-if [[ "$base_repository" != "$GITHUB_REPOSITORY" || "$base_ref" != fluss-main ]]; then
+allowed_base=fluss-main
+if [[ "$GITHUB_EVENT_NAME" == pull_request && "$base_ref" == "fluss-release-${rocksdb_version%.*}" ]]; then
+  allowed_base=$base_ref
+fi
+if [[ "$base_repository" != "$GITHUB_REPOSITORY" || "$base_ref" != "$allowed_base" ]]; then
   echo "Pull request $REQUESTED_PR_NUMBER must target $GITHUB_REPOSITORY:fluss-main" >&2
   exit 1
 fi
@@ -105,6 +109,7 @@ version="$rocksdb_version-fluss-pr$REQUESTED_PR_NUMBER-${source_sha:0:12}-SNAPSH
 
 jq -n \
   --arg target_repository "$GITHUB_REPOSITORY" \
+  --arg target_branch "$base_ref" \
   --arg source_repository "$source_repository" \
   --arg source_sha "$source_sha" \
   --arg rocksdb_version "$rocksdb_version" \
@@ -112,7 +117,7 @@ jq -n \
   --argjson pull_request "$REQUESTED_PR_NUMBER" \
   '{
     target_repository: $target_repository,
-    target_branch: "fluss-main",
+    target_branch: $target_branch,
     pull_request: $pull_request,
     source_repository: $source_repository,
     source_sha: $source_sha,

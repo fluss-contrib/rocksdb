@@ -138,4 +138,28 @@ assert_failure \
   run_prepare "$valid_pr" "$outputs" "$manifest" \
     pull_request refs/pull/42/merge 41
 
+release_pr="$temporary_directory/release-pr.json"
+write_pull_request "$release_pr" open fluss-release-11.8
+run_prepare "$release_pr" "$temporary_directory/release-outputs" "$manifest" \
+  pull_request refs/pull/42/merge
+jq -e '.target_branch == "fluss-release-11.8"' "$manifest" > /dev/null
+
+assert_failure \
+  "Pull request 42 must target fluss-contrib/rocksdb:fluss-main" \
+  run_prepare "$release_pr" "$outputs" "$manifest"
+
+wrong_series_pr="$temporary_directory/wrong-series-pr.json"
+write_pull_request "$wrong_series_pr" open fluss-release-11.9
+assert_failure \
+  "Pull request 42 must target fluss-contrib/rocksdb:fluss-main" \
+  run_prepare "$wrong_series_pr" "$outputs" "$manifest" \
+    pull_request refs/pull/42/merge
+
+wrong_repository_pr="$temporary_directory/wrong-repository-pr.json"
+jq '.base.repo.full_name = "contributor/rocksdb"' "$release_pr" > "$wrong_repository_pr"
+assert_failure \
+  "Pull request 42 must target fluss-contrib/rocksdb:fluss-main" \
+  run_prepare "$wrong_repository_pr" "$outputs" "$manifest" \
+    pull_request refs/pull/42/merge
+
 echo "PR Snapshot preparation tests passed"
