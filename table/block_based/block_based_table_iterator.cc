@@ -50,18 +50,24 @@ void BlockBasedTableIterator::SeekImpl(const Slice* target,
     return;
   }
 
-  if (target != nullptr && prefix_extractor_ &&
-      read_options_.prefix_same_as_start) {
-    const Slice& seek_user_key = ExtractUserKey(*target);
-    seek_key_prefix_for_readahead_trimming_ =
-        prefix_extractor_->InDomain(seek_user_key)
-            ? prefix_extractor_->Transform(seek_user_key).ToString()
-            : "";
-  }
+  auto update_readahead_prefix = [&] {
+    if (target != nullptr && prefix_extractor_ &&
+        read_options_.prefix_same_as_start) {
+      const Slice& seek_user_key = ExtractUserKey(*target);
+      if (prefix_extractor_->InDomain(seek_user_key)) {
+        const Slice prefix = prefix_extractor_->Transform(seek_user_key);
+        seek_key_prefix_for_readahead_trimming_.assign(prefix.data(),
+                                                       prefix.size());
+      } else {
+        seek_key_prefix_for_readahead_trimming_.clear();
+      }
+    }
+  };
 
   bool is_first_pass = !async_read_in_progress_;
 
   if (!is_first_pass) {
+    update_readahead_prefix();
     SeekSecondPass(target);
     return;
   }
@@ -84,12 +90,15 @@ void BlockBasedTableIterator::SeekImpl(const Slice* target,
   bool filter_checked = false;
   if (target &&
       !CheckPrefixMayMatch(*target, IterDirection::kForward, &filter_checked)) {
+    seek_key_prefix_for_readahead_trimming_.clear();
     ResetDataIter();
     RecordTick(table_->GetStatistics(), is_last_level_
                                             ? LAST_LEVEL_SEEK_FILTERED
                                             : NON_LAST_LEVEL_SEEK_FILTERED);
     return;
   }
+  // Rejected SSTs do not need a prefix copy for readahead trimming.
+  update_readahead_prefix();
   if (filter_checked) {
     seek_stat_state_ = kFilterUsed;
     RecordTick(table_->GetStatistics(), is_last_level_

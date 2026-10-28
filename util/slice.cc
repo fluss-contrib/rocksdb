@@ -183,7 +183,13 @@ class LayoutPrefixTransform : public SliceTransform {
       id += component.kind == Kind::kFixed
                 ? "f" + std::to_string(component.length)
                 : token;
-      components.push_back(component);
+      // Normalize the execution plan without changing the persisted identity.
+      if (component.kind == Kind::kFixed && !components.empty() &&
+          components.back().kind == Kind::kFixed) {
+        components.back().length += component.length;
+      } else {
+        components.push_back(component);
+      }
       if (comma == std::string::npos) {
         break;
       }
@@ -228,21 +234,38 @@ class LayoutPrefixTransform : public SliceTransform {
   LayoutPrefixTransform(std::vector<Component> components, std::string id)
       : components_(std::move(components)), id_(std::move(id)) {}
 
-  static bool ReadVarint(const Slice& key, size_t* position, unsigned width,
-                         uint64_t* value) noexcept {
-    uint64_t result = 0;
-    for (unsigned i = 0; i < width; ++i) {
+  template <unsigned Width, bool DecodeLength = false>
+  static bool ConsumeVarint(const Slice& key, size_t* position,
+                            uint32_t* length = nullptr) noexcept {
+    static_assert(Width == 5 || Width == 10);
+    static_assert(!DecodeLength || Width == 5);
+    if (*position == key.size()) {
+      return false;
+    }
+    unsigned char byte = key[(*position)++];
+    if (byte < 0x80) {
+      if constexpr (DecodeLength) {
+        *length = byte;
+      }
+      return true;
+    }
+    [[maybe_unused]] uint32_t result = byte & 0x7f;
+    for (unsigned i = 1; i < Width; ++i) {
       if (*position == key.size()) {
         return false;
       }
-      const unsigned char byte = key[(*position)++];
-      if (i == width - 1 && byte > (width == 5 ? 0x0f : 0x01)) {
+      byte = key[(*position)++];
+      if (i == Width - 1 && byte > (Width == 5 ? 0x0f : 0x01)) {
         return false;
       }
-      const uint64_t payload = byte & 0x7f;
-      result |= payload << (7 * i);
-      if ((byte & 0x80) == 0) {
-        *value = result;
+      if constexpr (DecodeLength) {
+        const uint32_t payload = byte & 0x7f;
+        result |= payload << (7 * i);
+      }
+      if (byte < 0x80) {
+        if constexpr (DecodeLength) {
+          *length = result;
+        }
         return true;
       }
     }
@@ -257,18 +280,19 @@ class LayoutPrefixTransform : public SliceTransform {
           return false;
         }
         position += component.length;
-      } else {
-        uint64_t value;
-        if (!ReadVarint(key, &position,
-                        component.kind == Kind::kVarint64 ? 10 : 5, &value)) {
+      } else if (component.kind == Kind::kBytesVarint32) {
+        uint32_t length;
+        if (!ConsumeVarint<5, true>(key, &position, &length) ||
+            length > key.size() - position) {
           return false;
         }
-        if (component.kind == Kind::kBytesVarint32) {
-          if (value > key.size() - position) {
-            return false;
-          }
-          // The remaining-size check above proves this conversion fits size_t.
-          position += static_cast<size_t>(value);
+        position += length;
+      } else {
+        const bool valid = component.kind == Kind::kVarint64
+                               ? ConsumeVarint<10>(key, &position)
+                               : ConsumeVarint<5>(key, &position);
+        if (!valid) {
+          return false;
         }
       }
     }
