@@ -1808,11 +1808,15 @@ TEST_F(LoadCustomizableTest, LoadComparatorTest) {
 TEST_F(LoadCustomizableTest, LoadSliceTransformFactoryTest) {
   std::shared_ptr<const SliceTransform> result;
   std::vector<std::string> failures;
-  std::unordered_set<std::string> expected = {"rocksdb.Noop", "fixed",
-                                              "rocksdb.FixedPrefix", "capped",
-                                              "rocksdb.CappedPrefix"};
+  std::unordered_set<std::string> expected = {
+      "rocksdb.Noop",         "fixed",
+      "rocksdb.FixedPrefix",  "capped",
+      "rocksdb.CappedPrefix", "rocksdb.LayoutPrefix"};
   ASSERT_OK(TestExpectedBuiltins<SliceTransform>(
       "Mock", expected, &result, &failures, [](const std::string& name) {
+        if (name == "rocksdb.LayoutPrefix") {
+          return std::vector<std::string>{name + ".v1:v32,b32"};
+        }
         std::vector<std::string> names = {name + ":22", name + ".22"};
         return names;
       }));

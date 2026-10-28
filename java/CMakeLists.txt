@@ -223,6 +223,7 @@ set(JAVA_MAIN_CLASSES
   src/main/java/io/github/fluss_contrib/rocksdb/PersistentCache.java
   src/main/java/io/github/fluss_contrib/rocksdb/PlainTableConfig.java
   src/main/java/io/github/fluss_contrib/rocksdb/PrepopulateBlobCache.java
+  src/main/java/io/github/fluss_contrib/rocksdb/PrefixLayout.java
   src/main/java/io/github/fluss_contrib/rocksdb/Priority.java
   src/main/java/io/github/fluss_contrib/rocksdb/Range.java
   src/main/java/io/github/fluss_contrib/rocksdb/RateLimiter.java
@@ -380,6 +381,7 @@ set(JAVA_TEST_CLASSES
   src/test/java/io/github/fluss_contrib/rocksdb/PerfContextTest.java
   src/test/java/io/github/fluss_contrib/rocksdb/PerfLevelTest.java
   src/test/java/io/github/fluss_contrib/rocksdb/PlainTableConfigTest.java
+  src/test/java/io/github/fluss_contrib/rocksdb/PrefixLayoutTest.java
   src/test/java/io/github/fluss_contrib/rocksdb/PlatformRandomHelper.java
   src/test/java/io/github/fluss_contrib/rocksdb/PutCFVariantsTest.java
   src/test/java/io/github/fluss_contrib/rocksdb/PutMultiplePartsTest.java
@@ -501,6 +503,7 @@ set(JAVA_TEST_RUNNING_CLASSES
   io.github.fluss_contrib.rocksdb.PerfContextTest
   io.github.fluss_contrib.rocksdb.PerfLevelTest
   io.github.fluss_contrib.rocksdb.PlainTableConfigTest
+  io.github.fluss_contrib.rocksdb.PrefixLayoutTest
   io.github.fluss_contrib.rocksdb.PutCFVariantsTest
   io.github.fluss_contrib.rocksdb.PutMultiplePartsTest
   io.github.fluss_contrib.rocksdb.PutVariantsTest

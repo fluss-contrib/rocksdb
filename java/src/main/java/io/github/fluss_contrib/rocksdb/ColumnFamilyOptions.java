@@ -308,6 +308,14 @@ public class ColumnFamilyOptions
   }
 
   @Override
+  public ColumnFamilyOptions useLayoutPrefixExtractor(final PrefixLayout layout) {
+    assert (isOwningHandle());
+    useLayoutPrefixExtractor(
+        nativeHandle_, java.util.Objects.requireNonNull(layout, "layout").nativeId());
+    return this;
+  }
+
+  @Override
   public ColumnFamilyOptions setCompressionType(
       final CompressionType compressionType) {
     setCompressionType(nativeHandle_, compressionType.getValue());
@@ -1394,6 +1402,7 @@ public class ColumnFamilyOptions
   private static native void setCompressionOptions(long handle, long compressionOptionsHandle);
   private static native void useFixedLengthPrefixExtractor(long handle, int prefixLength);
   private static native void useCappedPrefixExtractor(long handle, int prefixLength);
+  private static native void useLayoutPrefixExtractor(long handle, String layout);
   private static native void setNumLevels(long handle, int numLevels);
   private static native int numLevels(long handle);
   private static native void setLevelZeroFileNumCompactionTrigger(long handle, int numFiles);
