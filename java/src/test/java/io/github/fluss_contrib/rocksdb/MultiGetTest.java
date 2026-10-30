@@ -7,6 +7,8 @@ package io.github.fluss_contrib.rocksdb;
 import static org.assertj.core.api.Assertions.*;
 
 import io.github.fluss_contrib.rocksdb.util.TestUtil;
+import java.io.File;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +25,83 @@ public class MultiGetTest {
       new RocksNativeLibraryResource();
 
   @Rule public TemporaryFolder dbFolder = new TemporaryFolder();
+
+  @Test
+  public void multiGetFailsOnCorruption() throws Exception {
+    assertMultiGetReadError(false, Status.Code.Corruption);
+  }
+
+  @Test
+  public void multiGetFailsOnIOError() throws Exception {
+    assertMultiGetReadError(true, Status.Code.IOError);
+  }
+
+  private void assertMultiGetReadError(final boolean removeFile, final Status.Code expectedCode)
+      throws Exception {
+    for (int variant = 0; variant < 4; variant++) {
+      final File directory = dbFolder.newFolder();
+      final byte[] key = "sst-key".getBytes();
+      final byte[] cachedKey = "memtable-key".getBytes();
+      try (final Options options = new Options()
+                                       .setCreateIfMissing(true)
+                                       .setDisableAutoCompactions(true)
+                                       .setMaxOpenFiles(0)
+                                       .setEnableBlobFiles(removeFile)
+                                       .setMinBlobSize(0)) {
+        try (final RocksDB db = RocksDB.open(options, directory.getAbsolutePath());
+             final FlushOptions flush = new FlushOptions().setWaitForFlush(true)) {
+          db.put(key, "value".getBytes());
+          db.flush(flush);
+        }
+        final String suffix = removeFile ? ".blob" : ".sst";
+        final File[] files = directory.listFiles((dir, name) -> name.endsWith(suffix));
+        assertThat(files).hasSize(1);
+        try (final RocksDB db = RocksDB.open(options, directory.getAbsolutePath());
+             final ReadOptions readOptions = new ReadOptions()) {
+          // Keep one successful read in the batch without caching the SST data block.
+          db.put(cachedKey, "cached-value".getBytes());
+          if (removeFile) {
+            assertThat(files[0].delete()).isTrue();
+          } else {
+            try (final RandomAccessFile file = new RandomAccessFile(files[0], "rw")) {
+              final int firstByte = file.readUnsignedByte();
+              file.seek(0);
+              file.writeByte(firstByte ^ 0xff);
+            }
+          }
+          final Throwable readError = catchThrowable(() -> db.get(key));
+          assertThat(readError)
+              .isInstanceOf(RocksDBException.class)
+              .extracting("status.code")
+              .containsExactly(expectedCode);
+          final List<byte[]> keys =
+              variant % 2 == 0 ? Arrays.asList(key, cachedKey) : Arrays.asList(cachedKey, key);
+          final List<ColumnFamilyHandle> handles =
+              Arrays.asList(db.getDefaultColumnFamily(), db.getDefaultColumnFamily());
+          final int overload = variant;
+          assertThatThrownBy(() -> {
+            switch (overload) {
+              case 0:
+                db.multiGetAsList(keys);
+                break;
+              case 1:
+                db.multiGetAsList(readOptions, keys);
+                break;
+              case 2:
+                db.multiGetAsList(handles, keys);
+                break;
+              default:
+                db.multiGetAsList(readOptions, handles, keys);
+            }
+          })
+              .isInstanceOf(RocksDBException.class)
+              .hasMessage(readError.getMessage())
+              .extracting("status.code")
+              .containsExactly(expectedCode);
+        }
+      }
+    }
+  }
 
   @FunctionalInterface
   public interface RocksDBBiFunction<T1, T2, R> {
