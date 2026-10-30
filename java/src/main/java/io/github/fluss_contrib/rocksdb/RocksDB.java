@@ -2282,8 +2282,8 @@ public class RocksDB extends RocksObject {
    * @return List of values for the given list of keys. List will contain
    * null for keys which could not be found.
    *
-   * @throws RocksDBException thrown if error happens in underlying
-   *    native library.
+   * @throws RocksDBException if any key returns a read error other than NotFound;
+   *     the entire operation fails without returning partial results.
    */
   public List<byte[]> multiGetAsList(final List<byte[]> keys)
       throws RocksDBException {
@@ -2314,8 +2314,8 @@ public class RocksDB extends RocksObject {
    * @return List of values for the given list of keys. List will contain
    * null for keys which could not be found.
    *
-   * @throws RocksDBException thrown if error happens in underlying
-   *    native library.
+   * @throws RocksDBException if any key returns a read error other than NotFound;
+   *     the entire operation fails without returning partial results.
    * @throws IllegalArgumentException thrown if the size of passed keys is not
    *    equal to the amount of passed column family handles.
    */
@@ -2355,8 +2355,8 @@ public class RocksDB extends RocksObject {
    * @return List of values for the given list of keys. List will contain
    * null for keys which could not be found.
    *
-   * @throws RocksDBException thrown if error happens in underlying
-   *    native library.
+   * @throws RocksDBException if any key returns a read error other than NotFound;
+   *     the entire operation fails without returning partial results.
    */
   public List<byte[]> multiGetAsList(final ReadOptions opt,
       final List<byte[]> keys) throws RocksDBException {
@@ -2388,8 +2388,8 @@ public class RocksDB extends RocksObject {
    * @return List of values for the given list of keys. List will contain
    * null for keys which could not be found.
    *
-   * @throws RocksDBException thrown if error happens in underlying
-   *    native library.
+   * @throws RocksDBException if any key returns a read error other than NotFound;
+   *     the entire operation fails without returning partial results.
    * @throws IllegalArgumentException thrown if the size of passed keys is not
    *    equal to the amount of passed column family handles.
    */

@@ -4,6 +4,19 @@ This changelog summarizes engine, Java/JNI API, and runtime compatibility
 changes in published Fluss releases. For changes inherited from RocksDB, see
 the upstream [HISTORY.md](https://github.com/facebook/rocksdb/blob/main/HISTORY.md).
 
+## [v11.8.1-fluss-5] - 2026-10-30
+
+Based on upstream RocksDB
+[v11.8.1](https://github.com/facebook/rocksdb/releases/tag/v11.8.1).
+
+### Fixed
+
+- Java byte-array multi-get operations now throw `RocksDBException` when a key
+  encounters a read error instead of reporting it as a missing key. This also
+  applies to transaction multi-get and multi-get-for-update. Missing keys still
+  return `null`; any other error fails the entire batch without additional point
+  lookups ([#37](https://github.com/fluss-contrib/rocksdb/pull/37)).
+
 ## [v11.8.1-fluss-4] - 2026-10-28
 
 Based on upstream RocksDB
@@ -54,6 +67,7 @@ Based on upstream RocksDB
   Java/JNI API and failure-safe filtering behavior
   ([#14](https://github.com/fluss-contrib/rocksdb/pull/14)).
 
+[v11.8.1-fluss-5]: https://github.com/fluss-contrib/rocksdb/releases/tag/v11.8.1-fluss-5
 [v11.8.1-fluss-4]: https://github.com/fluss-contrib/rocksdb/releases/tag/v11.8.1-fluss-4
 [v11.8.1-fluss-3]: https://github.com/fluss-contrib/rocksdb/releases/tag/v11.8.1-fluss-3
 [v11.8.1-fluss-2]: https://github.com/fluss-contrib/rocksdb/releases/tag/v11.8.1-fluss-2

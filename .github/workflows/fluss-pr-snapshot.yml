@@ -20,6 +20,7 @@ name: Fluss PR Snapshot
 on:
   pull_request:
     paths:
+      - 'CHANGELOG.md'
       - '.github/scripts/prepare-pr-snapshot.sh'
       - '.github/scripts/prepare-pr-snapshot.test.sh'
       - '.github/scripts/prepare-release-component.sh'
