@@ -1,0 +1,1 @@
+Java byte-array multi-get operations, including transaction multi-get and multi-get-for-update, now throw `RocksDBException` if any key returns an error other than `NotFound`, instead of silently returning `null` for that key. Missing keys still return `null`.
