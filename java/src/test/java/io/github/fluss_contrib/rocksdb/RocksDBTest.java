@@ -46,20 +46,26 @@ public class RocksDBTest {
             .setBottommostLevelCompaction(CompactRangeOptions.BottommostLevelCompaction.kForce);
         db.compactRange(null, null, null, compact);
         assertThat(db.getFullHistoryTsLow()).isEqualTo(u64Timestamp(12));
+        assertRetainedHistory(db);
         assertThatThrownBy(() -> db.increaseFullHistoryTsLow(u64Timestamp(11)))
             .isInstanceOf(RocksDBException.class);
       }
-      try (final RocksDB db = RocksDB.open(options, path);
-           final Slice ts = new Slice(u64Timestamp(12));
-           final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
+      try (final RocksDB db = RocksDB.open(options, path)) {
         assertThat(db.getFullHistoryTsLow()).isEqualTo(u64Timestamp(12));
-        assertThat(db.get(read, new byte[] {1})).containsExactly(8);
-        assertThat(db.get(read, new byte[] {2})).isNull();
-        try (final Slice later = new Slice(u64Timestamp(22));
-             final ReadOptions laterRead = new ReadOptions().setTimestamp(later)) {
-          assertThat(db.get(laterRead, new byte[] {2})).containsExactly(20);
-        }
+        assertRetainedHistory(db);
       }
+    }
+  }
+
+  private static void assertRetainedHistory(final RocksDB db) throws RocksDBException {
+    try (final Slice ts = new Slice(u64Timestamp(12));
+         final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
+      assertThat(db.get(read, new byte[] {1})).containsExactly(8);
+      assertThat(db.get(read, new byte[] {2})).isNull();
+    }
+    try (final Slice ts = new Slice(u64Timestamp(22));
+         final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
+      assertThat(db.get(read, new byte[] {2})).containsExactly(20);
     }
   }
 

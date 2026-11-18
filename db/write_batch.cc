@@ -42,7 +42,6 @@
 #include <cstdint>
 #include <limits>
 #include <map>
-#include <stack>
 #include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
@@ -66,7 +65,6 @@
 #include "rocksdb/merge_operator.h"
 #include "rocksdb/system_clock.h"
 #include "util/aligned_storage.h"
-#include "util/autovector.h"
 #include "util/cast_util.h"
 #include "util/coding.h"
 #include "util/duplicate_detector.h"
@@ -175,7 +173,14 @@ struct BatchContentClassifier : public WriteBatch::Handler {
 }  // anonymous namespace
 
 struct SavePoints {
-  std::stack<SavePoint, autovector<SavePoint>> stack;
+  struct State {
+    SavePoint contents;
+    bool needs_timestamp_update;
+    bool has_key_with_timestamp;
+    std::unordered_map<uint32_t, size_t> timestamp_sizes;
+  };
+
+  std::vector<State> stack;
 };
 
 WriteBatch::WriteBatch(size_t reserved_bytes, size_t max_bytes,
@@ -206,9 +211,13 @@ WriteBatch::WriteBatch(std::string&& rep)
 
 WriteBatch::WriteBatch(const WriteBatch& src)
     : wal_term_point_(src.wal_term_point_),
+      needs_in_place_update_ts_(src.needs_in_place_update_ts_),
+      has_key_with_ts_(src.has_key_with_ts_),
       content_flags_(src.content_flags_.load(std::memory_order_relaxed)),
       max_bytes_(src.max_bytes_),
       default_cf_ts_sz_(src.default_cf_ts_sz_),
+      track_timestamp_size_(src.track_timestamp_size_),
+      cf_id_to_ts_sz_(src.cf_id_to_ts_sz_),
       rep_(src.rep_) {
   if (src.save_points_ != nullptr) {
     save_points_.reset(new SavePoints());
@@ -223,10 +232,14 @@ WriteBatch::WriteBatch(const WriteBatch& src)
 WriteBatch::WriteBatch(WriteBatch&& src) noexcept
     : save_points_(std::move(src.save_points_)),
       wal_term_point_(std::move(src.wal_term_point_)),
+      needs_in_place_update_ts_(src.needs_in_place_update_ts_),
+      has_key_with_ts_(src.has_key_with_ts_),
       content_flags_(src.content_flags_.load(std::memory_order_relaxed)),
       max_bytes_(src.max_bytes_),
       prot_info_(std::move(src.prot_info_)),
       default_cf_ts_sz_(src.default_cf_ts_sz_),
+      track_timestamp_size_(src.track_timestamp_size_),
+      cf_id_to_ts_sz_(std::move(src.cf_id_to_ts_sz_)),
       rep_(std::move(src.rep_)) {}
 
 WriteBatch& WriteBatch::operator=(const WriteBatch& src) {
@@ -263,9 +276,7 @@ void WriteBatch::Clear() {
   content_flags_.store(0, std::memory_order_relaxed);
 
   if (save_points_ != nullptr) {
-    while (!save_points_->stack.empty()) {
-      save_points_->stack.pop();
-    }
+    save_points_->stack.clear();
   }
 
   if (prot_info_ != nullptr) {
@@ -273,6 +284,8 @@ void WriteBatch::Clear() {
   }
   wal_term_point_.clear();
   default_cf_ts_sz_ = 0;
+  needs_in_place_update_ts_ = false;
+  has_key_with_ts_ = false;
   cf_id_to_ts_sz_.clear();
 }
 
@@ -951,14 +964,16 @@ Status WriteBatch::Put(ColumnFamilyHandle* column_family, const Slice& key,
   if (0 == ts_sz) {
     s = WriteBatchInternal::Put(this, cf_id, key, value);
   } else {
-    needs_in_place_update_ts_ = true;
-    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> key_with_ts{{key, dummy_ts}};
     s = WriteBatchInternal::Put(this, cf_id, SliceParts(key_with_ts.data(), 2),
                                 SliceParts(&value, 1));
   }
   if (s.ok()) {
+    if (ts_sz != 0) {
+      needs_in_place_update_ts_ = true;
+      has_key_with_ts_ = true;
+    }
     MaybeTrackTimestampSize(cf_id, ts_sz);
   }
   return s;
@@ -990,13 +1005,13 @@ Status WriteBatch::Put(ColumnFamilyHandle* column_family, const Slice& key,
   if (!s.ok()) {
     return s;
   }
-  has_key_with_ts_ = true;
   assert(column_family);
   uint32_t cf_id = column_family->GetID();
   std::array<Slice, 2> key_with_ts{{key, ts}};
   s = WriteBatchInternal::Put(this, cf_id, SliceParts(key_with_ts.data(), 2),
                               SliceParts(&value, 1));
   if (s.ok()) {
+    has_key_with_ts_ = true;
     MaybeTrackTimestampSize(cf_id, ts.size());
   }
   return s;
@@ -1229,9 +1244,7 @@ Status WriteBatchInternal::MarkEndPrepare(WriteBatch* b, const Slice& xid,
 
   // all savepoints up to this point are cleared
   if (b->save_points_ != nullptr) {
-    while (!b->save_points_->stack.empty()) {
-      b->save_points_->stack.pop();
-    }
+    b->save_points_->stack.clear();
   }
 
   // rewrite noop as begin marker
@@ -1323,14 +1336,16 @@ Status WriteBatch::Delete(ColumnFamilyHandle* column_family, const Slice& key) {
   if (0 == ts_sz) {
     s = WriteBatchInternal::Delete(this, cf_id, key);
   } else {
-    needs_in_place_update_ts_ = true;
-    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> key_with_ts{{key, dummy_ts}};
     s = WriteBatchInternal::Delete(this, cf_id,
                                    SliceParts(key_with_ts.data(), 2));
   }
   if (s.ok()) {
+    if (ts_sz != 0) {
+      needs_in_place_update_ts_ = true;
+      has_key_with_ts_ = true;
+    }
     MaybeTrackTimestampSize(cf_id, ts_sz);
   }
   return s;
@@ -1343,12 +1358,12 @@ Status WriteBatch::Delete(ColumnFamilyHandle* column_family, const Slice& key,
     return s;
   }
   assert(column_family);
-  has_key_with_ts_ = true;
   uint32_t cf_id = column_family->GetID();
   std::array<Slice, 2> key_with_ts{{key, ts}};
   s = WriteBatchInternal::Delete(this, cf_id,
                                  SliceParts(key_with_ts.data(), 2));
   if (s.ok()) {
+    has_key_with_ts_ = true;
     MaybeTrackTimestampSize(cf_id, ts.size());
   }
   return s;
@@ -1457,14 +1472,16 @@ Status WriteBatch::SingleDelete(ColumnFamilyHandle* column_family,
   if (0 == ts_sz) {
     s = WriteBatchInternal::SingleDelete(this, cf_id, key);
   } else {
-    needs_in_place_update_ts_ = true;
-    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> key_with_ts{{key, dummy_ts}};
     s = WriteBatchInternal::SingleDelete(this, cf_id,
                                          SliceParts(key_with_ts.data(), 2));
   }
   if (s.ok()) {
+    if (ts_sz != 0) {
+      needs_in_place_update_ts_ = true;
+      has_key_with_ts_ = true;
+    }
     MaybeTrackTimestampSize(cf_id, ts_sz);
   }
   return s;
@@ -1476,13 +1493,13 @@ Status WriteBatch::SingleDelete(ColumnFamilyHandle* column_family,
   if (!s.ok()) {
     return s;
   }
-  has_key_with_ts_ = true;
   assert(column_family);
   uint32_t cf_id = column_family->GetID();
   std::array<Slice, 2> key_with_ts{{key, ts}};
   s = WriteBatchInternal::SingleDelete(this, cf_id,
                                        SliceParts(key_with_ts.data(), 2));
   if (s.ok()) {
+    has_key_with_ts_ = true;
     MaybeTrackTimestampSize(cf_id, ts.size());
   }
   return s;
@@ -1598,8 +1615,6 @@ Status WriteBatch::DeleteRange(ColumnFamilyHandle* column_family,
   if (0 == ts_sz) {
     s = WriteBatchInternal::DeleteRange(this, cf_id, begin_key, end_key);
   } else {
-    needs_in_place_update_ts_ = true;
-    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> begin_key_with_ts{{begin_key, dummy_ts}};
     std::array<Slice, 2> end_key_with_ts{{end_key, dummy_ts}};
@@ -1608,6 +1623,10 @@ Status WriteBatch::DeleteRange(ColumnFamilyHandle* column_family,
                                         SliceParts(end_key_with_ts.data(), 2));
   }
   if (s.ok()) {
+    if (ts_sz != 0) {
+      needs_in_place_update_ts_ = true;
+      has_key_with_ts_ = true;
+    }
     MaybeTrackTimestampSize(cf_id, ts_sz);
   }
   return s;
@@ -1621,7 +1640,6 @@ Status WriteBatch::DeleteRange(ColumnFamilyHandle* column_family,
     return s;
   }
   assert(column_family);
-  has_key_with_ts_ = true;
   uint32_t cf_id = column_family->GetID();
   std::array<Slice, 2> key_with_ts{{begin_key, ts}};
   std::array<Slice, 2> end_key_with_ts{{end_key, ts}};
@@ -1629,6 +1647,7 @@ Status WriteBatch::DeleteRange(ColumnFamilyHandle* column_family,
                                       SliceParts(key_with_ts.data(), 2),
                                       SliceParts(end_key_with_ts.data(), 2));
   if (s.ok()) {
+    has_key_with_ts_ = true;
     MaybeTrackTimestampSize(cf_id, ts.size());
   }
   return s;
@@ -1742,8 +1761,6 @@ Status WriteBatch::Merge(ColumnFamilyHandle* column_family, const Slice& key,
   if (0 == ts_sz) {
     s = WriteBatchInternal::Merge(this, cf_id, key, value);
   } else {
-    needs_in_place_update_ts_ = true;
-    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> key_with_ts{{key, dummy_ts}};
 
@@ -1751,6 +1768,10 @@ Status WriteBatch::Merge(ColumnFamilyHandle* column_family, const Slice& key,
         this, cf_id, SliceParts(key_with_ts.data(), 2), SliceParts(&value, 1));
   }
   if (s.ok()) {
+    if (ts_sz != 0) {
+      needs_in_place_update_ts_ = true;
+      has_key_with_ts_ = true;
+    }
     MaybeTrackTimestampSize(cf_id, ts_sz);
   }
   return s;
@@ -1762,13 +1783,13 @@ Status WriteBatch::Merge(ColumnFamilyHandle* column_family, const Slice& key,
   if (!s.ok()) {
     return s;
   }
-  has_key_with_ts_ = true;
   assert(column_family);
   uint32_t cf_id = column_family->GetID();
   std::array<Slice, 2> key_with_ts{{key, ts}};
   s = WriteBatchInternal::Merge(this, cf_id, SliceParts(key_with_ts.data(), 2),
                                 SliceParts(&value, 1));
   if (s.ok()) {
+    has_key_with_ts_ = true;
     MaybeTrackTimestampSize(cf_id, ts.size());
   }
   return s;
@@ -1869,19 +1890,21 @@ void WriteBatch::SetSavePoint() {
   if (save_points_ == nullptr) {
     save_points_.reset(new SavePoints());
   }
-  // Record length and count of current batch of writes.
-  save_points_->stack.push(SavePoint(
-      GetDataSize(), Count(), content_flags_.load(std::memory_order_relaxed)));
+  save_points_->stack.push_back(
+      {SavePoint(GetDataSize(), Count(),
+                 content_flags_.load(std::memory_order_relaxed)),
+       needs_in_place_update_ts_, has_key_with_ts_, cf_id_to_ts_sz_});
 }
 
 Status WriteBatch::RollbackToSavePoint() {
-  if (save_points_ == nullptr || save_points_->stack.size() == 0) {
+  if (save_points_ == nullptr || save_points_->stack.empty()) {
     return Status::NotFound();
   }
 
   // Pop the most recent savepoint off the stack
-  SavePoint savepoint = save_points_->stack.top();
-  save_points_->stack.pop();
+  auto state = std::move(save_points_->stack.back());
+  save_points_->stack.pop_back();
+  const auto& savepoint = state.contents;
 
   assert(savepoint.size <= rep_.size());
   assert(static_cast<uint32_t>(savepoint.count) <= Count());
@@ -1900,16 +1923,19 @@ Status WriteBatch::RollbackToSavePoint() {
     content_flags_.store(savepoint.content_flags, std::memory_order_relaxed);
   }
 
+  needs_in_place_update_ts_ = state.needs_timestamp_update;
+  has_key_with_ts_ = state.has_key_with_timestamp;
+  cf_id_to_ts_sz_ = std::move(state.timestamp_sizes);
   return Status::OK();
 }
 
 Status WriteBatch::PopSavePoint() {
-  if (save_points_ == nullptr || save_points_->stack.size() == 0) {
+  if (save_points_ == nullptr || save_points_->stack.empty()) {
     return Status::NotFound();
   }
 
   // Pop the most recent savepoint off the stack
-  save_points_->stack.pop();
+  save_points_->stack.pop_back();
 
   return Status::OK();
 }
@@ -1921,6 +1947,12 @@ Status WriteBatch::UpdateTimestamps(
   const Status s = Iterate(&ts_updater);
   if (s.ok()) {
     needs_in_place_update_ts_ = false;
+    if (save_points_ != nullptr) {
+      // Timestamp assignment updates the saved prefixes in place as well.
+      for (auto& state : save_points_->stack) {
+        state.needs_timestamp_update = false;
+      }
+    }
   }
   return s;
 }
