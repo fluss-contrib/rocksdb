@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +32,7 @@ public class RocksDBSample {
         // Recreate a configured batch after clear(), which resets that size to 0.
         try (final WriteBatch batch = new WriteBatch(0, 0, 0, 0)) {
           batch.put(cf, key, new byte[] {20});
-          batch.updateTimestamps(timestamp(20), Collections.singletonMap(cf.getID(), 8));
+          batch.updateTimestamps(timestamp(20));
           db.write(write, batch);
         }
         // Keep the timestamp Slice open until all reads and iterators finish.

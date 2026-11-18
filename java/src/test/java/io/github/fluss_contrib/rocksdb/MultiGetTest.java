@@ -27,6 +27,37 @@ public class MultiGetTest {
   @Rule public TemporaryFolder dbFolder = new TemporaryFolder();
 
   @Test
+  public void multiGetReportsInvalidReadTimestamp() throws Exception {
+    final List<byte[]> keys = Arrays.asList(new byte[] {1});
+    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final WriteOptions write = new WriteOptions();
+         final CompactRangeOptions compact =
+             new CompactRangeOptions().setFullHistoryTsLowBytes(TestUtil.u64Timestamp(8));
+         final Slice shortTimestamp = new Slice(new byte[4]);
+         final Slice oldTimestamp = new Slice(TestUtil.u64Timestamp(3));
+         final ReadOptions read = new ReadOptions()) {
+      db.put(write, keys.get(0), TestUtil.u64Timestamp(3), new byte[] {7});
+      assertThatThrownBy(() -> db.multiGetAsList(keys))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
+      read.setTimestamp(shortTimestamp);
+      assertThatThrownBy(() -> db.multiGetAsList(read, keys))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
+      db.compactRange(null, null, null, compact);
+      read.setTimestamp(oldTimestamp);
+      assertThatThrownBy(() -> db.multiGetAsList(read, keys))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
+    }
+  }
+
+  @Test
   public void multiGetFailsOnCorruption() throws Exception {
     assertMultiGetReadError(false, Status.Code.Corruption);
   }

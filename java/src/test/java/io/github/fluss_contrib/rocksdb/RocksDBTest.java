@@ -81,13 +81,9 @@ public class RocksDBTest {
           .isInstanceOf(RocksDBException.class);
       db.put(write, key, u64Timestamp(3), key);
       assertThatThrownBy(() -> db.get(key)).isInstanceOf(RocksDBException.class);
-      assertThatThrownBy(() -> db.multiGetAsList(Collections.singletonList(key)))
-          .isInstanceOf(RocksDBException.class);
       try (final Slice ts = new Slice(new byte[4]);
            final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
         assertThatThrownBy(() -> db.get(read, key)).isInstanceOf(RocksDBException.class);
-        assertThatThrownBy(() -> db.multiGetAsList(read, Collections.singletonList(key)))
-            .isInstanceOf(RocksDBException.class);
       }
       compact.setFullHistoryTsLowBytes(new byte[4]);
       assertThatThrownBy(() -> db.compactRange(null, null, null, compact))
@@ -103,8 +99,6 @@ public class RocksDBTest {
       try (final Slice ts = new Slice(u64Timestamp(3));
            final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
         assertThatThrownBy(() -> db.get(read, key)).isInstanceOf(RocksDBException.class);
-        assertThatThrownBy(() -> db.multiGetAsList(read, Collections.singletonList(key)))
-            .isInstanceOf(RocksDBException.class);
       }
     }
   }

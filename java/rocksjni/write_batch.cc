@@ -7,10 +7,7 @@
 // calling c++ ROCKSDB_NAMESPACE::WriteBatch methods from Java side.
 #include "rocksdb/write_batch.h"
 
-#include <limits>
 #include <memory>
-#include <unordered_map>
-#include <vector>
 
 #include "db/memtable.h"
 #include "db/write_batch_internal.h"
@@ -29,72 +26,27 @@
 
 jlong Java_io_github_fluss_1contrib_rocksdb_WriteBatch_newWriteBatchWithTimestamps(
     JNIEnv* env, jclass, jint reserved, jlong max_bytes, jlong protection,
-    jlong default_ts_size) {
-  using ROCKSDB_NAMESPACE::JniUtil;
-  if (!JniUtil::check_if_jlong_fits_size_t(max_bytes).ok() ||
-      !JniUtil::check_if_jlong_fits_size_t(default_ts_size).ok()) {
+    jint default_ts_size) {
+  using ROCKSDB_NAMESPACE::WriteBatch;
+  if (!ROCKSDB_NAMESPACE::JniUtil::check_if_jlong_fits_size_t(max_bytes).ok()) {
     ROCKSDB_NAMESPACE::IllegalArgumentExceptionJni::ThrowNew(
         env, "WriteBatch size cannot be represented by size_t");
     return 0;
   }
-  auto* batch = new ROCKSDB_NAMESPACE::WriteBatch(
+  auto* batch = new WriteBatch(WriteBatch::WithTimestampTracking(
       static_cast<size_t>(reserved), static_cast<size_t>(max_bytes),
-      static_cast<size_t>(protection), static_cast<size_t>(default_ts_size));
-  batch->SetTrackTimestampSize(true);
+      static_cast<size_t>(protection), static_cast<size_t>(default_ts_size)));
   return GET_CPLUSPLUS_POINTER(batch);
 }
 
 void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_updateTimestamps(
-    JNIEnv* env, jclass, jlong jbatch, jbyteArray jtimestamp, jintArray jids,
-    jintArray jsizes) {
+    JNIEnv* env, jclass, jlong jbatch, jbyteArray jtimestamp) {
   auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
-  using ROCKSDB_NAMESPACE::RocksDBExceptionJni;
-  using ROCKSDB_NAMESPACE::Status;
-  if (batch->GetProtectionBytesPerKey() != 0 && batch->HasDeleteRange()) {
-    RocksDBExceptionJni::ThrowNew(
-        env, Status::InvalidArgument("Cannot update timestamps in a protected "
-                                     "batch with range deletions"));
-    return;
-  }
-  const auto& recorded_sizes = batch->GetColumnFamilyToTimestampSize();
-  const jsize count = env->GetArrayLength(jids);
-  std::vector<jint> ids(count);
-  std::vector<jint> sizes(count);
-  env->GetIntArrayRegion(jids, 0, count, ids.data());
-  if (env->ExceptionCheck()) {
-    return;
-  }
-  env->GetIntArrayRegion(jsizes, 0, count, sizes.data());
-  if (env->ExceptionCheck()) {
-    return;
-  }
-  std::unordered_map<uint32_t, size_t> timestamp_sizes;
-  for (jsize i = 0; i < count; ++i) {
-    timestamp_sizes.emplace(static_cast<uint32_t>(ids[i]),
-                            static_cast<size_t>(sizes[i]));
-  }
   try {
     ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
                                           env->GetArrayLength(jtimestamp));
-    bool size_mismatch = false;
-    auto status = batch->UpdateTimestamps(ts.slice(), [&](uint32_t cf) {
-      const auto supplied = timestamp_sizes.find(cf);
-      if (supplied == timestamp_sizes.end()) {
-        return std::numeric_limits<size_t>::max();
-      }
-      const auto recorded = recorded_sizes.find(cf);
-      if (recorded == recorded_sizes.end() ||
-          recorded->second != supplied->second) {
-        size_mismatch = true;
-        return std::numeric_limits<size_t>::max();
-      }
-      return recorded->second;
-    });
-    if (status.IsNotFound() && size_mismatch) {
-      status = Status::InvalidArgument(
-          "Timestamp size does not match the write batch records");
-    }
-    RocksDBExceptionJni::ThrowNew(env, status);
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, batch->UpdateTimestamps(ts.slice()));
   } catch (const ROCKSDB_NAMESPACE::KVException&) {
     // The Java exception is already pending.
   }
@@ -579,7 +531,13 @@ jbyteArray Java_io_github_fluss_1contrib_rocksdb_WriteBatch_data(
   auto* wb = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle);
   assert(wb != nullptr);
 
-  auto data = wb->Data();
+  if (ROCKSDB_NAMESPACE::WriteBatchInternal::TimestampsUpdateNeeded(*wb)) {
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, ROCKSDB_NAMESPACE::Status::InvalidArgument(
+                 "Assign batch timestamps before serialization"));
+    return nullptr;
+  }
+  const auto& data = wb->Data();
   return ROCKSDB_NAMESPACE::JniUtil::copyBytes(env, data);
 }
 

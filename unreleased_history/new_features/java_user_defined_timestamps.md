@@ -1,1 +1,1 @@
-Added RocksJava bindings for user-defined timestamp Put/Delete, WriteBatch timestamp assignment, native U64 comparators, and history retention bounds.
+Added RocksJava bindings for timestamped Put/Delete, U64 comparators, and history retention bounds. C++ and Java write batches can track column family timestamp sizes and assign timestamps before submission.
