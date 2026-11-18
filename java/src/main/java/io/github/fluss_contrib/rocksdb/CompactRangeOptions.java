@@ -261,6 +261,10 @@ public class CompactRangeOptions extends RocksObject {
    * format. A nonempty bound requires both key range boundaries to be null.
    * An empty byte array does not advance the bound.
    *
+   * <p>Manual compaction can advance the history lower bound before flushing and compacting data.
+   * If either step fails, use {@link RocksDB#getFullHistoryTsLow(ColumnFamilyHandle)} to check
+   * the current bound.
+   *
    * @param timestamp lower bound, or null to clear the option
    * @return this options instance
    */

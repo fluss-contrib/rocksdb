@@ -12,6 +12,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -54,6 +55,39 @@ public class MultiGetTest {
           .isInstanceOf(RocksDBException.class)
           .extracting("status.code")
           .containsExactly(Status.Code.InvalidArgument);
+    }
+  }
+
+  @Test
+  public void multiGetRequiresTimestampCompatibleColumnFamilies() throws Exception {
+    final byte[] plainKey = {1};
+    final byte[] udtKey = {2};
+    final byte[] plainValue = {3};
+    final byte[] udtValue = {4};
+    final byte[] timestamp = TestUtil.u64Timestamp(7);
+    try (final Options options = new Options().setCreateIfMissing(true);
+         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final ColumnFamilyOptions udtOptions = new ColumnFamilyOptions().setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final ColumnFamilyHandle udt =
+             db.createColumnFamily(new ColumnFamilyDescriptor(new byte[] {2}, udtOptions));
+         final WriteOptions write = new WriteOptions();
+         final Slice timestampSlice = new Slice(timestamp);
+         final ReadOptions read = new ReadOptions().setTimestamp(timestampSlice)) {
+      final ColumnFamilyHandle plain = db.getDefaultColumnFamily();
+      db.put(plainKey, plainValue);
+      db.put(udt, write, udtKey, timestamp, udtValue);
+      assertThat(db.multiGetAsList(Collections.singletonList(plainKey)).get(0))
+          .isEqualTo(plainValue);
+      assertThat(db.multiGetAsList(read, Collections.singletonList(udt),
+                     Collections.singletonList(udtKey)).get(0))
+          .isEqualTo(udtValue);
+      assertThatThrownBy(
+          () -> db.multiGetAsList(read, Arrays.asList(plain, udt), Arrays.asList(plainKey, udtKey)))
+          .isInstanceOf(RocksDBException.class);
+      assertThatThrownBy(
+          () -> db.multiGetAsList(read, Arrays.asList(udt, plain), Arrays.asList(udtKey, plainKey)))
+          .isInstanceOf(RocksDBException.class);
     }
   }
 

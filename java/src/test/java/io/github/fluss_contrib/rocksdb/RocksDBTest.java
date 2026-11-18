@@ -48,7 +48,9 @@ public class RocksDBTest {
         assertThat(db.getFullHistoryTsLow()).isEqualTo(u64Timestamp(12));
         assertRetainedHistory(db);
         assertThatThrownBy(() -> db.increaseFullHistoryTsLow(u64Timestamp(11)))
-            .isInstanceOf(RocksDBException.class);
+            .isInstanceOf(RocksDBException.class)
+            .extracting("status.code")
+            .containsExactly(Status.Code.InvalidArgument);
       }
       try (final RocksDB db = RocksDB.open(options, path)) {
         assertThat(db.getFullHistoryTsLow()).isEqualTo(u64Timestamp(12));
@@ -78,27 +80,44 @@ public class RocksDBTest {
          final CompactRangeOptions compact = new CompactRangeOptions()) {
       final byte[] key = new byte[] {1};
       assertThatThrownBy(() -> db.put(write, key, new byte[4], key))
-          .isInstanceOf(RocksDBException.class);
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
       db.put(write, key, u64Timestamp(3), key);
-      assertThatThrownBy(() -> db.get(key)).isInstanceOf(RocksDBException.class);
+      assertThatThrownBy(() -> db.get(key))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
       try (final Slice ts = new Slice(new byte[4]);
            final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
-        assertThatThrownBy(() -> db.get(read, key)).isInstanceOf(RocksDBException.class);
+        assertThatThrownBy(() -> db.get(read, key))
+            .isInstanceOf(RocksDBException.class)
+            .extracting("status.code")
+            .containsExactly(Status.Code.InvalidArgument);
       }
       compact.setFullHistoryTsLowBytes(new byte[4]);
       assertThatThrownBy(() -> db.compactRange(null, null, null, compact))
-          .isInstanceOf(RocksDBException.class);
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
       compact.setFullHistoryTsLowBytes(u64Timestamp(8));
       assertThatThrownBy(() -> db.compactRange(null, key, new byte[] {2}, compact))
-          .isInstanceOf(RocksDBException.class);
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
       assertThatThrownBy(() -> db.compactRange(null, null, new byte[0], compact))
-          .isInstanceOf(RocksDBException.class);
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
       assertThat(db.getFullHistoryTsLow()).isEmpty();
       db.increaseFullHistoryTsLow(u64Timestamp(8));
       db.compactRange(null, null, null, compact);
       try (final Slice ts = new Slice(u64Timestamp(3));
            final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
-        assertThatThrownBy(() -> db.get(read, key)).isInstanceOf(RocksDBException.class);
+        assertThatThrownBy(() -> db.get(read, key))
+            .isInstanceOf(RocksDBException.class)
+            .extracting("status.code")
+            .containsExactly(Status.Code.InvalidArgument);
       }
     }
   }
@@ -109,11 +128,18 @@ public class RocksDBTest {
          final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
          final CompactRangeOptions compact =
              new CompactRangeOptions().setFullHistoryTsLowBytes(u64Timestamp(8))) {
-      assertThatThrownBy(db::getFullHistoryTsLow).isInstanceOf(RocksDBException.class);
+      assertThatThrownBy(db::getFullHistoryTsLow)
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
       assertThatThrownBy(() -> db.increaseFullHistoryTsLow(u64Timestamp(8)))
-          .isInstanceOf(RocksDBException.class);
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
       assertThatThrownBy(() -> db.compactRange(null, null, null, compact))
-          .isInstanceOf(RocksDBException.class);
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
     }
   }
 

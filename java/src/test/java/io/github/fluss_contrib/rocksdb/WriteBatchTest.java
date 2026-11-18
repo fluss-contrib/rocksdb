@@ -17,6 +17,7 @@ import static io.github.fluss_contrib.rocksdb.util.CapturingWriteBatchHandler.Ac
 import static io.github.fluss_contrib.rocksdb.util.TestUtil.u64Timestamp;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.fluss_contrib.rocksdb.util.CapturingWriteBatchHandler;
 import io.github.fluss_contrib.rocksdb.util.CapturingWriteBatchHandler.Event;
@@ -71,6 +72,32 @@ public class WriteBatchTest {
           assertThat(db.get(read, emptyValueKey)).isEmpty();
         }
       }
+    }
+  }
+
+  @Test
+  public void invalidTimestampLeavesBatchUnchanged() throws Exception {
+    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final WriteBatch batch = new WriteBatch()) {
+      final ColumnFamilyHandle cf = db.getDefaultColumnFamily();
+      final byte[] key = {1};
+      final byte[] invalidTimestamp = new byte[4];
+      batch.put(cf, key, u64Timestamp(3), new byte[] {3});
+      final byte[] before = batch.data();
+
+      assertThatThrownBy(() -> batch.put(cf, key, invalidTimestamp, new byte[] {8}))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
+      assertThat(batch.data()).isEqualTo(before);
+
+      assertThatThrownBy(() -> batch.delete(cf, key, invalidTimestamp))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
+      assertThat(batch.data()).isEqualTo(before);
     }
   }
 

@@ -2450,6 +2450,10 @@ public class RocksDB extends RocksObject {
    * {@code columnFamilyHandleList}.
    * </p>
    *
+   * <p>The read timestamp applies to every key. If set, it must match the timestamp
+   * format and length of every requested column family. Read column families without timestamps
+   * in a separate call using read options without a timestamp.
+   *
    * @param opt Read options.
    * @param columnFamilyHandleList {@link java.util.List} containing
    *     {@link io.github.fluss_contrib.rocksdb.ColumnFamilyHandle} instances.
