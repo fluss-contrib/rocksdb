@@ -59,6 +59,54 @@ public class RocksDBTest {
   }
 
   @Test
+  public void readOnlyOpenCannotAdvanceHistoryLowerBound() throws Exception {
+    final String path = dbFolder.newFolder().getAbsolutePath();
+    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final WriteOptions write = new WriteOptions();
+         final FlushOptions flush = new FlushOptions().setWaitForFlush(true)) {
+      try (final RocksDB db = RocksDB.open(options, path)) {
+        db.put(write, new byte[] {1}, u64Timestamp(3), new byte[] {2});
+        db.increaseFullHistoryTsLow(u64Timestamp(3));
+        db.flush(flush);
+      }
+      // A single flushed file and unlimited open files allow fully compacted read-only open.
+      for (final int maxOpenFiles : new int[] {128, -1}) {
+        options.setMaxOpenFiles(maxOpenFiles);
+        try (final RocksDB db = RocksDB.openReadOnly(options, path)) {
+          assertReadOnlyHistoryLowerBound(db);
+        }
+      }
+      try (final DBOptions dbOptions = new DBOptions();
+           final ColumnFamilyOptions cfOptions = new ColumnFamilyOptions().setComparator(
+               BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+           final RocksDB db = RocksDB.openReadOnly(dbOptions, path,
+               Collections.singletonList(
+                   new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, cfOptions)),
+               new ArrayList<>())) {
+        assertReadOnlyHistoryLowerBound(db);
+      }
+      try (final RocksDB db = RocksDB.open(options, path)) {
+        assertThat(db.getFullHistoryTsLow()).isEqualTo(u64Timestamp(3));
+      }
+    }
+  }
+
+  private static void assertReadOnlyHistoryLowerBound(final RocksDB db) throws RocksDBException {
+    final ColumnFamilyHandle cf = db.getDefaultColumnFamily();
+    assertThat(db.getFullHistoryTsLow()).isEqualTo(u64Timestamp(3));
+    assertThatThrownBy(() -> db.increaseFullHistoryTsLow(u64Timestamp(8)))
+        .isInstanceOf(RocksDBException.class)
+        .extracting("status.code")
+        .containsExactly(Status.Code.NotSupported);
+    assertThatThrownBy(() -> db.increaseFullHistoryTsLow(cf, u64Timestamp(8)))
+        .isInstanceOf(RocksDBException.class)
+        .extracting("status.code")
+        .containsExactly(Status.Code.NotSupported);
+    assertThat(db.getFullHistoryTsLow(cf)).isEqualTo(u64Timestamp(3));
+  }
+
+  @Test
   public void timestampHistorySurvivesCompactionAndReopen() throws Exception {
     final String path = dbFolder.getRoot().getAbsolutePath();
     try (final Options options = new Options().setCreateIfMissing(true).setComparator(

@@ -58,7 +58,11 @@ class Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions {
   }
 
   bool read_full_history_ts_low(uint64_t* start, uint64_t* range) {
-    if (compactRangeOptions.full_history_ts_low == nullptr) return false;
+    if (compactRangeOptions.full_history_ts_low == nullptr ||
+        compactRangeOptions.full_history_ts_low->size() !=
+            2 * sizeof(uint64_t)) {
+      return false;
+    }
     ROCKSDB_NAMESPACE::Slice read_slice(
         compactRangeOptions.full_history_ts_low->ToStringView());
     if (!ROCKSDB_NAMESPACE::GetFixed64(&read_slice, start)) return false;

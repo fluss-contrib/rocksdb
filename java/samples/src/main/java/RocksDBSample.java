@@ -18,7 +18,7 @@ public class RocksDBSample {
     return ByteBuffer.allocate(Long.BYTES).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
   }
 
-  private static void timestampExample(final RocksDB db) throws RocksDBException {
+  private static void timestampExample(final RocksDB db) {
     try (final ColumnFamilyOptions options = new ColumnFamilyOptions().setComparator(
              BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
          final ColumnFamilyHandle cf = db.createColumnFamily(new ColumnFamilyDescriptor(
@@ -35,14 +35,20 @@ public class RocksDBSample {
         try (final Slice ts = new Slice(timestamp(12));
              final ReadOptions read = new ReadOptions().setTimestamp(ts);
              final RocksIterator iterator = db.newIterator(cf, read)) {
-          assert Arrays.equals(db.get(cf, read, key), new byte[] {3});
+          if (!Arrays.equals(db.get(cf, read, key), new byte[] {3})) {
+            throw new IllegalStateException("Unexpected value for timestamped point read");
+          }
           iterator.seek(key);
-          assert iterator.isValid();
-          assert Arrays.equals(iterator.value(), new byte[] {3});
           iterator.status();
+          if (!iterator.isValid() || !Arrays.equals(iterator.key(), key)
+              || !Arrays.equals(iterator.value(), new byte[] {3})) {
+            throw new IllegalStateException("Unexpected entry for timestamped iteration");
+          }
         }
         db.increaseFullHistoryTsLow(cf, timestamp(12));
-        assert Arrays.equals(db.getFullHistoryTsLow(cf), timestamp(12));
+        if (!Arrays.equals(db.getFullHistoryTsLow(cf), timestamp(12))) {
+          throw new IllegalStateException("Unexpected history lower bound");
+        }
         try (final CompactRangeOptions compact =
                  new CompactRangeOptions().setFullHistoryTsLowBytes(timestamp(12))) {
           db.compactRange(cf, null, null, compact);
@@ -50,6 +56,8 @@ public class RocksDBSample {
       } finally {
         db.dropColumnFamily(cf);
       }
+    } catch (final RocksDBException e) {
+      throw new IllegalStateException("Timestamp example failed", e);
     }
   }
   static {

@@ -29,6 +29,8 @@ public class WriteBatch extends AbstractWriteBatch {
   /**
    * Appends a timestamped value. Arguments are copied before returning.
    * Versions of a key must be appended in nondecreasing timestamp order.
+   * Use the timestamped overloads with an explicit handle when batching writes
+   * to a column family that enables user-defined timestamps.
    *
    * @param cf column family handle, including an explicit default CF handle
    * @param key logical key without a timestamp suffix

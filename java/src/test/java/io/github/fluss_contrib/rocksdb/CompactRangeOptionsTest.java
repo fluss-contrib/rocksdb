@@ -28,6 +28,11 @@ public class CompactRangeOptionsTest {
       opt.setFullHistoryTSLow(new CompactRangeOptions.Timestamp(1, 2));
       assertThat(opt.fullHistoryTSLow()).isEqualTo(new CompactRangeOptions.Timestamp(1, 2));
       assertThat(opt.fullHistoryTsLowBytes()).hasSize(16);
+      final byte[] raw = new byte[17];
+      raw[16] = 1;
+      opt.setFullHistoryTsLowBytes(raw);
+      assertThat(opt.fullHistoryTSLow()).isNull();
+      assertThat(opt.fullHistoryTsLowBytes()).isEqualTo(raw);
     }
   }
 

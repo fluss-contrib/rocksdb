@@ -285,6 +285,11 @@ public class CompactRangeOptions extends RocksObject {
   private static native void setFullHistoryTsLowBytes(long handle, byte[] timestamp);
   private static native byte[] fullHistoryTsLowBytes(long handle);
 
+  /**
+   * Returns the history bound in the legacy two-U64 format.
+   *
+   * @return a decoded bound if it has exactly sixteen bytes, or null otherwise
+   */
   public Timestamp fullHistoryTSLow() {
     return fullHistoryTSLow(nativeHandle_);
   }

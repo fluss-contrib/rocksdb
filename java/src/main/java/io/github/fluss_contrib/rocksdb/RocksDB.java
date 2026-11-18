@@ -38,6 +38,7 @@ public class RocksDB extends RocksObject {
 
   private static final String BB_ALL_DIRECT_OR_INDIRECT =
       "ByteBuffer parameters must all be direct, or must all be indirect";
+  private final boolean readOnly_;
   private ColumnFamilyHandle defaultColumnFamilyHandle_;
   private final ReadOptions defaultReadOptions_ = new ReadOptions();
 
@@ -178,7 +179,12 @@ public class RocksDB extends RocksObject {
    * @param nativeHandle The native handle of the C++ RocksDB object
    */
   protected RocksDB(final long nativeHandle) {
+    this(nativeHandle, false);
+  }
+
+  private RocksDB(final long nativeHandle, final boolean readOnly) {
     super(nativeHandle);
+    readOnly_ = readOnly;
   }
 
   /**
@@ -415,7 +421,8 @@ public class RocksDB extends RocksObject {
     // when non-default Options is used, keeping an Options reference
     // in RocksDB can prevent Java to GC during the life-time of
     // the currently-created RocksDB.
-    final RocksDB db = new RocksDB(openROnly(options.nativeHandle_, path, errorIfWalFileExists));
+    final RocksDB db =
+        new RocksDB(openROnly(options.nativeHandle_, path, errorIfWalFileExists), true);
     db.storeOptionsInstance(options);
     db.storeDefaultColumnFamilyHandle(db.makeDefaultColumnFamilyHandle());
     return db;
@@ -526,7 +533,7 @@ public class RocksDB extends RocksObject {
 
     final long[] handles =
         openROnly(options.nativeHandle_, path, cfNames, cfOptionHandles, errorIfWalFileExists);
-    final RocksDB db = new RocksDB(handles[0]);
+    final RocksDB db = new RocksDB(handles[0], true);
     db.storeOptionsInstance(options);
 
     for (int i = 1; i < handles.length; i++) {
@@ -3805,10 +3812,10 @@ public class RocksDB extends RocksObject {
    * trigger compaction; the caller must ensure older reads are no longer needed.
    *
    * @param timestamp lower bound in the CF comparator's timestamp format
-   * @throws RocksDBException on native failure, including a backward bound
+   * @throws RocksDBException if the database is read-only or the requested bound cannot be applied
    */
   public void increaseFullHistoryTsLow(final byte[] timestamp) throws RocksDBException {
-    increaseFullHistoryTsLow(nativeHandle_, 0, Objects.requireNonNull(timestamp));
+    increaseFullHistoryTsLow(0, timestamp);
   }
 
   /**
@@ -3816,13 +3823,22 @@ public class RocksDB extends RocksObject {
    *
    * @param cf target CF
    * @param timestamp lower bound in the CF comparator's timestamp format
-   * @throws RocksDBException on failure, including a concurrent higher advance
+   * @throws RocksDBException if the database is read-only or the requested bound cannot be applied,
+   *     including when a concurrent call advances it further
    */
   public void increaseFullHistoryTsLow(final ColumnFamilyHandle cf, final byte[] timestamp)
       throws RocksDBException {
-    Objects.requireNonNull(cf);
+    increaseFullHistoryTsLow(Objects.requireNonNull(cf).nativeHandle_, timestamp);
+  }
+
+  private void increaseFullHistoryTsLow(final long cfHandle, final byte[] timestamp)
+      throws RocksDBException {
     Objects.requireNonNull(timestamp);
-    increaseFullHistoryTsLow(nativeHandle_, cf.nativeHandle_, timestamp);
+    if (readOnly_) {
+      throw new RocksDBException(new Status(
+          Status.Code.NotSupported, Status.SubCode.None, "Database opened in read-only mode"));
+    }
+    increaseFullHistoryTsLow(nativeHandle_, cfHandle, timestamp);
   }
 
   /**
