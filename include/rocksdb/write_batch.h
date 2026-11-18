@@ -28,7 +28,6 @@
 
 #include <atomic>
 #include <functional>
-#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -72,6 +71,13 @@ class WriteBatch : public WriteBatchBase {
   // zero (disabled) and eight.
   explicit WriteBatch(size_t reserved_bytes, size_t max_bytes,
                       size_t protection_bytes_per_key, size_t default_cf_ts_sz);
+  // Creates a batch that records the timestamp size of each column family as
+  // entries are appended. Use UpdateTimestamps(ts) to assign their timestamps.
+  // The size and protection arguments have the same meaning as in WriteBatch().
+  static WriteBatch WithTimestampTracking(size_t reserved_bytes,
+                                          size_t max_bytes,
+                                          size_t protection_bytes_per_key,
+                                          size_t default_cf_ts_sz);
   ~WriteBatch() override;
 
   using WriteBatchBase::Put;
@@ -441,24 +447,27 @@ class WriteBatch : public WriteBatchBase {
   Status UpdateTimestamps(const Slice& ts,
                           std::function<size_t(uint32_t /*cf*/)> ts_sz_func);
 
+  // Assign ts to all timestamp-enabled entries in a batch created with
+  // WithTimestampTracking(). Each enabled column family must use ts.size()
+  // bytes. Entries in timestamp-disabled column families are left untouched.
+  // Batches with per-key protection and range deletions are unsupported.
+  // As with the callback overload, discard the batch if updating fails.
+  Status UpdateTimestamps(const Slice& ts);
+
   // TODO: remove these internal APIs after MyRocks refactor to not directly
   // write to a `WriteBatch` retrieved from `Transaction` via
   // `Transaction::GetWriteBatch`.
 
   void SetTrackTimestampSize(bool track_timestamp_size) {
-    track_timestamp_size_ = track_timestamp_size;
+    timestamp_tracking_ = track_timestamp_size ? TimestampTracking::kPartial
+                                               : TimestampTracking::kDisabled;
   }
 
   inline void MaybeTrackTimestampSize(uint32_t column_family_id, size_t ts_sz) {
-    if (!track_timestamp_size_) {
+    if (timestamp_tracking_ == TimestampTracking::kDisabled) {
       return;
     }
-    auto [iter, inserted] =
-        cf_id_to_ts_sz_.try_emplace(column_family_id, ts_sz);
-    if (!inserted && iter->second != ts_sz) {
-      // A single size cannot describe records written with different layouts.
-      iter->second = std::numeric_limits<size_t>::max();
-    }
+    TrackTimestampSize(column_family_id, ts_sz);
   }
 
   // Return a mapping from column family id to timestamp size of all the column
@@ -497,6 +506,8 @@ class WriteBatch : public WriteBatchBase {
   size_t GetProtectionBytesPerKey() const;
 
  private:
+  void TrackTimestampSize(uint32_t column_family_id, size_t ts_sz);
+
   friend class WriteBatchInternal;
   friend class LocalSavePoint;
   // TODO(myabandeh): this is needed for a hack to collapse the write batch and
@@ -542,7 +553,10 @@ class WriteBatch : public WriteBatchBase {
 
   size_t default_cf_ts_sz_ = 0;
 
-  bool track_timestamp_size_ = false;
+  // Transaction callers can enable tracking after appending entries. Only a
+  // batch tracked from construction has a complete layout for assignment.
+  enum class TimestampTracking : uint8_t { kDisabled, kPartial, kComplete };
+  TimestampTracking timestamp_tracking_ = TimestampTracking::kDisabled;
 
   std::unordered_map<uint32_t, size_t> cf_id_to_ts_sz_;
 

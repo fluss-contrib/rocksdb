@@ -42,6 +42,7 @@
 #include <cstdint>
 #include <limits>
 #include <map>
+#include <optional>
 #include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
@@ -65,6 +66,7 @@
 #include "rocksdb/merge_operator.h"
 #include "rocksdb/system_clock.h"
 #include "util/aligned_storage.h"
+#include "util/autovector.h"
 #include "util/cast_util.h"
 #include "util/coding.h"
 #include "util/duplicate_detector.h"
@@ -177,10 +179,17 @@ struct SavePoints {
     SavePoint contents;
     bool needs_timestamp_update;
     bool has_key_with_timestamp;
-    std::unordered_map<uint32_t, size_t> timestamp_sizes;
+    size_t layout_undo_size;
   };
 
-  std::vector<State> stack;
+  autovector<State> stack;
+  // Only layout changes made after a savepoint need undo entries. A missing
+  // previous size denotes a column family first seen after that savepoint.
+  struct LayoutChange {
+    uint32_t cf;
+    std::optional<size_t> previous_size;
+  };
+  std::vector<LayoutChange> layout_undo;
 };
 
 WriteBatch::WriteBatch(size_t reserved_bytes, size_t max_bytes,
@@ -201,6 +210,31 @@ WriteBatch::WriteBatch(size_t reserved_bytes, size_t max_bytes,
   rep_.resize(WriteBatchInternal::kHeader);
 }
 
+WriteBatch WriteBatch::WithTimestampTracking(size_t reserved_bytes,
+                                             size_t max_bytes,
+                                             size_t protection_bytes_per_key,
+                                             size_t default_cf_ts_sz) {
+  WriteBatch batch(reserved_bytes, max_bytes, protection_bytes_per_key,
+                   default_cf_ts_sz);
+  batch.timestamp_tracking_ = TimestampTracking::kComplete;
+  return batch;
+}
+
+void WriteBatch::TrackTimestampSize(uint32_t cf, size_t ts_sz) {
+  auto [it, inserted] = cf_id_to_ts_sz_.try_emplace(cf, ts_sz);
+  const size_t conflict = std::numeric_limits<size_t>::max();
+  if (!inserted && (it->second == ts_sz || it->second == conflict)) {
+    return;
+  }
+  if (save_points_ && !save_points_->stack.empty()) {
+    save_points_->layout_undo.push_back(
+        {cf, inserted ? std::nullopt : std::optional<size_t>(it->second)});
+  }
+  if (!inserted) {
+    it->second = conflict;
+  }
+}
+
 WriteBatch::WriteBatch(const std::string& rep)
     : content_flags_(ContentFlags::DEFERRED), max_bytes_(0), rep_(rep) {}
 
@@ -216,12 +250,11 @@ WriteBatch::WriteBatch(const WriteBatch& src)
       content_flags_(src.content_flags_.load(std::memory_order_relaxed)),
       max_bytes_(src.max_bytes_),
       default_cf_ts_sz_(src.default_cf_ts_sz_),
-      track_timestamp_size_(src.track_timestamp_size_),
+      timestamp_tracking_(src.timestamp_tracking_),
       cf_id_to_ts_sz_(src.cf_id_to_ts_sz_),
       rep_(src.rep_) {
   if (src.save_points_ != nullptr) {
-    save_points_.reset(new SavePoints());
-    save_points_->stack = src.save_points_->stack;
+    save_points_ = std::make_unique<SavePoints>(*src.save_points_);
   }
   if (src.prot_info_ != nullptr) {
     prot_info_.reset(new WriteBatch::ProtectionInfo());
@@ -238,7 +271,7 @@ WriteBatch::WriteBatch(WriteBatch&& src) noexcept
       max_bytes_(src.max_bytes_),
       prot_info_(std::move(src.prot_info_)),
       default_cf_ts_sz_(src.default_cf_ts_sz_),
-      track_timestamp_size_(src.track_timestamp_size_),
+      timestamp_tracking_(src.timestamp_tracking_),
       cf_id_to_ts_sz_(std::move(src.cf_id_to_ts_sz_)),
       rep_(std::move(src.rep_)) {}
 
@@ -277,6 +310,7 @@ void WriteBatch::Clear() {
 
   if (save_points_ != nullptr) {
     save_points_->stack.clear();
+    save_points_->layout_undo.clear();
   }
 
   if (prot_info_ != nullptr) {
@@ -1245,6 +1279,7 @@ Status WriteBatchInternal::MarkEndPrepare(WriteBatch* b, const Slice& xid,
   // all savepoints up to this point are cleared
   if (b->save_points_ != nullptr) {
     b->save_points_->stack.clear();
+    b->save_points_->layout_undo.clear();
   }
 
   // rewrite noop as begin marker
@@ -1893,7 +1928,8 @@ void WriteBatch::SetSavePoint() {
   save_points_->stack.push_back(
       {SavePoint(GetDataSize(), Count(),
                  content_flags_.load(std::memory_order_relaxed)),
-       needs_in_place_update_ts_, has_key_with_ts_, cf_id_to_ts_sz_});
+       needs_in_place_update_ts_, has_key_with_ts_,
+       save_points_->layout_undo.size()});
 }
 
 Status WriteBatch::RollbackToSavePoint() {
@@ -1925,7 +1961,16 @@ Status WriteBatch::RollbackToSavePoint() {
 
   needs_in_place_update_ts_ = state.needs_timestamp_update;
   has_key_with_ts_ = state.has_key_with_timestamp;
-  cf_id_to_ts_sz_ = std::move(state.timestamp_sizes);
+  auto& undo = save_points_->layout_undo;
+  while (undo.size() > state.layout_undo_size) {
+    const auto& change = undo.back();
+    if (change.previous_size) {
+      cf_id_to_ts_sz_[change.cf] = *change.previous_size;
+    } else {
+      cf_id_to_ts_sz_.erase(change.cf);
+    }
+    undo.pop_back();
+  }
   return Status::OK();
 }
 
@@ -1936,8 +1981,36 @@ Status WriteBatch::PopSavePoint() {
 
   // Pop the most recent savepoint off the stack
   save_points_->stack.pop_back();
+  if (save_points_->stack.empty()) {
+    save_points_->layout_undo.clear();
+  }
 
   return Status::OK();
+}
+
+Status WriteBatch::UpdateTimestamps(const Slice& ts) {
+  if (timestamp_tracking_ != TimestampTracking::kComplete || ts.empty()) {
+    return Status::InvalidArgument(
+        "Timestamp assignment requires a tracked batch and a nonempty "
+        "timestamp");
+  }
+  // The callback updater advances its protection index for both range
+  // endpoints, while the batch stores one checksum per range deletion.
+  if (prot_info_ && HasDeleteRange()) {
+    return Status::InvalidArgument(
+        "Cannot update timestamps in a protected batch with range deletions");
+  }
+  for (const auto& [cf, size] : cf_id_to_ts_sz_) {
+    if (size != 0 && size != ts.size()) {
+      return Status::InvalidArgument(
+          "Timestamp size does not match batch layout");
+    }
+  }
+  return UpdateTimestamps(ts, [this](uint32_t cf) {
+    const auto it = cf_id_to_ts_sz_.find(cf);
+    return it == cf_id_to_ts_sz_.end() ? std::numeric_limits<size_t>::max()
+                                       : it->second;
+  });
 }
 
 Status WriteBatch::UpdateTimestamps(
