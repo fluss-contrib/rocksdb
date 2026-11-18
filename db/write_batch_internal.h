@@ -246,10 +246,9 @@ class WriteBatchInternal {
   static bool IsLatestPersistentState(const WriteBatch* b);
 
   // Record timestamp widths from the first append for checked assignment.
-  static WriteBatch WithTimestampTracking(size_t reserved_bytes,
-                                          size_t max_bytes,
-                                          size_t protection_bytes_per_key,
-                                          size_t default_cf_ts_sz);
+  static std::unique_ptr<WriteBatch> WithTimestampTracking(
+      size_t reserved_bytes, size_t max_bytes, size_t protection_bytes_per_key,
+      size_t default_cf_ts_sz);
   static Status UpdateTrackedTimestamps(WriteBatch* batch, const Slice& ts);
 
   static void SetDefaultColumnFamilyTimestampSize(WriteBatch* wb,
@@ -259,7 +258,7 @@ class WriteBatchInternal {
       WriteBatch* b, ColumnFamilyHandle* column_family);
 
   static bool TimestampsUpdateNeeded(const WriteBatch& wb) {
-    return wb.needs_in_place_update_ts_;
+    return wb.TimestampsUpdateNeeded();
   }
 
   static bool HasKeyWithTimestamp(const WriteBatch& wb) {

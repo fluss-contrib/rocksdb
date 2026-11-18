@@ -445,18 +445,16 @@ class WriteBatch : public WriteBatchBase {
   // `Transaction::GetWriteBatch`.
 
   void SetTrackTimestampSize(bool track_timestamp_size) {
-    timestamp_tracking_ = track_timestamp_size ? TimestampTracking::kPartial
-                                               : TimestampTracking::kDisabled;
+    track_timestamp_size_ = track_timestamp_size;
   }
 
   inline void MaybeTrackTimestampSize(uint32_t column_family_id, size_t ts_sz) {
-    if (timestamp_tracking_ == TimestampTracking::kDisabled) {
+    if (!track_timestamp_size_) {
       return;
     }
-    if (timestamp_tracking_ == TimestampTracking::kComplete) {
-      TrackTimestampSize(column_family_id, ts_sz);
-    } else {
-      cf_id_to_ts_sz_.try_emplace(column_family_id, ts_sz);
+    auto iter = cf_id_to_ts_sz_.find(column_family_id);
+    if (iter == cf_id_to_ts_sz_.end()) {
+      cf_id_to_ts_sz_.emplace(column_family_id, ts_sz);
     }
   }
 
@@ -495,7 +493,15 @@ class WriteBatch : public WriteBatchBase {
   size_t GetProtectionBytesPerKey() const;
 
  private:
-  void TrackTimestampSize(uint32_t column_family_id, size_t ts_sz);
+  void RecordTimestampSize(uint32_t cf, size_t ts_sz, bool pending = false) {
+    MaybeTrackTimestampSize(cf, ts_sz);
+    if (save_points_) {
+      RecordTrackedTimestampSize(cf, ts_sz, pending);
+    }
+  }
+
+  void RecordTrackedTimestampSize(uint32_t cf, size_t ts_sz, bool pending);
+  bool TimestampsUpdateNeeded() const;
 
   friend class WriteBatchInternal;
   friend class LocalSavePoint;
@@ -542,10 +548,7 @@ class WriteBatch : public WriteBatchBase {
 
   size_t default_cf_ts_sz_ = 0;
 
-  // Transaction callers can enable tracking after appending entries. Only a
-  // batch tracked from construction has a complete layout for assignment.
-  enum class TimestampTracking : uint8_t { kDisabled, kPartial, kComplete };
-  TimestampTracking timestamp_tracking_ = TimestampTracking::kDisabled;
+  bool track_timestamp_size_ = false;
 
   std::unordered_map<uint32_t, size_t> cf_id_to_ts_sz_;
 

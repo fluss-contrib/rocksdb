@@ -1453,7 +1453,8 @@ TEST_F(WriteBatchTest, LateTimestampTrackingCannotAssignEarlierEntries) {
 TEST_F(WriteBatchTest, CopyAndMoveTrackedSavePoints) {
   ColumnFamilyHandleImplDummy cf(4, test::BytewiseComparatorWithU64TsWrapper());
   ColumnFamilyHandleImplDummy plain(5);
-  WriteBatch source = WriteBatchInternal::WithTimestampTracking(0, 0, 8, 0);
+  auto tracked = WriteBatchInternal::WithTimestampTracking(0, 0, 8, 0);
+  auto& source = *tracked;
   ASSERT_OK(source.Put(&cf, "kept", "value"));
   source.SetSavePoint();
   ASSERT_OK(source.Put(&plain, "discarded", "value"));

@@ -42,7 +42,7 @@
 #include <cstdint>
 #include <limits>
 #include <map>
-#include <optional>
+#include <stack>
 #include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
@@ -92,9 +92,6 @@ enum ContentFlags : uint32_t {
   HAS_BEGIN_UNPREPARE = 1 << 11,
   HAS_PUT_ENTITY = 1 << 12,
   HAS_TIMED_PUT = 1 << 13,
-  // Used only in SavePoint::content_flags and masked out on rollback.
-  SAVED_NEEDS_TIMESTAMP = 1 << 14,
-  SAVED_HAS_TIMESTAMP = 1 << 15,
 };
 
 // The user key will become an internal key by appending kNumInternalBytes,
@@ -175,18 +172,24 @@ struct BatchContentClassifier : public WriteBatch::Handler {
   }
 };
 
+struct TimestampTracking {
+  struct ColumnFamilyLayout {
+    size_t width;
+    size_t first_record_end;
+    size_t first_conflict_end = 0;
+  };
+
+  // Record ends let rollback discard later changes using the saved batch size.
+  std::unordered_map<uint32_t, ColumnFamilyLayout> layouts;
+  size_t first_pending_end = 0;
+};
+
 }  // anonymous namespace
 
 struct SavePoints {
-  autovector<SavePoint> stack;
-  // Only layout changes made after a savepoint need undo entries. A missing
-  // previous size denotes a column family first seen after that savepoint.
-  struct LayoutChange {
-    size_t batch_size;
-    uint32_t cf;
-    std::optional<size_t> previous_size;
-  };
-  std::vector<LayoutChange> layout_undo;
+  std::stack<SavePoint, autovector<SavePoint>> stack;
+  // Only batches created for checked timestamp assignment allocate this state.
+  std::unique_ptr<TimestampTracking> timestamp_tracking;
 };
 
 WriteBatch::WriteBatch(size_t reserved_bytes, size_t max_bytes,
@@ -207,29 +210,39 @@ WriteBatch::WriteBatch(size_t reserved_bytes, size_t max_bytes,
   rep_.resize(WriteBatchInternal::kHeader);
 }
 
-WriteBatch WriteBatchInternal::WithTimestampTracking(
+std::unique_ptr<WriteBatch> WriteBatchInternal::WithTimestampTracking(
     size_t reserved_bytes, size_t max_bytes, size_t protection_bytes_per_key,
     size_t default_cf_ts_sz) {
-  WriteBatch batch(reserved_bytes, max_bytes, protection_bytes_per_key,
-                   default_cf_ts_sz);
-  batch.timestamp_tracking_ = WriteBatch::TimestampTracking::kComplete;
+  auto batch = std::make_unique<WriteBatch>(
+      reserved_bytes, max_bytes, protection_bytes_per_key, default_cf_ts_sz);
+  batch->save_points_ = std::make_unique<SavePoints>();
+  batch->save_points_->timestamp_tracking =
+      std::make_unique<TimestampTracking>();
   return batch;
 }
 
-void WriteBatch::TrackTimestampSize(uint32_t cf, size_t ts_sz) {
-  auto [it, inserted] = cf_id_to_ts_sz_.try_emplace(cf, ts_sz);
-  const size_t conflict = std::numeric_limits<size_t>::max();
-  if (!inserted && (it->second == ts_sz || it->second == conflict)) {
+void WriteBatch::RecordTrackedTimestampSize(uint32_t cf, size_t ts_sz,
+                                            bool pending) {
+  if (!save_points_->timestamp_tracking) {
     return;
   }
-  if (save_points_ && !save_points_->stack.empty()) {
-    save_points_->layout_undo.push_back(
-        {GetDataSize(), cf,
-         inserted ? std::nullopt : std::optional<size_t>(it->second)});
+  auto& tracking = *save_points_->timestamp_tracking;
+  const size_t end = GetDataSize();
+  auto [it, inserted] = tracking.layouts.try_emplace(
+      cf, TimestampTracking::ColumnFamilyLayout{ts_sz, end});
+  if (!inserted && it->second.width != ts_sz &&
+      it->second.first_conflict_end == 0) {
+    it->second.first_conflict_end = end;
   }
-  if (!inserted) {
-    it->second = conflict;
+  if (pending && ts_sz != 0 && tracking.first_pending_end == 0) {
+    tracking.first_pending_end = end;
   }
+}
+
+bool WriteBatch::TimestampsUpdateNeeded() const {
+  return save_points_ && save_points_->timestamp_tracking
+             ? save_points_->timestamp_tracking->first_pending_end != 0
+             : needs_in_place_update_ts_;
 }
 
 WriteBatch::WriteBatch(const std::string& rep)
@@ -242,18 +255,17 @@ WriteBatch::WriteBatch(std::string&& rep)
 
 WriteBatch::WriteBatch(const WriteBatch& src)
     : wal_term_point_(src.wal_term_point_),
-      needs_in_place_update_ts_(src.needs_in_place_update_ts_),
-      has_key_with_ts_(src.has_key_with_ts_),
       content_flags_(src.content_flags_.load(std::memory_order_relaxed)),
       max_bytes_(src.max_bytes_),
       default_cf_ts_sz_(src.default_cf_ts_sz_),
       rep_(src.rep_) {
-  if (src.timestamp_tracking_ == TimestampTracking::kComplete) {
-    timestamp_tracking_ = TimestampTracking::kComplete;
-    cf_id_to_ts_sz_ = src.cf_id_to_ts_sz_;
-  }
   if (src.save_points_ != nullptr) {
-    save_points_ = std::make_unique<SavePoints>(*src.save_points_);
+    save_points_.reset(new SavePoints());
+    save_points_->stack = src.save_points_->stack;
+    if (src.save_points_->timestamp_tracking) {
+      save_points_->timestamp_tracking = std::make_unique<TimestampTracking>(
+          *src.save_points_->timestamp_tracking);
+    }
   }
   if (src.prot_info_ != nullptr) {
     prot_info_.reset(new WriteBatch::ProtectionInfo());
@@ -264,18 +276,11 @@ WriteBatch::WriteBatch(const WriteBatch& src)
 WriteBatch::WriteBatch(WriteBatch&& src) noexcept
     : save_points_(std::move(src.save_points_)),
       wal_term_point_(std::move(src.wal_term_point_)),
-      needs_in_place_update_ts_(src.needs_in_place_update_ts_),
-      has_key_with_ts_(src.has_key_with_ts_),
       content_flags_(src.content_flags_.load(std::memory_order_relaxed)),
       max_bytes_(src.max_bytes_),
       prot_info_(std::move(src.prot_info_)),
       default_cf_ts_sz_(src.default_cf_ts_sz_),
-      rep_(std::move(src.rep_)) {
-  if (src.timestamp_tracking_ == TimestampTracking::kComplete) {
-    timestamp_tracking_ = TimestampTracking::kComplete;
-    cf_id_to_ts_sz_ = std::move(src.cf_id_to_ts_sz_);
-  }
-}
+      rep_(std::move(src.rep_)) {}
 
 WriteBatch& WriteBatch::operator=(const WriteBatch& src) {
   if (&src != this) {
@@ -311,8 +316,13 @@ void WriteBatch::Clear() {
   content_flags_.store(0, std::memory_order_relaxed);
 
   if (save_points_ != nullptr) {
-    save_points_->stack.clear();
-    save_points_->layout_undo.clear();
+    while (!save_points_->stack.empty()) {
+      save_points_->stack.pop();
+    }
+    if (auto* tracking = save_points_->timestamp_tracking.get()) {
+      tracking->layouts.clear();
+      tracking->first_pending_end = 0;
+    }
   }
 
   if (prot_info_ != nullptr) {
@@ -320,10 +330,6 @@ void WriteBatch::Clear() {
   }
   wal_term_point_.clear();
   default_cf_ts_sz_ = 0;
-  needs_in_place_update_ts_ = false;
-  has_key_with_ts_ = false;
-  if (timestamp_tracking_ == TimestampTracking::kComplete)
-    cf_id_to_ts_sz_.clear();
 }
 
 uint32_t WriteBatch::Count() const { return WriteBatchInternal::Count(this); }
@@ -1001,17 +1007,15 @@ Status WriteBatch::Put(ColumnFamilyHandle* column_family, const Slice& key,
   if (0 == ts_sz) {
     s = WriteBatchInternal::Put(this, cf_id, key, value);
   } else {
+    needs_in_place_update_ts_ = true;
+    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> key_with_ts{{key, dummy_ts}};
     s = WriteBatchInternal::Put(this, cf_id, SliceParts(key_with_ts.data(), 2),
                                 SliceParts(&value, 1));
   }
   if (s.ok()) {
-    if (ts_sz != 0) {
-      needs_in_place_update_ts_ = true;
-      has_key_with_ts_ = true;
-    }
-    MaybeTrackTimestampSize(cf_id, ts_sz);
+    RecordTimestampSize(cf_id, ts_sz, /* pending */ true);
   }
   return s;
 }
@@ -1042,14 +1046,14 @@ Status WriteBatch::Put(ColumnFamilyHandle* column_family, const Slice& key,
   if (!s.ok()) {
     return s;
   }
+  has_key_with_ts_ = true;
   assert(column_family);
   uint32_t cf_id = column_family->GetID();
   std::array<Slice, 2> key_with_ts{{key, ts}};
   s = WriteBatchInternal::Put(this, cf_id, SliceParts(key_with_ts.data(), 2),
                               SliceParts(&value, 1));
   if (s.ok()) {
-    has_key_with_ts_ = true;
-    MaybeTrackTimestampSize(cf_id, ts.size());
+    RecordTimestampSize(cf_id, ts.size());
   }
   return s;
 }
@@ -1121,7 +1125,7 @@ Status WriteBatch::Put(ColumnFamilyHandle* column_family, const SliceParts& key,
   if (ts_sz == 0) {
     s = WriteBatchInternal::Put(this, cf_id, key, value);
     if (s.ok()) {
-      MaybeTrackTimestampSize(cf_id, ts_sz);
+      RecordTimestampSize(cf_id, ts_sz);
     }
     return s;
   }
@@ -1281,8 +1285,9 @@ Status WriteBatchInternal::MarkEndPrepare(WriteBatch* b, const Slice& xid,
 
   // all savepoints up to this point are cleared
   if (b->save_points_ != nullptr) {
-    b->save_points_->stack.clear();
-    b->save_points_->layout_undo.clear();
+    while (!b->save_points_->stack.empty()) {
+      b->save_points_->stack.pop();
+    }
   }
 
   // rewrite noop as begin marker
@@ -1374,17 +1379,15 @@ Status WriteBatch::Delete(ColumnFamilyHandle* column_family, const Slice& key) {
   if (0 == ts_sz) {
     s = WriteBatchInternal::Delete(this, cf_id, key);
   } else {
+    needs_in_place_update_ts_ = true;
+    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> key_with_ts{{key, dummy_ts}};
     s = WriteBatchInternal::Delete(this, cf_id,
                                    SliceParts(key_with_ts.data(), 2));
   }
   if (s.ok()) {
-    if (ts_sz != 0) {
-      needs_in_place_update_ts_ = true;
-      has_key_with_ts_ = true;
-    }
-    MaybeTrackTimestampSize(cf_id, ts_sz);
+    RecordTimestampSize(cf_id, ts_sz, /* pending */ true);
   }
   return s;
 }
@@ -1396,13 +1399,13 @@ Status WriteBatch::Delete(ColumnFamilyHandle* column_family, const Slice& key,
     return s;
   }
   assert(column_family);
+  has_key_with_ts_ = true;
   uint32_t cf_id = column_family->GetID();
   std::array<Slice, 2> key_with_ts{{key, ts}};
   s = WriteBatchInternal::Delete(this, cf_id,
                                  SliceParts(key_with_ts.data(), 2));
   if (s.ok()) {
-    has_key_with_ts_ = true;
-    MaybeTrackTimestampSize(cf_id, ts.size());
+    RecordTimestampSize(cf_id, ts.size());
   }
   return s;
 }
@@ -1455,7 +1458,7 @@ Status WriteBatch::Delete(ColumnFamilyHandle* column_family,
   if (0 == ts_sz) {
     s = WriteBatchInternal::Delete(this, cf_id, key);
     if (s.ok()) {
-      MaybeTrackTimestampSize(cf_id, ts_sz);
+      RecordTimestampSize(cf_id, ts_sz);
     }
     return s;
   }
@@ -1510,17 +1513,15 @@ Status WriteBatch::SingleDelete(ColumnFamilyHandle* column_family,
   if (0 == ts_sz) {
     s = WriteBatchInternal::SingleDelete(this, cf_id, key);
   } else {
+    needs_in_place_update_ts_ = true;
+    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> key_with_ts{{key, dummy_ts}};
     s = WriteBatchInternal::SingleDelete(this, cf_id,
                                          SliceParts(key_with_ts.data(), 2));
   }
   if (s.ok()) {
-    if (ts_sz != 0) {
-      needs_in_place_update_ts_ = true;
-      has_key_with_ts_ = true;
-    }
-    MaybeTrackTimestampSize(cf_id, ts_sz);
+    RecordTimestampSize(cf_id, ts_sz, /* pending */ true);
   }
   return s;
 }
@@ -1538,7 +1539,7 @@ Status WriteBatch::SingleDelete(ColumnFamilyHandle* column_family,
   s = WriteBatchInternal::SingleDelete(this, cf_id,
                                        SliceParts(key_with_ts.data(), 2));
   if (s.ok()) {
-    MaybeTrackTimestampSize(cf_id, ts.size());
+    RecordTimestampSize(cf_id, ts.size());
   }
   return s;
 }
@@ -1593,7 +1594,7 @@ Status WriteBatch::SingleDelete(ColumnFamilyHandle* column_family,
   if (0 == ts_sz) {
     s = WriteBatchInternal::SingleDelete(this, cf_id, key);
     if (s.ok()) {
-      MaybeTrackTimestampSize(cf_id, ts_sz);
+      RecordTimestampSize(cf_id, ts_sz);
     }
     return s;
   }
@@ -1653,6 +1654,8 @@ Status WriteBatch::DeleteRange(ColumnFamilyHandle* column_family,
   if (0 == ts_sz) {
     s = WriteBatchInternal::DeleteRange(this, cf_id, begin_key, end_key);
   } else {
+    needs_in_place_update_ts_ = true;
+    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> begin_key_with_ts{{begin_key, dummy_ts}};
     std::array<Slice, 2> end_key_with_ts{{end_key, dummy_ts}};
@@ -1661,11 +1664,7 @@ Status WriteBatch::DeleteRange(ColumnFamilyHandle* column_family,
                                         SliceParts(end_key_with_ts.data(), 2));
   }
   if (s.ok()) {
-    if (ts_sz != 0) {
-      needs_in_place_update_ts_ = true;
-      has_key_with_ts_ = true;
-    }
-    MaybeTrackTimestampSize(cf_id, ts_sz);
+    RecordTimestampSize(cf_id, ts_sz, /* pending */ true);
   }
   return s;
 }
@@ -1686,7 +1685,7 @@ Status WriteBatch::DeleteRange(ColumnFamilyHandle* column_family,
                                       SliceParts(key_with_ts.data(), 2),
                                       SliceParts(end_key_with_ts.data(), 2));
   if (s.ok()) {
-    MaybeTrackTimestampSize(cf_id, ts.size());
+    RecordTimestampSize(cf_id, ts.size());
   }
   return s;
 }
@@ -1741,7 +1740,7 @@ Status WriteBatch::DeleteRange(ColumnFamilyHandle* column_family,
   if (0 == ts_sz) {
     s = WriteBatchInternal::DeleteRange(this, cf_id, begin_key, end_key);
     if (s.ok()) {
-      MaybeTrackTimestampSize(cf_id, ts_sz);
+      RecordTimestampSize(cf_id, ts_sz);
     }
     return s;
   }
@@ -1799,6 +1798,8 @@ Status WriteBatch::Merge(ColumnFamilyHandle* column_family, const Slice& key,
   if (0 == ts_sz) {
     s = WriteBatchInternal::Merge(this, cf_id, key, value);
   } else {
+    needs_in_place_update_ts_ = true;
+    has_key_with_ts_ = true;
     std::string dummy_ts(ts_sz, '\0');
     std::array<Slice, 2> key_with_ts{{key, dummy_ts}};
 
@@ -1806,11 +1807,7 @@ Status WriteBatch::Merge(ColumnFamilyHandle* column_family, const Slice& key,
         this, cf_id, SliceParts(key_with_ts.data(), 2), SliceParts(&value, 1));
   }
   if (s.ok()) {
-    if (ts_sz != 0) {
-      needs_in_place_update_ts_ = true;
-      has_key_with_ts_ = true;
-    }
-    MaybeTrackTimestampSize(cf_id, ts_sz);
+    RecordTimestampSize(cf_id, ts_sz, /* pending */ true);
   }
   return s;
 }
@@ -1828,7 +1825,7 @@ Status WriteBatch::Merge(ColumnFamilyHandle* column_family, const Slice& key,
   s = WriteBatchInternal::Merge(this, cf_id, SliceParts(key_with_ts.data(), 2),
                                 SliceParts(&value, 1));
   if (s.ok()) {
-    MaybeTrackTimestampSize(cf_id, ts.size());
+    RecordTimestampSize(cf_id, ts.size());
   }
   return s;
 }
@@ -1881,7 +1878,7 @@ Status WriteBatch::Merge(ColumnFamilyHandle* column_family,
   if (0 == ts_sz) {
     s = WriteBatchInternal::Merge(this, cf_id, key, value);
     if (s.ok()) {
-      MaybeTrackTimestampSize(cf_id, ts_sz);
+      RecordTimestampSize(cf_id, ts_sz);
     }
     return s;
   }
@@ -1928,20 +1925,19 @@ void WriteBatch::SetSavePoint() {
   if (save_points_ == nullptr) {
     save_points_.reset(new SavePoints());
   }
-  uint32_t flags = content_flags_.load(std::memory_order_relaxed);
-  if (needs_in_place_update_ts_) flags |= SAVED_NEEDS_TIMESTAMP;
-  if (has_key_with_ts_) flags |= SAVED_HAS_TIMESTAMP;
-  save_points_->stack.emplace_back(GetDataSize(), Count(), flags);
+  // Record length and count of current batch of writes.
+  save_points_->stack.push(SavePoint(
+      GetDataSize(), Count(), content_flags_.load(std::memory_order_relaxed)));
 }
 
 Status WriteBatch::RollbackToSavePoint() {
-  if (save_points_ == nullptr || save_points_->stack.empty()) {
+  if (save_points_ == nullptr || save_points_->stack.size() == 0) {
     return Status::NotFound();
   }
 
   // Pop the most recent savepoint off the stack
-  const SavePoint savepoint = save_points_->stack.back();
-  save_points_->stack.pop_back();
+  SavePoint savepoint = save_points_->stack.top();
+  save_points_->stack.pop();
 
   assert(savepoint.size <= rep_.size());
   assert(static_cast<uint32_t>(savepoint.count) <= Count());
@@ -1957,44 +1953,43 @@ Status WriteBatch::RollbackToSavePoint() {
       prot_info_->entries_.resize(savepoint.count);
     }
     WriteBatchInternal::SetCount(this, savepoint.count);
-    content_flags_.store(savepoint.content_flags &
-                             ~(SAVED_NEEDS_TIMESTAMP | SAVED_HAS_TIMESTAMP),
-                         std::memory_order_relaxed);
+    content_flags_.store(savepoint.content_flags, std::memory_order_relaxed);
+    if (auto* tracking = save_points_->timestamp_tracking.get()) {
+      for (auto it = tracking->layouts.begin();
+           it != tracking->layouts.end();) {
+        auto& layout = it->second;
+        if (layout.first_record_end > savepoint.size) {
+          it = tracking->layouts.erase(it);
+        } else {
+          if (layout.first_conflict_end > savepoint.size) {
+            layout.first_conflict_end = 0;
+          }
+          ++it;
+        }
+      }
+      if (tracking->first_pending_end > savepoint.size) {
+        tracking->first_pending_end = 0;
+      }
+    }
   }
 
-  needs_in_place_update_ts_ =
-      (savepoint.content_flags & SAVED_NEEDS_TIMESTAMP) != 0;
-  has_key_with_ts_ = (savepoint.content_flags & SAVED_HAS_TIMESTAMP) != 0;
-  auto& undo = save_points_->layout_undo;
-  while (!undo.empty() && undo.back().batch_size > savepoint.size) {
-    const auto& change = undo.back();
-    if (change.previous_size) {
-      cf_id_to_ts_sz_[change.cf] = *change.previous_size;
-    } else {
-      cf_id_to_ts_sz_.erase(change.cf);
-    }
-    undo.pop_back();
-  }
   return Status::OK();
 }
 
 Status WriteBatch::PopSavePoint() {
-  if (save_points_ == nullptr || save_points_->stack.empty()) {
+  if (save_points_ == nullptr || save_points_->stack.size() == 0) {
     return Status::NotFound();
   }
 
   // Pop the most recent savepoint off the stack
-  save_points_->stack.pop_back();
-  if (save_points_->stack.empty()) {
-    save_points_->layout_undo.clear();
-  }
+  save_points_->stack.pop();
 
   return Status::OK();
 }
 
 Status WriteBatchInternal::UpdateTrackedTimestamps(WriteBatch* batch,
                                                    const Slice& ts) {
-  if (batch->timestamp_tracking_ != WriteBatch::TimestampTracking::kComplete ||
+  if (!batch->save_points_ || !batch->save_points_->timestamp_tracking ||
       ts.empty()) {
     return Status::InvalidArgument(
         "Timestamp assignment requires a tracked batch and a nonempty "
@@ -2006,18 +2001,23 @@ Status WriteBatchInternal::UpdateTrackedTimestamps(WriteBatch* batch,
     return Status::InvalidArgument(
         "Cannot update timestamps in a protected batch with range deletions");
   }
-  for (const auto& [cf, size] : batch->cf_id_to_ts_sz_) {
-    if (size != 0 && size != ts.size()) {
+  auto& tracking = *batch->save_points_->timestamp_tracking;
+  for (const auto& [cf, layout] : tracking.layouts) {
+    if (layout.first_conflict_end != 0 ||
+        (layout.width != 0 && layout.width != ts.size())) {
       return Status::InvalidArgument(
           "Timestamp size does not match batch layout");
     }
   }
-  return batch->UpdateTimestamps(ts, [batch](uint32_t cf) {
-    const auto it = batch->cf_id_to_ts_sz_.find(cf);
-    return it == batch->cf_id_to_ts_sz_.end()
-               ? std::numeric_limits<size_t>::max()
-               : it->second;
+  const Status s = batch->UpdateTimestamps(ts, [&tracking](uint32_t cf) {
+    const auto it = tracking.layouts.find(cf);
+    return it == tracking.layouts.end() ? std::numeric_limits<size_t>::max()
+                                        : it->second.width;
   });
+  if (s.ok()) {
+    tracking.first_pending_end = 0;
+  }
+  return s;
 }
 
 Status WriteBatch::UpdateTimestamps(
@@ -2027,12 +2027,6 @@ Status WriteBatch::UpdateTimestamps(
   const Status s = Iterate(&ts_updater);
   if (s.ok()) {
     needs_in_place_update_ts_ = false;
-    if (save_points_ != nullptr) {
-      // Timestamp assignment updates the saved prefixes in place as well.
-      for (auto& state : save_points_->stack) {
-        state.content_flags &= ~SAVED_NEEDS_TIMESTAMP;
-      }
-    }
   }
   return s;
 }

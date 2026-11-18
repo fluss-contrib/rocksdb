@@ -27,18 +27,15 @@
 jlong Java_io_github_fluss_1contrib_rocksdb_WriteBatch_newWriteBatchWithTimestamps(
     JNIEnv* env, jclass, jint reserved, jlong max_bytes, jlong protection,
     jint default_ts_size) {
-  using ROCKSDB_NAMESPACE::WriteBatch;
   if (!ROCKSDB_NAMESPACE::JniUtil::check_if_jlong_fits_size_t(max_bytes).ok()) {
     ROCKSDB_NAMESPACE::IllegalArgumentExceptionJni::ThrowNew(
         env, "WriteBatch size cannot be represented by size_t");
     return 0;
   }
-  auto* batch = new WriteBatch(
-      ROCKSDB_NAMESPACE::WriteBatchInternal::WithTimestampTracking(
-          static_cast<size_t>(reserved), static_cast<size_t>(max_bytes),
-          static_cast<size_t>(protection),
-          static_cast<size_t>(default_ts_size)));
-  return GET_CPLUSPLUS_POINTER(batch);
+  auto batch = ROCKSDB_NAMESPACE::WriteBatchInternal::WithTimestampTracking(
+      static_cast<size_t>(reserved), static_cast<size_t>(max_bytes),
+      static_cast<size_t>(protection), static_cast<size_t>(default_ts_size));
+  return GET_CPLUSPLUS_POINTER(batch.release());
 }
 
 void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_updateTimestamps(
