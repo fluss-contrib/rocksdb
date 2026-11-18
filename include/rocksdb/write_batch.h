@@ -71,13 +71,6 @@ class WriteBatch : public WriteBatchBase {
   // zero (disabled) and eight.
   explicit WriteBatch(size_t reserved_bytes, size_t max_bytes,
                       size_t protection_bytes_per_key, size_t default_cf_ts_sz);
-  // Creates a batch that records the timestamp size of each column family as
-  // entries are appended. Use UpdateTimestamps(ts) to assign their timestamps.
-  // The size and protection arguments have the same meaning as in WriteBatch().
-  static WriteBatch WithTimestampTracking(size_t reserved_bytes,
-                                          size_t max_bytes,
-                                          size_t protection_bytes_per_key,
-                                          size_t default_cf_ts_sz);
   ~WriteBatch() override;
 
   using WriteBatchBase::Put;
@@ -447,13 +440,6 @@ class WriteBatch : public WriteBatchBase {
   Status UpdateTimestamps(const Slice& ts,
                           std::function<size_t(uint32_t /*cf*/)> ts_sz_func);
 
-  // Assign ts to all timestamp-enabled entries in a batch created with
-  // WithTimestampTracking(). Each enabled column family must use ts.size()
-  // bytes. Entries in timestamp-disabled column families are left untouched.
-  // Batches with per-key protection and range deletions are unsupported.
-  // As with the callback overload, discard the batch if updating fails.
-  Status UpdateTimestamps(const Slice& ts);
-
   // TODO: remove these internal APIs after MyRocks refactor to not directly
   // write to a `WriteBatch` retrieved from `Transaction` via
   // `Transaction::GetWriteBatch`.
@@ -467,12 +453,15 @@ class WriteBatch : public WriteBatchBase {
     if (timestamp_tracking_ == TimestampTracking::kDisabled) {
       return;
     }
-    TrackTimestampSize(column_family_id, ts_sz);
+    if (timestamp_tracking_ == TimestampTracking::kComplete) {
+      TrackTimestampSize(column_family_id, ts_sz);
+    } else {
+      cf_id_to_ts_sz_.try_emplace(column_family_id, ts_sz);
+    }
   }
 
   // Return a mapping from column family id to timestamp size of all the column
-  // families involved in this WriteBatch. An inconsistent size is represented
-  // by std::numeric_limits<size_t>::max().
+  // families involved in this WriteBatch.
   const std::unordered_map<uint32_t, size_t>& GetColumnFamilyToTimestampSize() {
     return cf_id_to_ts_sz_;
   }

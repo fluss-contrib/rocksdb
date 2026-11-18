@@ -33,9 +33,11 @@ jlong Java_io_github_fluss_1contrib_rocksdb_WriteBatch_newWriteBatchWithTimestam
         env, "WriteBatch size cannot be represented by size_t");
     return 0;
   }
-  auto* batch = new WriteBatch(WriteBatch::WithTimestampTracking(
-      static_cast<size_t>(reserved), static_cast<size_t>(max_bytes),
-      static_cast<size_t>(protection), static_cast<size_t>(default_ts_size)));
+  auto* batch = new WriteBatch(
+      ROCKSDB_NAMESPACE::WriteBatchInternal::WithTimestampTracking(
+          static_cast<size_t>(reserved), static_cast<size_t>(max_bytes),
+          static_cast<size_t>(protection),
+          static_cast<size_t>(default_ts_size)));
   return GET_CPLUSPLUS_POINTER(batch);
 }
 
@@ -46,7 +48,8 @@ void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_updateTimestamps(
     ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
                                           env->GetArrayLength(jtimestamp));
     ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
-        env, batch->UpdateTimestamps(ts.slice()));
+        env, ROCKSDB_NAMESPACE::WriteBatchInternal::UpdateTrackedTimestamps(
+                 batch, ts.slice()));
   } catch (const ROCKSDB_NAMESPACE::KVException&) {
     // The Java exception is already pending.
   }
