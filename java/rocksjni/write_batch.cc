@@ -80,7 +80,7 @@ void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_updateTimestamps(
 
 void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_putWithTimestamp(
     JNIEnv* env, jclass, jlong jbatch, jlong jcf, jbyteArray jkey,
-    jbyteArray jtimestamp, jbyteArray jvalue) {
+    jbyteArray jtimestamp, jbyteArray jval) {
   auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
   auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   try {
@@ -88,8 +88,8 @@ void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_putWithTimestamp(
                                            env->GetArrayLength(jkey));
     ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
                                           env->GetArrayLength(jtimestamp));
-    ROCKSDB_NAMESPACE::JByteArraySlice value(env, jvalue, 0,
-                                             env->GetArrayLength(jvalue));
+    ROCKSDB_NAMESPACE::JByteArraySlice value(env, jval, 0,
+                                             env->GetArrayLength(jval));
     ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
         env, batch->Put(cf, key.slice(), ts.slice(), value.slice()));
   } catch (const ROCKSDB_NAMESPACE::KVException&) {
