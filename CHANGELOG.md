@@ -4,6 +4,12 @@ This changelog summarizes engine, Java/JNI API, and runtime compatibility
 changes in published Fluss releases. For changes inherited from RocksDB, see
 the upstream [HISTORY.md](https://github.com/facebook/rocksdb/blob/main/HISTORY.md).
 
+## Unreleased
+
+- Added Java/JNI support for timestamped Put/Delete, WriteBatch timestamp
+  assignment, U64 timestamp comparators, and history retention bounds
+  ([#40](https://github.com/fluss-contrib/rocksdb/issues/40)).
+
 ## [v11.8.1-fluss-3] - 2026-08-29
 
 Based on upstream RocksDB

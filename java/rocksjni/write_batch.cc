@@ -7,7 +7,10 @@
 // calling c++ ROCKSDB_NAMESPACE::WriteBatch methods from Java side.
 #include "rocksdb/write_batch.h"
 
+#include <limits>
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 #include "db/memtable.h"
 #include "db/write_batch_internal.h"
@@ -20,8 +23,96 @@
 #include "rocksdb/status.h"
 #include "rocksdb/write_buffer_manager.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
+#include "rocksjni/kv_helper.h"
 #include "rocksjni/portal.h"
 #include "rocksjni/writebatchhandlerjnicallback.h"
+
+jlong Java_io_github_fluss_1contrib_rocksdb_WriteBatch_newWriteBatchWithTimestamps(
+    JNIEnv* env, jclass, jint reserved, jlong max_bytes, jlong protection,
+    jlong default_ts_size) {
+  if (static_cast<uint64_t>(max_bytes) > std::numeric_limits<size_t>::max() ||
+      static_cast<uint64_t>(default_ts_size) >
+          std::numeric_limits<size_t>::max()) {
+    ROCKSDB_NAMESPACE::IllegalArgumentExceptionJni::ThrowNew(
+        env, "WriteBatch size cannot be represented by size_t");
+    return 0;
+  }
+  return GET_CPLUSPLUS_POINTER(new ROCKSDB_NAMESPACE::WriteBatch(
+      static_cast<size_t>(reserved), static_cast<size_t>(max_bytes),
+      static_cast<size_t>(protection), static_cast<size_t>(default_ts_size)));
+}
+
+void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_updateTimestamps(
+    JNIEnv* env, jclass, jlong jbatch, jbyteArray jtimestamp, jintArray jids,
+    jintArray jsizes) {
+  auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
+  const jsize count = env->GetArrayLength(jids);
+  std::vector<jint> ids(count);
+  std::vector<jint> sizes(count);
+  env->GetIntArrayRegion(jids, 0, count, ids.data());
+  if (env->ExceptionCheck()) {
+    return;
+  }
+  env->GetIntArrayRegion(jsizes, 0, count, sizes.data());
+  if (env->ExceptionCheck()) {
+    return;
+  }
+  std::unordered_map<uint32_t, size_t> timestamp_sizes;
+  for (jsize i = 0; i < count; ++i) {
+    timestamp_sizes.emplace(static_cast<uint32_t>(ids[i]),
+                            static_cast<size_t>(sizes[i]));
+  }
+  try {
+    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
+                                          env->GetArrayLength(jtimestamp));
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env,
+        batch->UpdateTimestamps(ts.slice(), [&timestamp_sizes](uint32_t cf) {
+          auto it = timestamp_sizes.find(cf);
+          return it == timestamp_sizes.end()
+                     ? std::numeric_limits<size_t>::max()
+                     : it->second;
+        }));
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
+  }
+}
+
+void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_putWithTimestamp(
+    JNIEnv* env, jclass, jlong jbatch, jlong jcf, jbyteArray jkey,
+    jbyteArray jtimestamp, jbyteArray jvalue) {
+  auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
+  auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  try {
+    ROCKSDB_NAMESPACE::JByteArraySlice key(env, jkey, 0,
+                                           env->GetArrayLength(jkey));
+    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
+                                          env->GetArrayLength(jtimestamp));
+    ROCKSDB_NAMESPACE::JByteArraySlice value(env, jvalue, 0,
+                                             env->GetArrayLength(jvalue));
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, batch->Put(cf, key.slice(), ts.slice(), value.slice()));
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
+  }
+}
+
+void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_deleteWithTimestamp(
+    JNIEnv* env, jclass, jlong jbatch, jlong jcf, jbyteArray jkey,
+    jbyteArray jtimestamp) {
+  auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
+  auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  try {
+    ROCKSDB_NAMESPACE::JByteArraySlice key(env, jkey, 0,
+                                           env->GetArrayLength(jkey));
+    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
+                                          env->GetArrayLength(jtimestamp));
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, batch->Delete(cf, key.slice(), ts.slice()));
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
+  }
+}
 
 /*
  * Class:     io_github_fluss_contrib_rocksdb_WriteBatch

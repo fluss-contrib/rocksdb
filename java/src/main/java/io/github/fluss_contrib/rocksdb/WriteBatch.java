@@ -6,6 +6,8 @@
 package io.github.fluss_contrib.rocksdb;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * WriteBatch holds a collection of updates to apply atomically to a DB.
@@ -25,6 +27,116 @@ import java.nio.ByteBuffer;
  * external synchronization.
  */
 public class WriteBatch extends AbstractWriteBatch {
+  /**
+   * Creates a batch with the native size and protection settings.
+   *
+   * <p>Timestamp-less writes reserve timestamp space for later
+   * {@link #updateTimestamps(byte[], Map)}. Clear resets the default CF timestamp
+   * size to zero; construct a new configured batch before using that path again.
+   *
+   * @param reservedBytes initial capacity
+   * @param maxBytes maximum batch size, or zero for unlimited
+   * @param protectionBytesPerKey native protection bytes, zero or eight
+   * @param defaultColumnFamilyTimestampSize timestamp bytes for CF id zero
+   * @throws IllegalArgumentException if a size is negative, unrepresentable,
+   *     or the protection size is unsupported
+   */
+  public WriteBatch(final int reservedBytes, final long maxBytes, final long protectionBytesPerKey,
+      final long defaultColumnFamilyTimestampSize) {
+    super(newConfiguredBatch(
+        reservedBytes, maxBytes, protectionBytesPerKey, defaultColumnFamilyTimestampSize));
+  }
+
+  private static long newConfiguredBatch(final int reservedBytes, final long maxBytes,
+      final long protectionBytesPerKey, final long defaultColumnFamilyTimestampSize) {
+    if (reservedBytes < 0 || maxBytes < 0 || defaultColumnFamilyTimestampSize < 0
+        || (protectionBytesPerKey != 0 && protectionBytesPerKey != 8)) {
+      throw new IllegalArgumentException("Invalid WriteBatch size or protection setting");
+    }
+    return newWriteBatchWithTimestamps(
+        reservedBytes, maxBytes, protectionBytesPerKey, defaultColumnFamilyTimestampSize);
+  }
+
+  /**
+   * Replaces timestamps of all timestamp-enabled entries, not just placeholders.
+   * CFs with size zero are left unchanged. The map must describe every CF used
+   * by this batch, with id zero denoting the default CF.
+   *
+   * <p>The map is copied synchronously and must not be changed during this call.
+   * A native failure can leave the batch partially updated; discard or rebuild
+   * it rather than submitting it after a failure.
+   *
+   * @param timestamp nonempty timestamp in the common format of enabled CFs
+   * @param columnFamilyTimestampSizes CF id to nonnegative timestamp byte size
+   * @throws RocksDBException if a CF is unknown or native updating fails
+   * @throws IllegalArgumentException if timestamp is empty or a size is negative
+   */
+  public void updateTimestamps(final byte[] timestamp,
+      final Map<Integer, Integer> columnFamilyTimestampSizes) throws RocksDBException {
+    Objects.requireNonNull(timestamp);
+    Objects.requireNonNull(columnFamilyTimestampSizes);
+    if (timestamp.length == 0) {
+      throw new IllegalArgumentException("Timestamp must not be empty");
+    }
+    final int[] ids = new int[columnFamilyTimestampSizes.size()];
+    final int[] sizes = new int[ids.length];
+    int i = 0;
+    for (final Map.Entry<Integer, Integer> entry : columnFamilyTimestampSizes.entrySet()) {
+      ids[i] = Objects.requireNonNull(entry.getKey());
+      sizes[i] = Objects.requireNonNull(entry.getValue());
+      if (sizes[i] < 0) {
+        throw new IllegalArgumentException("Timestamp size must not be negative");
+      }
+      i++;
+    }
+    updateTimestamps(nativeHandle_, timestamp, ids, sizes);
+  }
+
+  private static native long newWriteBatchWithTimestamps(
+      int reservedBytes, long maxBytes, long protectionBytesPerKey, long defaultTimestampSize);
+  private static native void updateTimestamps(long batch, byte[] timestamp, int[] ids, int[] sizes)
+      throws RocksDBException;
+
+  /**
+   * Appends a timestamped value. Arguments are copied before returning.
+   * Versions of a key must be appended in nondecreasing timestamp order.
+   *
+   * @param cf column family handle, including an explicit default CF handle
+   * @param key logical key without a timestamp suffix
+   * @param timestamp bytes matching the CF comparator's format and length
+   * @param value value to write
+   * @throws RocksDBException if the native append fails
+   */
+  public void put(final ColumnFamilyHandle cf, final byte[] key, final byte[] timestamp,
+      final byte[] value) throws RocksDBException {
+    Objects.requireNonNull(cf);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(timestamp);
+    Objects.requireNonNull(value);
+    putWithTimestamp(nativeHandle_, cf.nativeHandle_, key, timestamp, value);
+  }
+
+  /**
+   * Appends a timestamped deletion without removing older versions.
+   *
+   * @param cf column family handle, including an explicit default CF handle
+   * @param key logical key
+   * @param timestamp deletion timestamp in the CF comparator's format
+   * @throws RocksDBException if the native append fails
+   */
+  public void delete(final ColumnFamilyHandle cf, final byte[] key, final byte[] timestamp)
+      throws RocksDBException {
+    Objects.requireNonNull(cf);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(timestamp);
+    deleteWithTimestamp(nativeHandle_, cf.nativeHandle_, key, timestamp);
+  }
+
+  private static native void putWithTimestamp(
+      long batch, long cf, byte[] key, byte[] timestamp, byte[] value) throws RocksDBException;
+  private static native void deleteWithTimestamp(long batch, long cf, byte[] key, byte[] timestamp)
+      throws RocksDBException;
+
   /**
    * Constructs a WriteBatch instance.
    */

@@ -8,6 +8,9 @@
 
 #include <jni.h>
 
+#include <string>
+#include <utility>
+
 #include "include/io_github_fluss_contrib_rocksdb_CompactRangeOptions.h"
 #include "rocksdb/options.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
@@ -29,6 +32,7 @@ class Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions {
 
  private:
   std::string full_history_ts_low;
+  ROCKSDB_NAMESPACE::Slice full_history_ts_low_slice;
   std::atomic<bool> canceled;
 
  public:
@@ -36,8 +40,20 @@ class Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions {
     full_history_ts_low = "";
     ROCKSDB_NAMESPACE::PutFixed64(&full_history_ts_low, start);
     ROCKSDB_NAMESPACE::PutFixed64(&full_history_ts_low, range);
-    compactRangeOptions.full_history_ts_low =
-        new ROCKSDB_NAMESPACE::Slice(full_history_ts_low);
+    full_history_ts_low_slice = ROCKSDB_NAMESPACE::Slice(full_history_ts_low);
+    compactRangeOptions.full_history_ts_low = &full_history_ts_low_slice;
+  }
+
+  void set_full_history_ts_low_bytes(std::string bytes) {
+    full_history_ts_low = std::move(bytes);
+    full_history_ts_low_slice = ROCKSDB_NAMESPACE::Slice(full_history_ts_low);
+    compactRangeOptions.full_history_ts_low = &full_history_ts_low_slice;
+  }
+
+  void clear_full_history_ts_low() {
+    compactRangeOptions.full_history_ts_low = nullptr;
+    full_history_ts_low_slice.clear();
+    full_history_ts_low.clear();
   }
 
   bool read_full_history_ts_low(uint64_t* start, uint64_t* range) {
@@ -62,6 +78,36 @@ class Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions {
            compactRangeOptions.canceled->load(std::memory_order_seq_cst);
   }
 };
+
+void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setFullHistoryTsLowBytes(
+    JNIEnv* env, jclass, jlong jhandle, jbyteArray jtimestamp) {
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
+  if (jtimestamp == nullptr) {
+    options->clear_full_history_ts_low();
+    return;
+  }
+  jboolean has_exception = JNI_FALSE;
+  std::string bytes = ROCKSDB_NAMESPACE::JniUtil::byteString<std::string>(
+      env, jtimestamp, env->GetArrayLength(jtimestamp),
+      [](const char* data, const size_t size) {
+        return std::string(data, size);
+      },
+      &has_exception);
+  if (!has_exception) {
+    options->set_full_history_ts_low_bytes(std::move(bytes));
+  }
+}
+
+jbyteArray
+Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_fullHistoryTsLowBytes(
+    JNIEnv* env, jclass, jlong jhandle) {
+  auto* options = reinterpret_cast<
+      Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions*>(jhandle);
+  const auto* bound = options->compactRangeOptions.full_history_ts_low;
+  return bound == nullptr ? nullptr
+                          : ROCKSDB_NAMESPACE::JniUtil::copyBytes(env, *bound);
+}
 
 /*
  * Class:     io_github_fluss_contrib_rocksdb_CompactRangeOptions

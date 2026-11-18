@@ -16,5 +16,16 @@ package io.github.fluss_contrib.rocksdb;
  * </ol>
  */
 public enum BuiltinComparator {
-  BYTEWISE_COMPARATOR, REVERSE_BYTEWISE_COMPARATOR
+  BYTEWISE_COMPARATOR,
+  REVERSE_BYTEWISE_COMPARATOR,
+  /**
+   * Bytewise keys with eight-byte little-endian unsigned timestamps.
+   * Reopening a column family requires the same comparator.
+   */
+  BYTEWISE_COMPARATOR_WITH_U64_TS,
+  /**
+   * Reverse bytewise keys with eight-byte little-endian unsigned timestamps.
+   * Newer versions of each key still sort first.
+   */
+  REVERSE_BYTEWISE_COMPARATOR_WITH_U64_TS
 }

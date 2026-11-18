@@ -570,6 +570,11 @@ public class ReadOptions extends RocksObject {
    * and the API is subject to change.
    * <p>
    * Default: null
+   * <p>The read timestamp is inclusive and is also restricted by any configured
+   * snapshot. This method borrows the Slice: keep it open while these options
+   * and iterators created from them are in use. A Java reference does not
+   * prevent explicitly closing its native storage.
+   *
    * @see #setIterStartTs(AbstractSlice)
    * @param timestamp Slice representing the timestamp
    * @return the reference to the current ReadOptions.
@@ -620,6 +625,10 @@ public class ReadOptions extends RocksObject {
    * <p>
    * Default: null
    *
+   * <p>This method borrows the Slice. Keep it open while these options and any
+   * iterators created from them are in use.
+   *
+   * @see #setTimestamp(AbstractSlice)
    * @param iterStartTs Reference to lower bound timestamp or null if there is no lower bound
    *     timestamp defined
    * @return the reference to the current ReadOptions.

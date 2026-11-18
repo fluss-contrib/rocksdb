@@ -176,6 +176,14 @@ Java_io_github_fluss_1contrib_rocksdb_Options_createMissingColumnFamilies(
 void Java_io_github_fluss_1contrib_rocksdb_Options_setComparatorHandle__JI(
     JNIEnv*, jclass, jlong jhandle, jint builtinComparator) {
   switch (builtinComparator) {
+    case 2:
+      reinterpret_cast<ROCKSDB_NAMESPACE::Options*>(jhandle)->comparator =
+          ROCKSDB_NAMESPACE::BytewiseComparatorWithU64Ts();
+      break;
+    case 3:
+      reinterpret_cast<ROCKSDB_NAMESPACE::Options*>(jhandle)->comparator =
+          ROCKSDB_NAMESPACE::ReverseBytewiseComparatorWithU64Ts();
+      break;
     case 1:
       reinterpret_cast<ROCKSDB_NAMESPACE::Options*>(jhandle)->comparator =
           ROCKSDB_NAMESPACE::ReverseBytewiseComparator();
@@ -4242,6 +4250,15 @@ void Java_io_github_fluss_1contrib_rocksdb_ColumnFamilyOptions_optimizeUniversal
 void Java_io_github_fluss_1contrib_rocksdb_ColumnFamilyOptions_setComparatorHandle__JI(
     JNIEnv*, jclass, jlong jhandle, jint builtinComparator) {
   switch (builtinComparator) {
+    case 2:
+      reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyOptions*>(jhandle)
+          ->comparator = ROCKSDB_NAMESPACE::BytewiseComparatorWithU64Ts();
+      break;
+    case 3:
+      reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyOptions*>(jhandle)
+          ->comparator =
+          ROCKSDB_NAMESPACE::ReverseBytewiseComparatorWithU64Ts();
+      break;
     case 1:
       reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyOptions*>(jhandle)
           ->comparator = ROCKSDB_NAMESPACE::ReverseBytewiseComparator();

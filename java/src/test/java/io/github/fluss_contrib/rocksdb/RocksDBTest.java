@@ -4,16 +4,17 @@
 //  (found in the LICENSE.Apache file in the root directory).
 package io.github.fluss_contrib.rocksdb;
 
-import org.junit.*;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import static io.github.fluss_contrib.rocksdb.util.TestUtil.u64Timestamp;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.fail;
 
 import java.nio.ByteBuffer;
 import java.util.*;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class RocksDBTest {
 
@@ -23,6 +24,88 @@ public class RocksDBTest {
 
   @Rule
   public TemporaryFolder dbFolder = new TemporaryFolder();
+
+  @Test
+  public void timestampHistorySurvivesCompactionAndReopen() throws Exception {
+    final String path = dbFolder.getRoot().getAbsolutePath();
+    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final WriteOptions write = new WriteOptions()) {
+      try (final RocksDB db = RocksDB.open(options, path);
+           final CompactRangeOptions compact = new CompactRangeOptions()) {
+        db.put(write, new byte[] {1}, u64Timestamp(3), new byte[] {3});
+        db.put(write, new byte[] {1}, u64Timestamp(8), new byte[] {8});
+        db.put(write, new byte[] {1}, u64Timestamp(15), new byte[] {15});
+        db.put(write, new byte[] {2}, u64Timestamp(3), new byte[] {3});
+        db.delete(db.getDefaultColumnFamily(), write, new byte[] {2}, u64Timestamp(8));
+        db.put(write, new byte[] {2}, u64Timestamp(20), new byte[] {20});
+        assertThat(db.getFullHistoryTsLow()).isEmpty();
+        db.increaseFullHistoryTsLow(u64Timestamp(12));
+        assertThat(db.getFullHistoryTsLow(db.getDefaultColumnFamily())).isEqualTo(u64Timestamp(12));
+        compact.setFullHistoryTsLow(u64Timestamp(12))
+            .setBottommostLevelCompaction(CompactRangeOptions.BottommostLevelCompaction.kForce);
+        db.compactRange(null, null, null, compact);
+        assertThatThrownBy(() -> db.increaseFullHistoryTsLow(u64Timestamp(11)))
+            .isInstanceOf(RocksDBException.class);
+      }
+      try (final RocksDB db = RocksDB.open(options, path);
+           final Slice ts = new Slice(u64Timestamp(12));
+           final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
+        assertThat(db.getFullHistoryTsLow()).isEqualTo(u64Timestamp(12));
+        assertThat(db.get(read, new byte[] {1})).containsExactly(8);
+        assertThat(db.get(read, new byte[] {2})).isNull();
+        try (final Slice later = new Slice(u64Timestamp(22));
+             final ReadOptions laterRead = new ReadOptions().setTimestamp(later)) {
+          assertThat(db.get(laterRead, new byte[] {2})).containsExactly(20);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void invalidTimestampOperationsReportErrors() throws Exception {
+    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final WriteOptions write = new WriteOptions();
+         final CompactRangeOptions compact = new CompactRangeOptions()) {
+      final byte[] key = new byte[] {1};
+      assertThatThrownBy(() -> db.put(write, key, new byte[4], key))
+          .isInstanceOf(RocksDBException.class);
+      db.put(write, key, u64Timestamp(3), key);
+      assertThatThrownBy(() -> db.get(key)).isInstanceOf(RocksDBException.class);
+      assertThatThrownBy(() -> db.multiGetAsList(Collections.singletonList(key)))
+          .isInstanceOf(RocksDBException.class);
+      compact.setFullHistoryTsLow(new byte[4]);
+      assertThatThrownBy(() -> db.compactRange(null, null, null, compact))
+          .isInstanceOf(RocksDBException.class);
+      compact.setFullHistoryTsLow(u64Timestamp(8));
+      assertThatThrownBy(() -> db.compactRange(null, key, new byte[] {2}, compact))
+          .isInstanceOf(RocksDBException.class);
+      db.increaseFullHistoryTsLow(u64Timestamp(8));
+      db.compactRange(null, null, null, compact);
+      try (final Slice ts = new Slice(u64Timestamp(3));
+           final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
+        assertThatThrownBy(() -> db.get(read, key)).isInstanceOf(RocksDBException.class);
+        assertThatThrownBy(() -> db.multiGetAsList(read, Collections.singletonList(key)))
+            .isInstanceOf(RocksDBException.class);
+      }
+    }
+  }
+
+  @Test
+  public void nonTimestampColumnFamilyRejectsHistoryOperations() throws Exception {
+    try (final Options options = new Options().setCreateIfMissing(true);
+         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final CompactRangeOptions compact =
+             new CompactRangeOptions().setFullHistoryTsLow(u64Timestamp(8))) {
+      assertThatThrownBy(db::getFullHistoryTsLow).isInstanceOf(RocksDBException.class);
+      assertThatThrownBy(() -> db.increaseFullHistoryTsLow(u64Timestamp(8)))
+          .isInstanceOf(RocksDBException.class);
+      assertThatThrownBy(() -> db.compactRange(null, null, null, compact))
+          .isInstanceOf(RocksDBException.class);
+    }
+  }
 
   public static final Random rand = PlatformRandomHelper.
       getPlatformSpecificRandomFactory();
