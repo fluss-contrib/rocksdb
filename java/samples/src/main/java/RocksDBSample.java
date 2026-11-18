@@ -23,34 +23,37 @@ public class RocksDBSample {
     try (final ColumnFamilyOptions options = new ColumnFamilyOptions().setComparator(
              BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
          final ColumnFamilyHandle cf = db.createColumnFamily(new ColumnFamilyDescriptor(
-             "timestamped".getBytes(java.nio.charset.StandardCharsets.UTF_8), options));
-         final WriteOptions write = new WriteOptions()) {
-      final byte[] key = new byte[] {1};
-      db.put(cf, write, key, timestamp(3), new byte[] {3});
-      db.delete(cf, write, key, timestamp(15));
-      // The default CF is not timestamped. Explicit CF writes reserve their own
-      // timestamp space. A timestamped default CF would require size 8 here.
-      // Recreate a configured batch after clear(), which resets that size to 0.
-      try (final WriteBatch batch = new WriteBatch(0, 0, 0, 0)) {
-        batch.put(cf, key, new byte[] {20});
-        batch.updateTimestamps(timestamp(20), Collections.singletonMap(cf.getID(), 8));
-        db.write(write, batch);
-      }
-      // Keep the timestamp Slice open until all reads and iterators finish.
-      try (final Slice ts = new Slice(timestamp(12));
-           final ReadOptions read = new ReadOptions().setTimestamp(ts);
-           final RocksIterator iterator = db.newIterator(cf, read)) {
-        assert Arrays.equals(db.get(cf, read, key), new byte[] {3});
-        iterator.seek(key);
-        assert iterator.isValid();
-        assert Arrays.equals(iterator.value(), new byte[] {3});
-        iterator.status();
-      }
-      db.increaseFullHistoryTsLow(cf, timestamp(12));
-      assert Arrays.equals(db.getFullHistoryTsLow(cf), timestamp(12));
-      try (final CompactRangeOptions compact =
-               new CompactRangeOptions().setFullHistoryTsLow(timestamp(12))) {
-        db.compactRange(cf, null, null, compact);
+             "timestamped".getBytes(java.nio.charset.StandardCharsets.UTF_8), options))) {
+      try (final WriteOptions write = new WriteOptions()) {
+        final byte[] key = new byte[] {1};
+        db.put(cf, write, key, timestamp(3), new byte[] {3});
+        db.delete(cf, write, key, timestamp(15));
+        // The default CF is not timestamped. Explicit CF writes reserve their own
+        // timestamp space. A timestamped default CF would require size 8 here.
+        // Recreate a configured batch after clear(), which resets that size to 0.
+        try (final WriteBatch batch = new WriteBatch(0, 0, 0, 0)) {
+          batch.put(cf, key, new byte[] {20});
+          batch.updateTimestamps(timestamp(20), Collections.singletonMap(cf.getID(), 8));
+          db.write(write, batch);
+        }
+        // Keep the timestamp Slice open until all reads and iterators finish.
+        try (final Slice ts = new Slice(timestamp(12));
+             final ReadOptions read = new ReadOptions().setTimestamp(ts);
+             final RocksIterator iterator = db.newIterator(cf, read)) {
+          assert Arrays.equals(db.get(cf, read, key), new byte[] {3});
+          iterator.seek(key);
+          assert iterator.isValid();
+          assert Arrays.equals(iterator.value(), new byte[] {3});
+          iterator.status();
+        }
+        db.increaseFullHistoryTsLow(cf, timestamp(12));
+        assert Arrays.equals(db.getFullHistoryTsLow(cf), timestamp(12));
+        try (final CompactRangeOptions compact =
+                 new CompactRangeOptions().setFullHistoryTsLow(timestamp(12))) {
+          db.compactRange(cf, null, null, compact);
+        }
+      } finally {
+        db.dropColumnFamily(cf);
       }
     }
   }
