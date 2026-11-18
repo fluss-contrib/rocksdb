@@ -14,6 +14,7 @@
 #include "include/io_github_fluss_contrib_rocksdb_CompactRangeOptions.h"
 #include "rocksdb/options.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
+#include "rocksjni/kv_helper.h"
 #include "rocksjni/portal.h"
 #include "util/coding.h"
 
@@ -87,15 +88,11 @@ void Java_io_github_fluss_1contrib_rocksdb_CompactRangeOptions_setFullHistoryTsL
     options->clear_full_history_ts_low();
     return;
   }
-  jboolean has_exception = JNI_FALSE;
-  std::string bytes = ROCKSDB_NAMESPACE::JniUtil::byteString<std::string>(
-      env, jtimestamp, env->GetArrayLength(jtimestamp),
-      [](const char* data, const size_t size) {
-        return std::string(data, size);
-      },
-      &has_exception);
-  if (!has_exception) {
-    options->set_full_history_ts_low_bytes(std::move(bytes));
+  try {
+    ROCKSDB_NAMESPACE::JByteArrayElements timestamp(env, jtimestamp);
+    options->set_full_history_ts_low_bytes(timestamp.CopyToString());
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
   }
 }
 

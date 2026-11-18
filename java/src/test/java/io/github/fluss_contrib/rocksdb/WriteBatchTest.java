@@ -57,6 +57,8 @@ public class WriteBatchTest {
       batch.put(cf, key, u64Timestamp(8), new byte[] {8});
       batch.delete(cf, key, u64Timestamp(15));
       batch.put(cf, key, u64Timestamp(20), new byte[] {20});
+      final byte[] emptyValueKey = new byte[] {3};
+      batch.put(cf, emptyValueKey, u64Timestamp(3), new byte[0]);
       batch.put(plain, key, new byte[] {42});
       db.write(write, batch);
       assertThat(db.get(plain, key)).isEqualTo(new byte[] {42});
@@ -66,6 +68,7 @@ public class WriteBatchTest {
         try (final Slice ts = new Slice(u64Timestamp(times[i]));
              final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
           assertThat(db.get(read, key)).isEqualTo(expected[i]);
+          assertThat(db.get(read, emptyValueKey)).isEmpty();
         }
       }
     }

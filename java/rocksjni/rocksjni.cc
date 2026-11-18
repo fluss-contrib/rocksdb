@@ -37,12 +37,9 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_putWithTimestamp(
   auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::WriteOptions*>(joptions);
   try {
-    ROCKSDB_NAMESPACE::JByteArraySlice key(env, jkey, 0,
-                                           env->GetArrayLength(jkey));
-    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
-                                          env->GetArrayLength(jtimestamp));
-    ROCKSDB_NAMESPACE::JByteArraySlice value(env, jval, 0,
-                                             env->GetArrayLength(jval));
+    ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
+    ROCKSDB_NAMESPACE::JByteArrayElements value(env, jval);
     ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
         env, db->Put(*options, cf, key.slice(), ts.slice(), value.slice()));
   } catch (const ROCKSDB_NAMESPACE::KVException&) {
@@ -57,10 +54,8 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_deleteWithTimestamp(
   auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::WriteOptions*>(joptions);
   try {
-    ROCKSDB_NAMESPACE::JByteArraySlice key(env, jkey, 0,
-                                           env->GetArrayLength(jkey));
-    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
-                                          env->GetArrayLength(jtimestamp));
+    ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
     ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
         env, db->Delete(*options, cf, key.slice(), ts.slice()));
   } catch (const ROCKSDB_NAMESPACE::KVException&) {
@@ -73,10 +68,9 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_increaseFullHistoryTsLow(
   auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
   auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   try {
-    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
-                                          env->GetArrayLength(jtimestamp));
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
     ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
-        env, db->IncreaseFullHistoryTsLow(cf, ts.slice().ToString()));
+        env, db->IncreaseFullHistoryTsLow(cf, ts.CopyToString()));
   } catch (const ROCKSDB_NAMESPACE::KVException&) {
     // The Java exception is already pending.
   }

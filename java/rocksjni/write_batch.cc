@@ -29,12 +29,9 @@ void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_putWithTimestamp(
   auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
   auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   try {
-    ROCKSDB_NAMESPACE::JByteArraySlice key(env, jkey, 0,
-                                           env->GetArrayLength(jkey));
-    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
-                                          env->GetArrayLength(jtimestamp));
-    ROCKSDB_NAMESPACE::JByteArraySlice value(env, jval, 0,
-                                             env->GetArrayLength(jval));
+    ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
+    ROCKSDB_NAMESPACE::JByteArrayElements value(env, jval);
     ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
         env, batch->Put(cf, key.slice(), ts.slice(), value.slice()));
   } catch (const ROCKSDB_NAMESPACE::KVException&) {
@@ -48,10 +45,8 @@ void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_deleteWithTimestamp(
   auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
   auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   try {
-    ROCKSDB_NAMESPACE::JByteArraySlice key(env, jkey, 0,
-                                           env->GetArrayLength(jkey));
-    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
-                                          env->GetArrayLength(jtimestamp));
+    ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
     ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
         env, batch->Delete(cf, key.slice(), ts.slice()));
   } catch (const ROCKSDB_NAMESPACE::KVException&) {
