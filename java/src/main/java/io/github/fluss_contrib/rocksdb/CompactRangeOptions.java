@@ -258,12 +258,13 @@ public class CompactRangeOptions extends RocksObject {
   /**
    * Sets the raw history lower bound for whole-CF compaction.
    * The bytes are copied and must match the target CF comparator's timestamp
-   * format. A nonempty bound cannot be combined with a key range.
+   * format. A nonempty bound requires both key range boundaries to be null.
+   * An empty byte array does not advance the bound.
    *
    * @param timestamp lower bound, or null to clear the option
    * @return this options instance
    */
-  public CompactRangeOptions setFullHistoryTsLow(final byte[] timestamp) {
+  public CompactRangeOptions setFullHistoryTsLowBytes(final byte[] timestamp) {
     setFullHistoryTsLowBytes(nativeHandle_, timestamp);
     return this;
   }
@@ -273,7 +274,7 @@ public class CompactRangeOptions extends RocksObject {
    *
    * @return bound bytes, or null if unset
    */
-  public byte[] fullHistoryTsLow() {
+  public byte[] fullHistoryTsLowBytes() {
     return fullHistoryTsLowBytes(nativeHandle_);
   }
 

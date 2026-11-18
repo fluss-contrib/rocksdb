@@ -2722,9 +2722,14 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_compactRange(
     end.reset(new ROCKSDB_NAMESPACE::Slice(str_end));
   }
   const auto* history_bound = compact_range_opts->full_history_ts_low;
-  if (history_bound != nullptr && !history_bound->empty() &&
-      (cf_handle->GetComparator()->timestamp_size() == 0 ||
-       cf_handle->GetComparator()->timestamp_size() != history_bound->size())) {
+  const bool set_history_bound =
+      history_bound != nullptr && !history_bound->empty();
+  if (set_history_bound && (jbegin != nullptr || jend != nullptr)) {
+    s = ROCKSDB_NAMESPACE::Status::InvalidArgument(
+        "Cannot specify a key range with a history timestamp bound");
+  } else if (set_history_bound &&
+             cf_handle->GetComparator()->timestamp_size() !=
+                 history_bound->size()) {
     s = ROCKSDB_NAMESPACE::Status::InvalidArgument(
         "History timestamp size does not match the column family comparator");
   } else {

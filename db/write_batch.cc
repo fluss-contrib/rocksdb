@@ -273,6 +273,7 @@ void WriteBatch::Clear() {
   }
   wal_term_point_.clear();
   default_cf_ts_sz_ = 0;
+  cf_id_to_ts_sz_.clear();
 }
 
 uint32_t WriteBatch::Count() const { return WriteBatchInternal::Count(this); }

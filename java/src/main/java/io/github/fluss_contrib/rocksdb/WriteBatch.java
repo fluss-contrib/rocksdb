@@ -27,12 +27,15 @@ import java.util.Objects;
  * external synchronization.
  */
 public class WriteBatch extends AbstractWriteBatch {
+  private final boolean tracksTimestampSizes;
+
   /**
    * Creates a batch with the native size and protection settings.
    *
-   * <p>Timestamp-less writes reserve timestamp space for later
-   * {@link #updateTimestamps(byte[], Map)}. Clear resets the default CF timestamp
-   * size to zero; construct a new configured batch before using that path again.
+   * <p>Writes without a timestamp reserve space when the CF has a nonzero
+   * timestamp size. Use {@link #updateTimestamps(byte[], Map)} to fill that space.
+   * {@link #clear()} resets the default CF size to zero. Create a new configured
+   * batch to reserve timestamp space for the default CF again.
    *
    * @param reservedBytes initial capacity
    * @param maxBytes maximum batch size, or zero for unlimited
@@ -45,6 +48,7 @@ public class WriteBatch extends AbstractWriteBatch {
       final long defaultColumnFamilyTimestampSize) {
     super(newConfiguredBatch(
         reservedBytes, maxBytes, protectionBytesPerKey, defaultColumnFamilyTimestampSize));
+    tracksTimestampSizes = true;
   }
 
   private static long newConfiguredBatch(final int reservedBytes, final long maxBytes,
@@ -60,7 +64,11 @@ public class WriteBatch extends AbstractWriteBatch {
   /**
    * Replaces timestamps of all timestamp-enabled entries, not just placeholders.
    * CFs with size zero are left unchanged. The map must describe every CF used
-   * by this batch, with id zero denoting the default CF.
+   * by this batch, with id zero denoting the default CF. The sizes must match
+   * the layout recorded when the entries were appended.
+   *
+   * <p>Use the four-argument constructor to record timestamp sizes. A batch
+   * with per-key protection cannot contain range deletions when using this method.
    *
    * <p>The map is copied synchronously and must not be changed during this call.
    * A native failure can leave the batch partially updated; discard or rebuild
@@ -68,11 +76,16 @@ public class WriteBatch extends AbstractWriteBatch {
    *
    * @param timestamp nonempty timestamp in the common format of enabled CFs
    * @param columnFamilyTimestampSizes CF id to nonnegative timestamp byte size
-   * @throws RocksDBException if a CF is unknown or native updating fails
+   * @throws RocksDBException if sizes are missing or inconsistent, the batch
+   *     has protected range deletions, or native updating fails
    * @throws IllegalArgumentException if timestamp is empty or a size is negative
+   * @throws IllegalStateException if this batch does not record timestamp sizes
    */
   public void updateTimestamps(final byte[] timestamp,
       final Map<Integer, Integer> columnFamilyTimestampSizes) throws RocksDBException {
+    if (!tracksTimestampSizes) {
+      throw new IllegalStateException("Timestamp updates require the four-argument constructor");
+    }
     Objects.requireNonNull(timestamp);
     Objects.requireNonNull(columnFamilyTimestampSizes);
     if (timestamp.length == 0) {
@@ -151,6 +164,7 @@ public class WriteBatch extends AbstractWriteBatch {
    */
   public WriteBatch(final int reserved_bytes) {
     super(newWriteBatch(reserved_bytes));
+    tracksTimestampSizes = false;
   }
 
   /**
@@ -161,6 +175,7 @@ public class WriteBatch extends AbstractWriteBatch {
    */
   public WriteBatch(final byte[] serialized) {
     super(newWriteBatch(serialized, serialized.length));
+    tracksTimestampSizes = false;
   }
 
   /**
@@ -326,6 +341,7 @@ public class WriteBatch extends AbstractWriteBatch {
    */
   WriteBatch(final long nativeHandle, final boolean owningNativeHandle) {
     super(nativeHandle);
+    tracksTimestampSizes = false;
     if(!owningNativeHandle)
       disOwnNativeHandle();
   }

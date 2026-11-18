@@ -534,9 +534,8 @@ public class ReadOptions extends RocksObject {
 
   /**
    * Timestamp of operation. Read should return the latest data visible to the
-   * specified timestamp. All timestamps of the same database must be of the
-   * same length and format. The user is responsible for providing a customized
-   * compare function via Comparator to order &gt;key, timestamp&gt; tuples.
+   * specified timestamp. Use the length and format defined by the target
+   * column family's comparator.
    * For iterator, iter_start_ts is the lower bound (older) and timestamp
    * serves as the upper bound. Versions of the same record that fall in
    * the timestamp range will be returned. If iter_start_ts is nullptr,
@@ -559,9 +558,8 @@ public class ReadOptions extends RocksObject {
 
   /**
    * Timestamp of operation. Read should return the latest data visible to the
-   * specified timestamp. All timestamps of the same database must be of the
-   * same length and format. The user is responsible for providing a customized
-   * compare function via Comparator to order {@code <key, timestamp>} tuples.
+   * specified timestamp. Use the length and format defined by the target
+   * column family's comparator.
    * For iterator, {@code iter_start_ts} is the lower bound (older) and timestamp
    * serves as the upper bound. Versions of the same record that fall in
    * the timestamp range will be returned. If iter_start_ts is nullptr,
@@ -571,7 +569,8 @@ public class ReadOptions extends RocksObject {
    * <p>
    * Default: null
    * <p>The read timestamp is inclusive and is also restricted by any configured
-   * snapshot. This method borrows the Slice: keep it open while these options
+   * snapshot. The built-in U64 timestamp comparators use eight little-endian bytes.
+   * This method borrows the Slice: keep it open while these options
    * and iterators created from them are in use. A Java reference does not
    * prevent explicitly closing its native storage.
    *
@@ -588,9 +587,8 @@ public class ReadOptions extends RocksObject {
 
   /**
    * Timestamp of operation. Read should return the latest data visible to the
-   * specified timestamp. All timestamps of the same database must be of the
-   * same length and format. The user is responsible for providing a customized
-   * compare function via Comparator to order {@code <key, timestamp>} tuples.
+   * specified timestamp. Use the length and format defined by the target
+   * column family's comparator.
    * For iterator, {@code iter_start_ts} is the lower bound (older) and timestamp
    * serves as the upper bound. Versions of the same record that fall in
    * the timestamp range will be returned. If iter_start_ts is nullptr,
@@ -613,9 +611,8 @@ public class ReadOptions extends RocksObject {
 
   /**
    * Timestamp of operation. Read should return the latest data visible to the
-   * specified timestamp. All timestamps of the same database must be of the
-   * same length and format. The user is responsible for providing a customized
-   * compare function via Comparator to order {@code <key, timestamp>} tuples.
+   * specified timestamp. Use the length and format defined by the target
+   * column family's comparator.
    * For iterator, {@code iter_start_ts} is the lower bound (older) and timestamp
    * serves as the upper bound. Versions of the same record that fall in
    * the timestamp range will be returned. If iter_start_ts is nullptr,

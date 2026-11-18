@@ -96,6 +96,9 @@ public class WriteBatchTest {
       batch.clear();
       assertThatThrownBy(() -> batch.put(db.getDefaultColumnFamily(), key, new byte[] {8}))
           .isInstanceOf(RocksDBException.class);
+      batch.put("key-without-timestamp".getBytes(UTF_8), new byte[] {8});
+      assertThatThrownBy(() -> batch.updateTimestamps(u64Timestamp(8), sizes))
+          .isInstanceOf(RocksDBException.class);
     }
   }
 
@@ -112,6 +115,27 @@ public class WriteBatchTest {
           .isInstanceOf(IllegalArgumentException.class);
       assertThatThrownBy(() -> batch.updateTimestamps(new byte[4], Collections.singletonMap(0, 8)))
           .isInstanceOf(RocksDBException.class);
+    }
+  }
+
+  @Test
+  public void protectedBatchWithRangeDeletionCannotUpdateTimestamps() throws Exception {
+    try (final Options options = new Options().setCreateIfMissing(true);
+         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final ColumnFamilyOptions timestampOptions = new ColumnFamilyOptions().setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final ColumnFamilyHandle timestampCf =
+             db.createColumnFamily(new ColumnFamilyDescriptor(new byte[] {2}, timestampOptions));
+         final WriteBatch batch = new WriteBatch(0, 0, 8, 0)) {
+      batch.deleteRange(new byte[] {1}, new byte[] {3});
+      batch.put(timestampCf, new byte[] {2}, new byte[] {7});
+      final Map<Integer, Integer> sizes = new HashMap<>();
+      sizes.put(0, 0);
+      sizes.put(timestampCf.getID(), 8);
+      final byte[] before = batch.data();
+      assertThatThrownBy(() -> batch.updateTimestamps(u64Timestamp(7), sizes))
+          .isInstanceOf(RocksDBException.class);
+      assertThat(batch.data()).isEqualTo(before);
     }
   }
 

@@ -28,6 +28,7 @@
 
 #include <atomic>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -452,14 +453,17 @@ class WriteBatch : public WriteBatchBase {
     if (!track_timestamp_size_) {
       return;
     }
-    auto iter = cf_id_to_ts_sz_.find(column_family_id);
-    if (iter == cf_id_to_ts_sz_.end()) {
-      cf_id_to_ts_sz_.emplace(column_family_id, ts_sz);
+    auto [iter, inserted] =
+        cf_id_to_ts_sz_.try_emplace(column_family_id, ts_sz);
+    if (!inserted && iter->second != ts_sz) {
+      // A single size cannot describe records written with different layouts.
+      iter->second = std::numeric_limits<size_t>::max();
     }
   }
 
   // Return a mapping from column family id to timestamp size of all the column
-  // families involved in this WriteBatch.
+  // families involved in this WriteBatch. An inconsistent size is represented
+  // by std::numeric_limits<size_t>::max().
   const std::unordered_map<uint32_t, size_t>& GetColumnFamilyToTimestampSize() {
     return cf_id_to_ts_sz_;
   }

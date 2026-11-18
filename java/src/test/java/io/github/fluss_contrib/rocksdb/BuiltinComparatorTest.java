@@ -83,29 +83,31 @@ public class BuiltinComparatorTest {
       try (final Options options = new Options().setCreateIfMissing(true).setComparator(comparator);
            final RocksDB db = RocksDB.open(options, dbFolder.newFolder().getAbsolutePath());
            final WriteOptions write = new WriteOptions()) {
-        for (byte key = 1; key <= 3; key++) {
+        for (byte key = 1; key <= 4; key++) {
           db.put(write, new byte[] {key}, u64Timestamp(3), new byte[] {3});
           db.put(write, new byte[] {key}, u64Timestamp(Long.MIN_VALUE), new byte[] {8});
         }
+        db.delete(write, new byte[] {2}, u64Timestamp(Long.MIN_VALUE));
+        final byte first = (byte) (reverse ? 4 : 1);
         try (
             final Slice ts = new Slice(u64Timestamp(Long.MIN_VALUE));
-            final Slice lower = new Slice(new byte[] {(byte) (reverse ? 3 : 1)});
-            final Slice upper = new Slice(new byte[] {(byte) (reverse ? 1 : 3)});
+            final Slice lower = new Slice(new byte[] {first});
+            final Slice upper = new Slice(new byte[] {(byte) (reverse ? 1 : 4)});
             final ReadOptions read =
                 new ReadOptions().setTimestamp(ts).setIterateLowerBound(lower).setIterateUpperBound(
                     upper);
             final RocksIterator it = db.newIterator(read)) {
-          it.seekToFirst();
-          assertThat(it.key()).containsExactly(reverse ? 3 : 1);
+          it.seek(new byte[] {first});
+          assertThat(it.key()).containsExactly(first);
           assertThat(it.value()).containsExactly(8);
           it.next();
-          assertThat(it.key()).containsExactly(2);
+          assertThat(it.key()).containsExactly(3);
           it.next();
           assertThat(it.isValid()).isFalse();
           it.seekToLast();
-          assertThat(it.key()).containsExactly(2);
+          assertThat(it.key()).containsExactly(3);
           it.prev();
-          assertThat(it.key()).containsExactly(reverse ? 3 : 1);
+          assertThat(it.key()).containsExactly(first);
           it.status();
         }
         try (final Slice ts = new Slice(u64Timestamp(Long.MAX_VALUE));

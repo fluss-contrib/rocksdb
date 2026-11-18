@@ -40,11 +40,12 @@ public class RocksDBTest {
         db.delete(db.getDefaultColumnFamily(), write, new byte[] {2}, u64Timestamp(8));
         db.put(write, new byte[] {2}, u64Timestamp(20), new byte[] {20});
         assertThat(db.getFullHistoryTsLow()).isEmpty();
-        db.increaseFullHistoryTsLow(u64Timestamp(12));
-        assertThat(db.getFullHistoryTsLow(db.getDefaultColumnFamily())).isEqualTo(u64Timestamp(12));
-        compact.setFullHistoryTsLow(u64Timestamp(12))
+        db.increaseFullHistoryTsLow(u64Timestamp(5));
+        assertThat(db.getFullHistoryTsLow(db.getDefaultColumnFamily())).isEqualTo(u64Timestamp(5));
+        compact.setFullHistoryTsLowBytes(u64Timestamp(12))
             .setBottommostLevelCompaction(CompactRangeOptions.BottommostLevelCompaction.kForce);
         db.compactRange(null, null, null, compact);
+        assertThat(db.getFullHistoryTsLow()).isEqualTo(u64Timestamp(12));
         assertThatThrownBy(() -> db.increaseFullHistoryTsLow(u64Timestamp(11)))
             .isInstanceOf(RocksDBException.class);
       }
@@ -76,12 +77,21 @@ public class RocksDBTest {
       assertThatThrownBy(() -> db.get(key)).isInstanceOf(RocksDBException.class);
       assertThatThrownBy(() -> db.multiGetAsList(Collections.singletonList(key)))
           .isInstanceOf(RocksDBException.class);
-      compact.setFullHistoryTsLow(new byte[4]);
+      try (final Slice ts = new Slice(new byte[4]);
+           final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
+        assertThatThrownBy(() -> db.get(read, key)).isInstanceOf(RocksDBException.class);
+        assertThatThrownBy(() -> db.multiGetAsList(read, Collections.singletonList(key)))
+            .isInstanceOf(RocksDBException.class);
+      }
+      compact.setFullHistoryTsLowBytes(new byte[4]);
       assertThatThrownBy(() -> db.compactRange(null, null, null, compact))
           .isInstanceOf(RocksDBException.class);
-      compact.setFullHistoryTsLow(u64Timestamp(8));
+      compact.setFullHistoryTsLowBytes(u64Timestamp(8));
       assertThatThrownBy(() -> db.compactRange(null, key, new byte[] {2}, compact))
           .isInstanceOf(RocksDBException.class);
+      assertThatThrownBy(() -> db.compactRange(null, null, new byte[0], compact))
+          .isInstanceOf(RocksDBException.class);
+      assertThat(db.getFullHistoryTsLow()).isEmpty();
       db.increaseFullHistoryTsLow(u64Timestamp(8));
       db.compactRange(null, null, null, compact);
       try (final Slice ts = new Slice(u64Timestamp(3));
@@ -98,7 +108,7 @@ public class RocksDBTest {
     try (final Options options = new Options().setCreateIfMissing(true);
          final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
          final CompactRangeOptions compact =
-             new CompactRangeOptions().setFullHistoryTsLow(u64Timestamp(8))) {
+             new CompactRangeOptions().setFullHistoryTsLowBytes(u64Timestamp(8))) {
       assertThatThrownBy(db::getFullHistoryTsLow).isInstanceOf(RocksDBException.class);
       assertThatThrownBy(() -> db.increaseFullHistoryTsLow(u64Timestamp(8)))
           .isInstanceOf(RocksDBException.class);

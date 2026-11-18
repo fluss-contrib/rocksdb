@@ -24,131 +24,6 @@ public class RocksDB extends RocksObject {
   public static final byte[] DEFAULT_COLUMN_FAMILY = "default".getBytes(UTF_8);
   public static final int NOT_FOUND = -1;
 
-  /**
-   * Advances the default CF's persisted history lower bound. This does not
-   * trigger compaction; the caller must ensure older reads are no longer needed.
-   *
-   * @param timestamp lower bound in the CF comparator's timestamp format
-   * @throws RocksDBException on native failure, including a backward bound
-   */
-  public void increaseFullHistoryTsLow(final byte[] timestamp) throws RocksDBException {
-    increaseFullHistoryTsLow(getDefaultColumnFamily(), timestamp);
-  }
-
-  /**
-   * Advances a CF's history lower bound without an implicit retry.
-   *
-   * @param cf target CF
-   * @param timestamp lower bound in the CF comparator's timestamp format
-   * @throws RocksDBException on failure, including a concurrent higher advance
-   */
-  public void increaseFullHistoryTsLow(final ColumnFamilyHandle cf, final byte[] timestamp)
-      throws RocksDBException {
-    Objects.requireNonNull(cf);
-    Objects.requireNonNull(timestamp);
-    increaseFullHistoryTsLow(nativeHandle_, cf.nativeHandle_, timestamp);
-  }
-
-  /**
-   * Reads the default CF's history lower bound.
-   *
-   * @return a copy of the bound, or an empty array if not set
-   * @throws RocksDBException if UDT is disabled or the native read fails
-   */
-  public byte[] getFullHistoryTsLow() throws RocksDBException {
-    return getFullHistoryTsLow(getDefaultColumnFamily());
-  }
-
-  /**
-   * Reads a CF's history lower bound.
-   *
-   * @param cf target CF
-   * @return a copy of the bound, or an empty array if not set
-   * @throws RocksDBException if UDT is disabled or the native read fails
-   */
-  public byte[] getFullHistoryTsLow(final ColumnFamilyHandle cf) throws RocksDBException {
-    Objects.requireNonNull(cf);
-    return getFullHistoryTsLow(nativeHandle_, cf.nativeHandle_);
-  }
-
-  private static native void increaseFullHistoryTsLow(long db, long cf, byte[] timestamp)
-      throws RocksDBException;
-  private static native byte[] getFullHistoryTsLow(long db, long cf) throws RocksDBException;
-
-  /**
-   * Writes a version in the default column family. Timestamps are opaque bytes
-   * interpreted by its comparator; U64 timestamps use eight little-endian bytes.
-   * Writes of the same key must have nondecreasing timestamps.
-   *
-   * @param options write policy
-   * @param key logical key without a timestamp suffix
-   * @param timestamp version timestamp
-   * @param value value copied by this call
-   * @throws RocksDBException if the native write fails, including invalid timestamps
-   */
-  public void put(final WriteOptions options, final byte[] key, final byte[] timestamp,
-      final byte[] value) throws RocksDBException {
-    put(getDefaultColumnFamily(), options, key, timestamp, value);
-  }
-
-  /**
-   * Writes a timestamped version to the specified column family.
-   *
-   * @param cf target column family, including the default handle
-   * @param options write policy
-   * @param key logical key
-   * @param timestamp bytes matching the comparator's format and length
-   * @param value value copied by this call
-   * @throws RocksDBException if the native write fails
-   * @see #put(WriteOptions, byte[], byte[], byte[])
-   */
-  public void put(final ColumnFamilyHandle cf, final WriteOptions options, final byte[] key,
-      final byte[] timestamp, final byte[] value) throws RocksDBException {
-    Objects.requireNonNull(cf);
-    Objects.requireNonNull(options);
-    Objects.requireNonNull(key);
-    Objects.requireNonNull(timestamp);
-    Objects.requireNonNull(value);
-    putWithTimestamp(nativeHandle_, cf.nativeHandle_, options.nativeHandle_, key, timestamp, value);
-  }
-
-  /**
-   * Writes a timestamped deletion in the default column family. Older reads can
-   * still see versions preceding the deletion.
-   *
-   * @param options write policy
-   * @param key logical key
-   * @param timestamp deletion timestamp
-   * @throws RocksDBException if the native deletion fails
-   */
-  public void delete(final WriteOptions options, final byte[] key, final byte[] timestamp)
-      throws RocksDBException {
-    delete(getDefaultColumnFamily(), options, key, timestamp);
-  }
-
-  /**
-   * Writes a timestamped deletion to the specified column family.
-   *
-   * @param cf target column family
-   * @param options write policy
-   * @param key logical key
-   * @param timestamp bytes matching the comparator's format and length
-   * @throws RocksDBException if the native deletion fails
-   */
-  public void delete(final ColumnFamilyHandle cf, final WriteOptions options, final byte[] key,
-      final byte[] timestamp) throws RocksDBException {
-    Objects.requireNonNull(cf);
-    Objects.requireNonNull(options);
-    Objects.requireNonNull(key);
-    Objects.requireNonNull(timestamp);
-    deleteWithTimestamp(nativeHandle_, cf.nativeHandle_, options.nativeHandle_, key, timestamp);
-  }
-
-  private static native void putWithTimestamp(long db, long cf, long options, byte[] key,
-      byte[] timestamp, byte[] value) throws RocksDBException;
-  private static native void deleteWithTimestamp(
-      long db, long cf, long options, byte[] key, byte[] timestamp) throws RocksDBException;
-
   private enum LibraryState {
     NOT_LOADED,
     LOADING,
@@ -1103,6 +978,43 @@ public class RocksDB extends RocksObject {
   }
 
   /**
+   * Writes a version in the default column family. Timestamps are opaque bytes
+   * interpreted by its comparator; U64 timestamps use eight little-endian bytes.
+   * Writes of the same key must have nondecreasing timestamps.
+   *
+   * @param options write policy
+   * @param key logical key without a timestamp suffix
+   * @param timestamp version timestamp
+   * @param value value copied by this call
+   * @throws RocksDBException if the native write fails, including invalid timestamps
+   */
+  public void put(final WriteOptions options, final byte[] key, final byte[] timestamp,
+      final byte[] value) throws RocksDBException {
+    put(getDefaultColumnFamily(), options, key, timestamp, value);
+  }
+
+  /**
+   * Writes a timestamped version to the specified column family.
+   *
+   * @param cf target column family, including the default handle
+   * @param options write policy
+   * @param key logical key
+   * @param timestamp bytes matching the comparator's format and length
+   * @param value value copied by this call
+   * @throws RocksDBException if the native write fails
+   * @see #put(WriteOptions, byte[], byte[], byte[])
+   */
+  public void put(final ColumnFamilyHandle cf, final WriteOptions options, final byte[] key,
+      final byte[] timestamp, final byte[] value) throws RocksDBException {
+    Objects.requireNonNull(cf);
+    Objects.requireNonNull(options);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(timestamp);
+    Objects.requireNonNull(value);
+    putWithTimestamp(nativeHandle_, cf.nativeHandle_, options.nativeHandle_, key, timestamp, value);
+  }
+
+  /**
    * Set the database entry for "key" to "value".
    *
    * @param writeOpts {@link io.github.fluss_contrib.rocksdb.WriteOptions} instance.
@@ -1496,6 +1408,38 @@ public class RocksDB extends RocksObject {
     }
     key.position(key.limit());
     return result;
+  }
+
+  /**
+   * Writes a timestamped deletion in the default column family. Older reads can
+   * still see versions preceding the deletion.
+   *
+   * @param options write policy
+   * @param key logical key
+   * @param timestamp deletion timestamp
+   * @throws RocksDBException if the native deletion fails
+   */
+  public void delete(final WriteOptions options, final byte[] key, final byte[] timestamp)
+      throws RocksDBException {
+    delete(getDefaultColumnFamily(), options, key, timestamp);
+  }
+
+  /**
+   * Writes a timestamped deletion to the specified column family.
+   *
+   * @param cf target column family
+   * @param options write policy
+   * @param key logical key
+   * @param timestamp bytes matching the comparator's format and length
+   * @throws RocksDBException if the native deletion fails
+   */
+  public void delete(final ColumnFamilyHandle cf, final WriteOptions options, final byte[] key,
+      final byte[] timestamp) throws RocksDBException {
+    Objects.requireNonNull(cf);
+    Objects.requireNonNull(options);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(timestamp);
+    deleteWithTimestamp(nativeHandle_, cf.nativeHandle_, options.nativeHandle_, key, timestamp);
   }
 
   /**
@@ -3845,6 +3789,53 @@ public class RocksDB extends RocksObject {
   }
 
   /**
+   * Advances the default CF's persisted history lower bound. This does not
+   * trigger compaction; the caller must ensure older reads are no longer needed.
+   *
+   * @param timestamp lower bound in the CF comparator's timestamp format
+   * @throws RocksDBException on native failure, including a backward bound
+   */
+  public void increaseFullHistoryTsLow(final byte[] timestamp) throws RocksDBException {
+    increaseFullHistoryTsLow(getDefaultColumnFamily(), timestamp);
+  }
+
+  /**
+   * Advances a CF's history lower bound without an implicit retry.
+   *
+   * @param cf target CF
+   * @param timestamp lower bound in the CF comparator's timestamp format
+   * @throws RocksDBException on failure, including a concurrent higher advance
+   */
+  public void increaseFullHistoryTsLow(final ColumnFamilyHandle cf, final byte[] timestamp)
+      throws RocksDBException {
+    Objects.requireNonNull(cf);
+    Objects.requireNonNull(timestamp);
+    increaseFullHistoryTsLow(nativeHandle_, cf.nativeHandle_, timestamp);
+  }
+
+  /**
+   * Reads the default CF's history lower bound.
+   *
+   * @return a copy of the bound, or an empty array if not set
+   * @throws RocksDBException if UDT is disabled or the native read fails
+   */
+  public byte[] getFullHistoryTsLow() throws RocksDBException {
+    return getFullHistoryTsLow(getDefaultColumnFamily());
+  }
+
+  /**
+   * Reads a CF's history lower bound.
+   *
+   * @param cf target CF
+   * @return a copy of the bound, or an empty array if not set
+   * @throws RocksDBException if UDT is disabled or the native read fails
+   */
+  public byte[] getFullHistoryTsLow(final ColumnFamilyHandle cf) throws RocksDBException {
+    Objects.requireNonNull(cf);
+    return getFullHistoryTsLow(nativeHandle_, cf.nativeHandle_);
+  }
+
+  /**
    * <p>Range compaction of database.</p>
    * <p><strong>Note</strong>: After the database has been compacted,
    * all data will have been pushed down to the last level containing
@@ -5013,6 +5004,15 @@ public class RocksDB extends RocksObject {
       throws RocksDBException;
   private static native void dropColumnFamilies(final long handle, final long[] cfHandles)
       throws RocksDBException;
+  private static native void putWithTimestamp(long db, long cf, long options, byte[] key,
+      byte[] timestamp, byte[] value) throws RocksDBException;
+  private static native void deleteWithTimestamp(
+      long db, long cf, long options, byte[] key, byte[] timestamp) throws RocksDBException;
+
+  private static native void increaseFullHistoryTsLow(long db, long cf, byte[] timestamp)
+      throws RocksDBException;
+  private static native byte[] getFullHistoryTsLow(long db, long cf) throws RocksDBException;
+
   private static native void put(final long handle, final byte[] key, final int keyOffset,
       final int keyLength, final byte[] value, final int valueOffset, int valueLength)
       throws RocksDBException;

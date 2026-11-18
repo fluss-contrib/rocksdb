@@ -49,7 +49,7 @@ public class RocksDBSample {
         db.increaseFullHistoryTsLow(cf, timestamp(12));
         assert Arrays.equals(db.getFullHistoryTsLow(cf), timestamp(12));
         try (final CompactRangeOptions compact =
-                 new CompactRangeOptions().setFullHistoryTsLow(timestamp(12))) {
+                 new CompactRangeOptions().setFullHistoryTsLowBytes(timestamp(12))) {
           db.compactRange(cf, null, null, compact);
         }
       } finally {
