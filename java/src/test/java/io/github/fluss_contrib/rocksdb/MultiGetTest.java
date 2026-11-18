@@ -79,8 +79,9 @@ public class MultiGetTest {
       db.put(udt, write, udtKey, timestamp, udtValue);
       assertThat(db.multiGetAsList(Collections.singletonList(plainKey)).get(0))
           .isEqualTo(plainValue);
-      assertThat(db.multiGetAsList(read, Collections.singletonList(udt),
-                     Collections.singletonList(udtKey)).get(0))
+      assertThat(
+          db.multiGetAsList(read, Collections.singletonList(udt), Collections.singletonList(udtKey))
+              .get(0))
           .isEqualTo(udtValue);
       assertThatThrownBy(
           () -> db.multiGetAsList(read, Arrays.asList(plain, udt), Arrays.asList(plainKey, udtKey)))
