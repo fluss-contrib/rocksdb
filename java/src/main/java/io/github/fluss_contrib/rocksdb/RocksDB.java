@@ -990,7 +990,7 @@ public class RocksDB extends RocksObject {
    */
   public void put(final WriteOptions options, final byte[] key, final byte[] timestamp,
       final byte[] value) throws RocksDBException {
-    put(getDefaultColumnFamily(), options, key, timestamp, value);
+    put(0, options, key, timestamp, value);
   }
 
   /**
@@ -1006,12 +1006,16 @@ public class RocksDB extends RocksObject {
    */
   public void put(final ColumnFamilyHandle cf, final WriteOptions options, final byte[] key,
       final byte[] timestamp, final byte[] value) throws RocksDBException {
-    Objects.requireNonNull(cf);
+    put(Objects.requireNonNull(cf).nativeHandle_, options, key, timestamp, value);
+  }
+
+  private void put(final long cfHandle, final WriteOptions options, final byte[] key,
+      final byte[] timestamp, final byte[] value) throws RocksDBException {
     Objects.requireNonNull(options);
     Objects.requireNonNull(key);
     Objects.requireNonNull(timestamp);
     Objects.requireNonNull(value);
-    putWithTimestamp(nativeHandle_, cf.nativeHandle_, options.nativeHandle_, key, timestamp, value);
+    putWithTimestamp(nativeHandle_, cfHandle, options.nativeHandle_, key, timestamp, value);
   }
 
   /**
@@ -1421,7 +1425,7 @@ public class RocksDB extends RocksObject {
    */
   public void delete(final WriteOptions options, final byte[] key, final byte[] timestamp)
       throws RocksDBException {
-    delete(getDefaultColumnFamily(), options, key, timestamp);
+    delete(0, options, key, timestamp);
   }
 
   /**
@@ -1435,11 +1439,15 @@ public class RocksDB extends RocksObject {
    */
   public void delete(final ColumnFamilyHandle cf, final WriteOptions options, final byte[] key,
       final byte[] timestamp) throws RocksDBException {
-    Objects.requireNonNull(cf);
+    delete(Objects.requireNonNull(cf).nativeHandle_, options, key, timestamp);
+  }
+
+  private void delete(final long cfHandle, final WriteOptions options, final byte[] key,
+      final byte[] timestamp) throws RocksDBException {
     Objects.requireNonNull(options);
     Objects.requireNonNull(key);
     Objects.requireNonNull(timestamp);
-    deleteWithTimestamp(nativeHandle_, cf.nativeHandle_, options.nativeHandle_, key, timestamp);
+    deleteWithTimestamp(nativeHandle_, cfHandle, options.nativeHandle_, key, timestamp);
   }
 
   /**
@@ -3800,7 +3808,7 @@ public class RocksDB extends RocksObject {
    * @throws RocksDBException on native failure, including a backward bound
    */
   public void increaseFullHistoryTsLow(final byte[] timestamp) throws RocksDBException {
-    increaseFullHistoryTsLow(getDefaultColumnFamily(), timestamp);
+    increaseFullHistoryTsLow(nativeHandle_, 0, Objects.requireNonNull(timestamp));
   }
 
   /**
@@ -3824,7 +3832,7 @@ public class RocksDB extends RocksObject {
    * @throws RocksDBException if UDT is disabled or the native read fails
    */
   public byte[] getFullHistoryTsLow() throws RocksDBException {
-    return getFullHistoryTsLow(getDefaultColumnFamily());
+    return getFullHistoryTsLow(nativeHandle_, 0);
   }
 
   /**

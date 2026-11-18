@@ -26,6 +26,39 @@ public class RocksDBTest {
   public TemporaryFolder dbFolder = new TemporaryFolder();
 
   @Test
+  public void defaultTimestampOperationsSurviveReleasedColumnFamilyHandle() throws Exception {
+    final List<ColumnFamilyHandle> handles = new ArrayList<>();
+    final byte[] key = {1};
+    final byte[] value = {9};
+    final byte[] writeTimestamp = u64Timestamp(3);
+    final byte[] deleteTimestamp = u64Timestamp(8);
+    try (
+        final DBOptions options =
+            new DBOptions().setCreateIfMissing(true).setCreateMissingColumnFamilies(true);
+        final ColumnFamilyOptions defaultOptions = new ColumnFamilyOptions().setComparator(
+            BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+        final ColumnFamilyOptions plainOptions = new ColumnFamilyOptions();
+        final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath(),
+            Arrays.asList(new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, defaultOptions),
+                new ColumnFamilyDescriptor(new byte[] {2}, plainOptions)),
+            handles);
+        final WriteOptions write = new WriteOptions();
+        final Slice beforeDelete = new Slice(writeTimestamp);
+        final Slice atDelete = new Slice(deleteTimestamp);
+        final ReadOptions read = new ReadOptions()) {
+      db.destroyColumnFamilyHandle(handles.get(0));
+
+      db.put(write, key, writeTimestamp, value);
+      db.delete(write, key, deleteTimestamp);
+      assertThat(db.get(read.setTimestamp(beforeDelete), key)).isEqualTo(value);
+      assertThat(db.get(read.setTimestamp(atDelete), key)).isNull();
+
+      db.increaseFullHistoryTsLow(writeTimestamp);
+      assertThat(db.getFullHistoryTsLow()).isEqualTo(writeTimestamp);
+    }
+  }
+
+  @Test
   public void timestampHistorySurvivesCompactionAndReopen() throws Exception {
     final String path = dbFolder.getRoot().getAbsolutePath();
     try (final Options options = new Options().setCreateIfMissing(true).setComparator(

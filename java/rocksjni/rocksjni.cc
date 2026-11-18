@@ -34,7 +34,9 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_putWithTimestamp(
     JNIEnv* env, jclass, jlong jdb, jlong jcf, jlong joptions, jbyteArray jkey,
     jbyteArray jtimestamp, jbyteArray jval) {
   auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
-  auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  auto* cf =
+      jcf == 0 ? db->DefaultColumnFamily()
+               : reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::WriteOptions*>(joptions);
   try {
     ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
@@ -51,7 +53,9 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_deleteWithTimestamp(
     JNIEnv* env, jclass, jlong jdb, jlong jcf, jlong joptions, jbyteArray jkey,
     jbyteArray jtimestamp) {
   auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
-  auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  auto* cf =
+      jcf == 0 ? db->DefaultColumnFamily()
+               : reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::WriteOptions*>(joptions);
   try {
     ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
@@ -66,7 +70,9 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_deleteWithTimestamp(
 void Java_io_github_fluss_1contrib_rocksdb_RocksDB_increaseFullHistoryTsLow(
     JNIEnv* env, jclass, jlong jdb, jlong jcf, jbyteArray jtimestamp) {
   auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
-  auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  auto* cf =
+      jcf == 0 ? db->DefaultColumnFamily()
+               : reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   try {
     ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
     ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
@@ -79,7 +85,9 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_increaseFullHistoryTsLow(
 jbyteArray Java_io_github_fluss_1contrib_rocksdb_RocksDB_getFullHistoryTsLow(
     JNIEnv* env, jclass, jlong jdb, jlong jcf) {
   auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
-  auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  auto* cf =
+      jcf == 0 ? db->DefaultColumnFamily()
+               : reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
   std::string timestamp;
   const auto status = db->GetFullHistoryTsLow(cf, &timestamp);
   if (!status.ok()) {
