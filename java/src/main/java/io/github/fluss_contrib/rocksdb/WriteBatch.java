@@ -27,63 +27,6 @@ import java.util.Objects;
  */
 public class WriteBatch extends AbstractWriteBatch {
   /**
-   * Creates a batch with the native size and protection settings.
-   *
-   * <p>Writes without a timestamp reserve space when the CF has a nonzero
-   * timestamp size. Use {@link #updateTimestamps(byte[])} to fill that space.
-   * {@link #clear()} resets the default CF size to zero. Create a new configured
-   * batch to reserve timestamp space for the default CF again.
-   *
-   * @param reservedBytes initial capacity
-   * @param maxBytes maximum batch size, or zero for unlimited
-   * @param protectionBytesPerKey native protection bytes, zero or eight
-   * @param defaultColumnFamilyTimestampSize timestamp bytes for CF id zero
-   * @throws IllegalArgumentException if a size is negative, exceeds the native range,
-   *     or the protection size is unsupported
-   */
-  public WriteBatch(final int reservedBytes, final long maxBytes, final long protectionBytesPerKey,
-      final int defaultColumnFamilyTimestampSize) {
-    super(newConfiguredBatch(
-        reservedBytes, maxBytes, protectionBytesPerKey, defaultColumnFamilyTimestampSize));
-  }
-
-  private static long newConfiguredBatch(final int reservedBytes, final long maxBytes,
-      final long protectionBytesPerKey, final int defaultColumnFamilyTimestampSize) {
-    if (reservedBytes < 0 || maxBytes < 0 || defaultColumnFamilyTimestampSize < 0
-        || (protectionBytesPerKey != 0 && protectionBytesPerKey != 8)) {
-      throw new IllegalArgumentException("Invalid WriteBatch size or protection setting");
-    }
-    return newWriteBatchWithTimestamps(
-        reservedBytes, maxBytes, protectionBytesPerKey, defaultColumnFamilyTimestampSize);
-  }
-
-  /**
-   * Assigns the same timestamp to all timestamp-enabled entries, including entries
-   * appended with explicit timestamps. The native batch records each column family's
-   * timestamp size when entries are appended. Entries with size zero are left unchanged.
-   *
-   * <p>Create the batch with the four-argument constructor to enable tracking.
-   * Batches with per-key protection and range deletions are unsupported.
-   * If assignment fails, discard or rebuild the batch before submitting it.
-   *
-   * @param timestamp nonempty bytes in the common format of the timestamp-enabled CFs
-   * @throws RocksDBException if tracking is disabled, column family sizes are inconsistent,
-   *     or native assignment fails
-   * @throws IllegalArgumentException if the timestamp is empty
-   */
-  public void updateTimestamps(final byte[] timestamp) throws RocksDBException {
-    Objects.requireNonNull(timestamp);
-    if (timestamp.length == 0) {
-      throw new IllegalArgumentException("Timestamp must not be empty");
-    }
-    updateTimestamps(nativeHandle_, timestamp);
-  }
-
-  private static native long newWriteBatchWithTimestamps(
-      int reservedBytes, long maxBytes, long protectionBytesPerKey, int defaultTimestampSize);
-  private static native void updateTimestamps(long batch, byte[] timestamp) throws RocksDBException;
-
-  /**
    * Appends a timestamped value. Arguments are copied before returning.
    * Versions of a key must be appended in nondecreasing timestamp order.
    *
@@ -162,12 +105,11 @@ public class WriteBatch extends AbstractWriteBatch {
   }
 
   /**
-   * Retrieve the serialized version of this batch. Assign pending timestamps first.
-   * The byte representation does not store which entries need timestamp assignment.
+   * Retrieve the serialized version of this batch.
    *
    * @return the serialized representation of this write batch.
    *
-   * @throws RocksDBException if timestamps are pending or an error occurs whilst retrieving
+   * @throws RocksDBException if an error occurs whilst retrieving
    *   the serialized batch data.
    */
   public byte[] data() throws RocksDBException {

@@ -1435,52 +1435,6 @@ TEST_F(WriteBatchTest, UpdateTimestamps) {
       batch, std::string(timestamp_size, '\xef'), cf_to_ucmps));
 }
 
-TEST_F(WriteBatchTest, LateTimestampTrackingCannotAssignEarlierEntries) {
-  WriteBatch batch;
-  ASSERT_OK(batch.Put("unversioned", "old"));
-  batch.SetTrackTimestampSize(true);
-  ASSERT_OK(batch.Put("plain", "value"));
-  ColumnFamilyHandleImplDummy cf(0, test::BytewiseComparatorWithU64TsWrapper());
-  const std::string timestamp(8, 'a');
-  ASSERT_OK(batch.Put(&cf, "versioned", timestamp, "new"));
-  ASSERT_EQ(0U, batch.GetColumnFamilyToTimestampSize().at(0));
-  const std::string before = batch.Data();
-  ASSERT_TRUE(WriteBatchInternal::UpdateTrackedTimestamps(&batch, timestamp)
-                  .IsInvalidArgument());
-  ASSERT_EQ(before, batch.Data());
-}
-
-TEST_F(WriteBatchTest, CopyAndMoveTrackedSavePoints) {
-  ColumnFamilyHandleImplDummy cf(4, test::BytewiseComparatorWithU64TsWrapper());
-  ColumnFamilyHandleImplDummy plain(5);
-  auto tracked = WriteBatchInternal::WithTimestampTracking(0, 0, 8, 0);
-  auto& source = *tracked;
-  ASSERT_OK(source.Put(&cf, "kept", "value"));
-  source.SetSavePoint();
-  ASSERT_OK(source.Put(&plain, "discarded", "value"));
-  source.SetSavePoint();
-  ASSERT_OK(source.Delete(&cf, "also-discarded"));
-
-  WriteBatch copy(source);
-  WriteBatch moved(std::move(copy));
-  ASSERT_OK(moved.PopSavePoint());
-  ASSERT_OK(moved.RollbackToSavePoint());
-  ASSERT_EQ(1U, moved.Count());
-  ASSERT_TRUE(WriteBatchInternal::TimestampsUpdateNeeded(moved));
-  const std::string ts(8, 'a');
-  ASSERT_OK(WriteBatchInternal::UpdateTrackedTimestamps(&moved, ts));
-  ASSERT_FALSE(WriteBatchInternal::TimestampsUpdateNeeded(moved));
-  ASSERT_OK(CheckTimestampsInWriteBatch(moved, ts, {{4, cf.GetComparator()}}));
-  ASSERT_OK(moved.VerifyChecksum());
-
-  ASSERT_EQ(3U, source.Count());
-  ASSERT_TRUE(WriteBatchInternal::TimestampsUpdateNeeded(source));
-  ASSERT_OK(source.RollbackToSavePoint());
-  ASSERT_OK(source.RollbackToSavePoint());
-  ASSERT_OK(CheckTimestampsInWriteBatch(source, std::string(8, 0),
-                                        {{4, cf.GetComparator()}}));
-}
-
 TEST_F(WriteBatchTest, CommitWithTimestamp) {
   WriteBatch wb;
   const std::string txn_name = "xid1";

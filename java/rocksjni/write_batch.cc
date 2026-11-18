@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "db/memtable.h"
-#include "db/write_batch_internal.h"
 #include "include/io_github_fluss_contrib_rocksdb_WriteBatch.h"
 #include "include/io_github_fluss_contrib_rocksdb_WriteBatch_Handler.h"
 #include "logging/logging.h"
@@ -23,34 +22,6 @@
 #include "rocksjni/kv_helper.h"
 #include "rocksjni/portal.h"
 #include "rocksjni/writebatchhandlerjnicallback.h"
-
-jlong Java_io_github_fluss_1contrib_rocksdb_WriteBatch_newWriteBatchWithTimestamps(
-    JNIEnv* env, jclass, jint reserved, jlong max_bytes, jlong protection,
-    jint default_ts_size) {
-  if (!ROCKSDB_NAMESPACE::JniUtil::check_if_jlong_fits_size_t(max_bytes).ok()) {
-    ROCKSDB_NAMESPACE::IllegalArgumentExceptionJni::ThrowNew(
-        env, "WriteBatch size cannot be represented by size_t");
-    return 0;
-  }
-  auto batch = ROCKSDB_NAMESPACE::WriteBatchInternal::WithTimestampTracking(
-      static_cast<size_t>(reserved), static_cast<size_t>(max_bytes),
-      static_cast<size_t>(protection), static_cast<size_t>(default_ts_size));
-  return GET_CPLUSPLUS_POINTER(batch.release());
-}
-
-void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_updateTimestamps(
-    JNIEnv* env, jclass, jlong jbatch, jbyteArray jtimestamp) {
-  auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
-  try {
-    ROCKSDB_NAMESPACE::JByteArraySlice ts(env, jtimestamp, 0,
-                                          env->GetArrayLength(jtimestamp));
-    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
-        env, ROCKSDB_NAMESPACE::WriteBatchInternal::UpdateTrackedTimestamps(
-                 batch, ts.slice()));
-  } catch (const ROCKSDB_NAMESPACE::KVException&) {
-    // The Java exception is already pending.
-  }
-}
 
 void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_putWithTimestamp(
     JNIEnv* env, jclass, jlong jbatch, jlong jcf, jbyteArray jkey,
@@ -531,13 +502,7 @@ jbyteArray Java_io_github_fluss_1contrib_rocksdb_WriteBatch_data(
   auto* wb = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jwb_handle);
   assert(wb != nullptr);
 
-  if (ROCKSDB_NAMESPACE::WriteBatchInternal::TimestampsUpdateNeeded(*wb)) {
-    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
-        env, ROCKSDB_NAMESPACE::Status::InvalidArgument(
-                 "Assign batch timestamps before serialization"));
-    return nullptr;
-  }
-  const auto& data = wb->Data();
+  auto data = wb->Data();
   return ROCKSDB_NAMESPACE::JniUtil::copyBytes(env, data);
 }
 

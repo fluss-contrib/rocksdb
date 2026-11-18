@@ -26,13 +26,9 @@ public class RocksDBSample {
       try (final WriteOptions write = new WriteOptions()) {
         final byte[] key = new byte[] {1};
         db.put(cf, write, key, timestamp(3), new byte[] {3});
-        db.delete(cf, write, key, timestamp(15));
-        // The default CF is not timestamped. Explicit CF writes reserve their own
-        // timestamp space. A timestamped default CF would require size 8 here.
-        // Recreate a configured batch after clear(), which resets that size to 0.
-        try (final WriteBatch batch = new WriteBatch(0, 0, 0, 0)) {
-          batch.put(cf, key, new byte[] {20});
-          batch.updateTimestamps(timestamp(20));
+        try (final WriteBatch batch = new WriteBatch()) {
+          batch.delete(cf, key, timestamp(15));
+          batch.put(cf, key, timestamp(20), new byte[] {20});
           db.write(write, batch);
         }
         // Keep the timestamp Slice open until all reads and iterators finish.

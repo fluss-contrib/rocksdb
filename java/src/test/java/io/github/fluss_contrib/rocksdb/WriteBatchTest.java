@@ -17,7 +17,6 @@ import static io.github.fluss_contrib.rocksdb.util.CapturingWriteBatchHandler.Ac
 import static io.github.fluss_contrib.rocksdb.util.TestUtil.u64Timestamp;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.fluss_contrib.rocksdb.util.CapturingWriteBatchHandler;
 import io.github.fluss_contrib.rocksdb.util.CapturingWriteBatchHandler.Event;
@@ -46,6 +45,9 @@ public class WriteBatchTest {
     try (final Options options = new Options().setCreateIfMissing(true).setComparator(
              BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
          final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final ColumnFamilyOptions plainOptions = new ColumnFamilyOptions();
+         final ColumnFamilyHandle plain =
+             db.createColumnFamily(new ColumnFamilyDescriptor(new byte[] {2}, plainOptions));
          final WriteOptions write = new WriteOptions(); final WriteBatch batch = new WriteBatch()) {
       final byte[] key = new byte[] {1};
       final ColumnFamilyHandle cf = db.getDefaultColumnFamily();
@@ -55,7 +57,9 @@ public class WriteBatchTest {
       batch.put(cf, key, u64Timestamp(8), new byte[] {8});
       batch.delete(cf, key, u64Timestamp(15));
       batch.put(cf, key, u64Timestamp(20), new byte[] {20});
+      batch.put(plain, key, new byte[] {42});
       db.write(write, batch);
+      assertThat(db.get(plain, key)).isEqualTo(new byte[] {42});
       final long[] times = {5, 12, 17, 22};
       final byte[][] expected = {{3}, {8}, null, {20}};
       for (int i = 0; i < times.length; i++) {
@@ -65,187 +69,6 @@ public class WriteBatchTest {
         }
       }
     }
-  }
-
-  @Test
-  public void deferredTimestampsRespectColumnFamilySizes() throws Exception {
-    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
-             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
-         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
-         final ColumnFamilyOptions plainOptions = new ColumnFamilyOptions();
-         final ColumnFamilyHandle plain =
-             db.createColumnFamily(new ColumnFamilyDescriptor(new byte[] {2}, plainOptions));
-         final WriteOptions write = new WriteOptions();
-         final WriteBatch batch = new WriteBatch(0, 0, 8, 8)) {
-      final byte[] key = new byte[] {1};
-      batch.put(key, new byte[] {7});
-      batch.put(plain, key, new byte[] {9});
-      batch.updateTimestamps(u64Timestamp(7));
-      db.write(write, batch);
-      try (final Slice ts = new Slice(u64Timestamp(7));
-           final ReadOptions read = new ReadOptions().setTimestamp(ts)) {
-        assertThat(db.get(read, key)).containsExactly(7);
-      }
-      assertThat(db.get(plain, key)).containsExactly(9);
-      batch.clear();
-      assertThatThrownBy(() -> batch.put(db.getDefaultColumnFamily(), key, new byte[] {8}))
-          .isInstanceOf(RocksDBException.class);
-    }
-  }
-
-  @Test
-  public void serializeAfterTimestampAssignment() throws Exception {
-    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
-             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
-         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
-         final WriteBatch batch = new WriteBatch(0, 0, 0, 8);
-         final WriteOptions write = new WriteOptions();
-         final Slice zero = new Slice(u64Timestamp(0));
-         final Slice seven = new Slice(u64Timestamp(7));
-         final ReadOptions read = new ReadOptions()) {
-      final byte[] key = {1};
-      batch.put(key, new byte[] {42});
-      assertThatThrownBy(batch::data)
-          .isInstanceOf(RocksDBException.class)
-          .extracting("status.code")
-          .containsExactly(Status.Code.InvalidArgument);
-      batch.updateTimestamps(u64Timestamp(7));
-      try (final WriteBatch restored = new WriteBatch(batch.data())) {
-        db.write(write, restored);
-      }
-      assertThat(db.get(read.setTimestamp(zero), key)).isNull();
-      assertThat(db.get(read.setTimestamp(seven), key)).containsExactly(42);
-    }
-  }
-
-  @Test
-  public void deferredTimestampErrorsAreReported() throws Exception {
-    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
-             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
-         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
-         final WriteBatch batch = new WriteBatch(0, 0, 0, 8)) {
-      batch.put(new byte[] {1}, new byte[] {7});
-      try (final WriteBatch untracked = new WriteBatch()) {
-        assertThatThrownBy(() -> untracked.updateTimestamps(u64Timestamp(7)))
-            .isInstanceOf(RocksDBException.class);
-      }
-      assertThatThrownBy(() -> batch.updateTimestamps(new byte[0]))
-          .isInstanceOf(IllegalArgumentException.class);
-      assertThatThrownBy(() -> batch.updateTimestamps(new byte[4]))
-          .isInstanceOf(RocksDBException.class);
-    }
-  }
-
-  @Test
-  public void protectedBatchWithRangeDeletionCannotUpdateTimestamps() throws Exception {
-    try (final Options options = new Options().setCreateIfMissing(true);
-         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
-         final ColumnFamilyOptions timestampOptions = new ColumnFamilyOptions().setComparator(
-             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
-         final ColumnFamilyHandle timestampCf =
-             db.createColumnFamily(new ColumnFamilyDescriptor(new byte[] {2}, timestampOptions));
-         final WriteBatch batch = new WriteBatch(0, 0, 8, 0)) {
-      batch.deleteRange(new byte[] {1}, new byte[] {3});
-      batch.put(timestampCf, new byte[] {2}, u64Timestamp(3), new byte[] {7});
-      final byte[] before = batch.data();
-      assertThatThrownBy(() -> batch.updateTimestamps(u64Timestamp(7)))
-          .isInstanceOf(RocksDBException.class);
-      assertThat(batch.data()).isEqualTo(before);
-    }
-  }
-
-  @Test
-  public void discardedDeferredWriteDoesNotRequireTimestampAssignment() throws Exception {
-    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
-             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
-         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
-         final WriteOptions write = new WriteOptions();
-         final Slice timestamp = new Slice(u64Timestamp(7));
-         final ReadOptions read = new ReadOptions().setTimestamp(timestamp)) {
-      final ColumnFamilyHandle cf = db.getDefaultColumnFamily();
-      final byte[] discardedKey = {0};
-      final byte[] value = {7};
-      try (final WriteBatch batch = new WriteBatch(0, 64, 0, 8)) {
-        batch.put(cf, new byte[] {1}, u64Timestamp(7), value);
-        batch.setSavePoint();
-        batch.put(discardedKey, value);
-        batch.rollbackToSavePoint();
-        db.write(write, batch);
-        assertThat(db.get(read, new byte[] {1})).containsExactly(7);
-        assertThat(db.get(read, discardedKey)).isNull();
-      }
-      try (final WriteBatch batch = new WriteBatch(0, 64, 0, 8)) {
-        batch.put(discardedKey, value);
-        batch.clear();
-        batch.put(cf, new byte[] {2}, u64Timestamp(7), value);
-        db.write(write, batch);
-        assertThat(db.get(read, new byte[] {2})).containsExactly(7);
-        assertThat(db.get(read, discardedKey)).isNull();
-      }
-      try (final WriteBatch batch = new WriteBatch(0, 64, 0, 8)) {
-        batch.put(cf, new byte[] {3}, u64Timestamp(7), value);
-        assertThatThrownBy(() -> batch.put(discardedKey, new byte[100]))
-            .isInstanceOf(RocksDBException.class);
-        db.write(write, batch);
-        assertThat(db.get(read, new byte[] {3})).containsExactly(7);
-        assertThat(db.get(read, discardedKey)).isNull();
-      }
-    }
-  }
-
-  @Test
-  public void rollbackRestoresTimestampLayout() throws Exception {
-    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
-             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
-         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
-         final WriteOptions write = new WriteOptions();
-         final WriteBatch batch = new WriteBatch(0, 0, 0, 0);
-         final Slice timestamp = new Slice(u64Timestamp(7));
-         final ReadOptions read = new ReadOptions().setTimestamp(timestamp)) {
-      final byte[] key = {1};
-      final byte[] discardedKey = {2};
-      batch.put(db.getDefaultColumnFamily(), key, u64Timestamp(3), key);
-      batch.setSavePoint();
-      batch.put(discardedKey, key);
-      batch.rollbackToSavePoint();
-      batch.updateTimestamps(u64Timestamp(7));
-      db.write(write, batch);
-      assertThat(db.get(read, key)).containsExactly(1);
-      assertThat(db.get(read, discardedKey)).isNull();
-      batch.put(discardedKey, key);
-      assertThatThrownBy(() -> batch.updateTimestamps(u64Timestamp(7)))
-          .isInstanceOf(RocksDBException.class);
-    }
-  }
-
-  @Test
-  public void rollbackAfterTimestampAssignmentKeepsAssignedPrefix() throws Exception {
-    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
-             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
-         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
-         final WriteOptions write = new WriteOptions();
-         final WriteBatch batch = new WriteBatch(0, 0, 0, 8);
-         final Slice timestamp = new Slice(u64Timestamp(7));
-         final ReadOptions read = new ReadOptions().setTimestamp(timestamp)) {
-      final byte[] key = {1};
-      final byte[] discardedKey = {2};
-      batch.put(key, key);
-      batch.setSavePoint();
-      batch.updateTimestamps(u64Timestamp(7));
-      batch.put(discardedKey, key);
-      batch.rollbackToSavePoint();
-      db.write(write, batch);
-      assertThat(db.get(read, key)).containsExactly(1);
-      assertThat(db.get(read, discardedKey)).isNull();
-    }
-  }
-
-  @Test
-  public void invalidTimestampBatchConfigurationIsRejected() {
-    assertThatThrownBy(() -> new WriteBatch(0, 0, 1, 8))
-        .isInstanceOf(IllegalArgumentException.class);
-    assertThatThrownBy(() -> new WriteBatch(0, -1, 0, 8))
-        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test

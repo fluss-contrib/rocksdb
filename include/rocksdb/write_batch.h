@@ -493,16 +493,6 @@ class WriteBatch : public WriteBatchBase {
   size_t GetProtectionBytesPerKey() const;
 
  private:
-  void RecordTimestampSize(uint32_t cf, size_t ts_sz, bool pending = false) {
-    MaybeTrackTimestampSize(cf, ts_sz);
-    if (save_points_) {
-      RecordTrackedTimestampSize(cf, ts_sz, pending);
-    }
-  }
-
-  void RecordTrackedTimestampSize(uint32_t cf, size_t ts_sz, bool pending);
-  bool TimestampsUpdateNeeded() const;
-
   friend class WriteBatchInternal;
   friend class LocalSavePoint;
   // TODO(myabandeh): this is needed for a hack to collapse the write batch and
