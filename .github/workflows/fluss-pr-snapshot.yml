@@ -16,32 +16,29 @@
 # under the License.
 
 name: Fluss PR Snapshot
+run-name: 'PR #${{ inputs.pull_request_number }} / ${{ inputs.publication_mode }}'
 
 on:
-  pull_request:
-    paths:
-      - '.github/scripts/prepare-pr-snapshot.sh'
-      - '.github/scripts/prepare-pr-snapshot.test.sh'
-      - '.github/scripts/prepare-release-component.sh'
-      - '.github/scripts/prepare-release-component.test.sh'
-      - '.github/scripts/verify-release-component.sh'
-      - '.github/workflows/fluss-jni-publish.yml'
-      - '.github/workflows/fluss-pr-snapshot.yml'
-      - 'java/pom.xml.template'
   workflow_dispatch:
     inputs:
       pull_request_number:
-        description: Pull request number to publish
+        description: Open pull request number
         required: true
         type: number
+      publication_mode:
+        description: Publish a PR Snapshot or run a local publication preflight
+        type: choice
+        default: pr-snapshot
+        options:
+          - pr-snapshot
+          - preflight
 
 permissions:
   contents: read
-  deployments: read
   pull-requests: read
 
 concurrency:
-  group: fluss-pr-snapshot-${{ inputs.pull_request_number || github.event.pull_request.number }}
+  group: fluss-pr-snapshot-${{ inputs.pull_request_number }}
   cancel-in-progress: false
 
 jobs:
@@ -60,19 +57,18 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Test PR Snapshot preparation
-        run: bash .github/scripts/prepare-pr-snapshot.test.sh
-
-      - name: Test release component recovery
-        run: bash .github/scripts/prepare-release-component.test.sh
-
       - name: Resolve and validate PR source
         id: resolve
         env:
           GH_TOKEN: ${{ github.token }}
-          REQUESTED_PR_NUMBER: ${{ inputs.pull_request_number || github.event.pull_request.number }}
+          REQUESTED_PR_NUMBER: ${{ inputs.pull_request_number }}
+          PUBLICATION_MODE: ${{ inputs.publication_mode }}
         run: |
           set -euo pipefail
+          if [[ "$GITHUB_REF" != refs/heads/fluss-main ]]; then
+            echo "PR publication workflows must run from fluss-main" >&2
+            exit 1
+          fi
           gh api "repos/$GITHUB_REPOSITORY/pulls/$REQUESTED_PR_NUMBER" \
             > "$RUNNER_TEMP/pull-request.json"
           base_sha=$(jq -er '.base.sha' "$RUNNER_TEMP/pull-request.json")
@@ -98,6 +94,18 @@ jobs:
             "$GITHUB_OUTPUT" \
             "$RUNNER_TEMP/pr-snapshot-manifest.json"
 
+      - name: Summarize PR source
+        env:
+          SOURCE_SHA: ${{ steps.resolve.outputs.source_sha }}
+          VERSION: ${{ steps.resolve.outputs.version }}
+          PUBLICATION_MODE: ${{ inputs.publication_mode }}
+        run: |
+          {
+            printf 'PR source: `%s`\n\n' "$SOURCE_SHA"
+            printf 'Mode: `%s`\n\n' "$PUBLICATION_MODE"
+            printf 'Maven component: `io.github.fluss-contrib:fluss-rocksdbjni:%s`\n' "$VERSION"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/upload-artifact@v7
         with:
           name: fluss-pr-snapshot-source
@@ -105,15 +113,15 @@ jobs:
           if-no-files-found: error
 
   publication:
-    name: Build and publish PR Snapshot
+    name: Run PR publication workflow
     needs: resolve
     permissions:
+      actions: read
       contents: write
-      deployments: read
       pull-requests: read
     uses: ./.github/workflows/fluss-jni-publish.yml
     with:
-      publication_mode: ${{ github.event_name == 'workflow_dispatch' && 'pr-snapshot' || 'preflight' }}
+      publication_mode: ${{ inputs.publication_mode }}
       pr_number: ${{ needs.resolve.outputs.pr_number }}
       rocksdb_version: ${{ needs.resolve.outputs.rocksdb_version }}
       source_repository: ${{ needs.resolve.outputs.source_repository }}

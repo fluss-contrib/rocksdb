@@ -53,7 +53,7 @@ Add the Fluss RocksDB JNI artifact to your Maven project:
 | Branch | Purpose |
 | --- | --- |
 | `main` | Mirrors `facebook/rocksdb/main` without Fluss-specific commits. |
-| `fluss-main` | Default Fluss development branch and the only source of Snapshot publications. |
+| `fluss-main` | Default Fluss development branch and source of Nightly builds. |
 | `fluss-release-X.Y` | Release line based on an upstream RocksDB tag; the only source of RC and final releases. |
 
 Changes to this fork are driven by a GitHub issue and submitted through a pull
@@ -65,7 +65,7 @@ Read the repository policies before contributing:
 - [Branch management](docs/fluss/branch-management.md) describes branch roles,
   pull-request integration, release branches, and upstream upgrades.
 - [Versioning and releases](docs/fluss/versioning-and-releases.md) describes
-  artifact versions, supported platforms, and Snapshot, RC, and final
+  artifact versions, supported platforms, and Nightly, PR Snapshot, RC, and final
   publication.
 
 ## Upstream RocksDB

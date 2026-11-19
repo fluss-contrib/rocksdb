@@ -14,10 +14,10 @@ release state.
 The upstream version is read from `include/rocksdb/version.h`. A separate copy
 of that version is not maintained.
 
-The current development Snapshot is:
+The `fluss-main` Nightly version is:
 
 ```text
-<rocksdb-version>-fluss-SNAPSHOT
+<rocksdb-version>-fluss-nightly-SNAPSHOT
 ```
 
 A pull-request Snapshot is:
@@ -42,7 +42,7 @@ Git tags add a leading `v`; Maven versions do not. For the RocksDB `11.8.1`
 baseline, the corresponding examples are:
 
 ```text
-Snapshot: 11.8.1-fluss-SNAPSHOT
+Nightly: 11.8.1-fluss-nightly-SNAPSHOT
 PR Snapshot: 11.8.1-fluss-pr42-a1b2c3d4e5f6-SNAPSHOT
 RC tag:   v11.8.1-fluss-1-rc1
 RC Maven: 11.8.1-fluss-1-rc1
@@ -58,11 +58,12 @@ within a revision.
 
 ### Pull-request preflight
 
-An ordinary pull request runs the Linux x86_64 test workflow. A pull request
-that changes publication-related files additionally exercises the complete
-publication build without external side effects. This preflight accepts pull
-requests targeting `fluss-main` or the matching `fluss-release-X.Y` branch and
-reads the RocksDB baseline from the pull request's base commit:
+Pull requests automatically run the Linux x86_64 tests and publication script
+checks. To validate packaging across all supported platforms, a maintainer with
+repository write access runs **Fluss PR Snapshot** from `fluss-main`, enters
+the PR number and selects `preflight`. This mode accepts open PRs targeting
+`fluss-main` or the matching `fluss-release-X.Y` branch and reads the RocksDB
+baseline from the PR's base commit. It runs these checks:
 
 - build and smoke-test every supported platform;
 - assemble the four-platform JNI JAR;
@@ -77,11 +78,15 @@ key. It does not publish a Snapshot, create a tag, or create a GitHub Release.
 
 ### Pull-request Snapshots
 
-Most pull requests use only the ordinary validation workflows. When a change
-needs cross-repository integration testing, a repository maintainer can run
-the `Fluss PR Snapshot` workflow from `fluss-main` and supply the open pull
-request number. GitHub requires write access to dispatch the workflow, so a
-contributor cannot publish directly from a fork.
+When a change needs a Maven dependency for cross-repository testing, a
+maintainer with repository write access can publish a PR Snapshot:
+
+1. Review the current head of the open PR targeting `fluss-main`.
+2. In **Actions → Fluss PR Snapshot → Run workflow**, select `fluss-main`,
+   enter the PR number, and use the default `pr-snapshot` mode.
+3. Confirm the resolved head SHA in the run summary. After the publication
+   job succeeds, use the Maven coordinates from that summary and verify
+   dependency resolution via the [Snapshot repository](#consuming-maven-snapshots).
 
 The workflow resolves the pull request through the GitHub API and locks its
 source repository and complete head commit SHA. It rejects a pull request that
@@ -90,12 +95,12 @@ is closed, targets a repository or branch other than
 longer has the locked head SHA when publication begins. It does not create a
 temporary branch, Git tag, or GitHub Release.
 
-The trusted workflow runs from `fluss-main`, while its secretless build jobs
-check out the exact pull-request head SHA with persisted checkout credentials
-disabled. The publication job does not check out or execute pull-request
-source. It verifies the retained source manifest and current pull-request
-identity before receiving the existing `maven-snapshots` Environment
-credentials and publishing the assembled component.
+The workflow definition comes from `fluss-main`. Build jobs check out the
+locked PR head SHA with persisted checkout credentials disabled. The
+verification job compares the retained manifest with the current PR before
+the separate publication job signs and uploads the assembled component. The
+publication job uses the `maven-snapshots` Environment and consumes the build
+artifacts directly.
 
 The version includes the target RocksDB version, pull request number, and the
 first 12 lowercase hexadecimal characters of the locked head SHA:
@@ -110,18 +115,22 @@ version. A new pull-request head therefore produces a new Maven version.
 Repeated publication of the same head remains a normal timestamped Maven
 Snapshot deployment.
 
-### Development Snapshots
+### Nightly builds
 
-The development Snapshot builds the source tree directly from `fluss-main`.
+**Fluss JNI Publish** builds the Nightly directly from `fluss-main`. The
+scheduled workflow checks the branch daily and skips building a commit that a
+previous scheduled or manual Nightly run already published. The **Run workflow**
+button on `fluss-main` republishes the current head on demand.
 
-A scheduled job checks the current `fluss-main` head daily. It publishes only
-when that head differs from the commit associated with the latest successful
-deployment to the `maven-snapshots` GitHub Environment. A manual
-`workflow_dispatch` run may republish the current head on demand.
+Nightlies use the mutable `<rocksdb-version>-fluss-nightly-SNAPSHOT` Maven
+version. The Maven `-SNAPSHOT` suffix enables snapshot repository semantics.
+Nightly and PR Snapshot coordinates are separate. Neither mode creates
+a Git tag or GitHub Release.
 
-Snapshots use the mutable `<rocksdb-version>-fluss-SNAPSHOT` version. They have
-no Fluss revision, Git tag, or GitHub Release. Consumers add the Central Portal
-Snapshot repository explicitly:
+### Consuming Maven Snapshots
+
+Consumers of Nightly or PR Snapshot versions add the Central Portal Snapshot
+repository explicitly:
 
 ```xml
 <repository>
@@ -193,7 +202,7 @@ retaining the applicable RocksDB licenses and upstream attribution.
 
 ## Credentials and environments
 
-Development and pull-request Snapshot publication use the `maven-snapshots`
+Nightly and PR Snapshot publication use the `maven-snapshots`
 GitHub Environment, restricted to workflows running from `fluss-main` without
 a separate manual approval gate. Starting the pull-request Snapshot workflow
 is its single maintainer approval.
@@ -239,4 +248,4 @@ either publication.
 
 RC and final Maven versions, Git tags, and published GitHub Release assets are
 immutable. A defect is corrected with the next RC sequence or Fluss revision.
-Snapshots are the only mutable publication channel.
+Nightly and PR Snapshot Maven versions are mutable.

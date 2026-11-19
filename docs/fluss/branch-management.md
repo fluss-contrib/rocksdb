@@ -9,8 +9,8 @@ Fluss changes on top of an explicit upstream RocksDB release.
 An immutable upstream RocksDB release tag is the baseline for each Fluss
 release line.
 
-`fluss-main` is the default branch and the current Fluss development and
-Snapshot line. It is protected, requires pull requests for ordinary changes,
+`fluss-main` is the default development branch and the source of Nightly
+builds. It is protected, requires pull requests for ordinary changes,
 and requires linear history. RC and final release tags are never created
 directly from `fluss-main`.
 
@@ -36,10 +36,10 @@ evidence.
 Contributors normally create changes in forks and open pull requests against
 `fluss-main`; they do not need permission to create branches in this
 repository. When cross-repository testing requires a published Maven artifact,
-a maintainer may manually publish a PR-specific Snapshot from the exact pull
-request head SHA. The workflow retains the source identity as repository-owned
-Actions artifacts and does not mirror the contributor branch into this
-repository.
+a maintainer with write access may publish a
+[PR Snapshot](versioning-and-releases.md#pull-request-snapshots) from the exact
+pull request head SHA. The workflow retains the source identity as a GitHub
+Actions artifact.
 
 Pull requests are squash-merged. The squash commit describes the resulting
 change rather than the development process. Merge commits and GitHub rebase

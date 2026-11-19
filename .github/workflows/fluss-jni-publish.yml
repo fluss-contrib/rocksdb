@@ -28,8 +28,8 @@ on:
       - 'v*-fluss-*'
 
 permissions:
+  actions: read
   contents: read
-  deployments: read
   pull-requests: read
 
 concurrency:
@@ -97,11 +97,11 @@ jobs:
                 exit 1
               fi
               if [[ "$source_rocksdb_version" != "$REQUESTED_ROCKSDB_VERSION" ]]; then
-                echo "Pull request RocksDB version $source_rocksdb_version does not match fluss-main version $REQUESTED_ROCKSDB_VERSION" >&2
+                echo "Pull request RocksDB version $source_rocksdb_version does not match base version $REQUESTED_ROCKSDB_VERSION" >&2
                 exit 1
               fi
-              if [[ "$PUBLICATION_MODE" == pr-snapshot && "$GITHUB_REF" != refs/heads/fluss-main ]]; then
-                echo "PR Snapshot publication must run from fluss-main" >&2
+              if [[ "$EVENT_NAME" != workflow_dispatch || "$GITHUB_REF" != refs/heads/fluss-main ]]; then
+                echo "PR publication workflows must be dispatched from fluss-main" >&2
                 exit 1
               fi
 
@@ -109,49 +109,28 @@ jobs:
               version="$source_rocksdb_version-fluss-pr$PR_NUMBER-${SOURCE_SHA:0:12}-SNAPSHOT"
               ;;
             schedule)
-              mode=snapshot
-              version="$source_rocksdb_version-fluss-SNAPSHOT"
+              mode=nightly
+              version="$source_rocksdb_version-fluss-nightly-SNAPSHOT"
 
-              deployments=$(gh api --paginate --slurp --method GET \
-                "repos/$GITHUB_REPOSITORY/deployments" \
-                -f environment=maven-snapshots \
-                -F per_page=100)
-              latest_successful_sha=
-              while IFS=$'\t' read -r deployment_id deployment_sha; do
-                statuses=$(gh api --paginate --slurp --method GET \
-                  "repos/$GITHUB_REPOSITORY/deployments/$deployment_id/statuses" \
-                  -F per_page=100)
-                latest_state=$(jq -r '
-                  [.[][]]
-                  | sort_by([.created_at, .id])
-                  | reverse
-                  | .[0].state // ""
-                ' <<<"$statuses")
-                if [[ "$latest_state" == success ]]; then
-                  latest_successful_sha=$deployment_sha
-                  break
-                fi
-              done < <(jq -r '
-                [.[][]]
-                | sort_by([.created_at, .id])
-                | reverse
-                | .[]
-                | [.id, .sha]
-                | @tsv
-              ' <<<"$deployments")
-
-              if [[ -n "$latest_successful_sha" && "$latest_successful_sha" == "$GITHUB_SHA" ]]; then
+              # PR Snapshots share the Maven environment and can run at this workflow SHA.
+              successful_nightly_runs=$(gh api --method GET \
+                "repos/$GITHUB_REPOSITORY/actions/workflows/fluss-jni-publish.yml/runs" \
+                -f branch=fluss-main \
+                -f head_sha="$GITHUB_SHA" \
+                -f status=success \
+                --jq '.workflow_runs[] | select(.event == "schedule" or .event == "workflow_dispatch") | .id')
+              if [[ -n "$successful_nightly_runs" ]]; then
                 should_build=false
-                echo "Snapshot already published for $GITHUB_SHA"
+                echo "Nightly already published for $GITHUB_SHA"
               fi
               ;;
             workflow_dispatch)
               if [[ "$GITHUB_REF" != refs/heads/fluss-main ]]; then
-                echo "Manual Snapshot publication must run from fluss-main" >&2
+                echo "Manual Nightly publication must run from fluss-main" >&2
                 exit 1
               fi
-              mode=snapshot
-              version="$source_rocksdb_version-fluss-SNAPSHOT"
+              mode=nightly
+              version="$source_rocksdb_version-fluss-nightly-SNAPSHOT"
               ;;
             upgrade)
               expected_branch="upgrade-rocksdb-$source_rocksdb_version"
@@ -160,7 +139,7 @@ jobs:
                 exit 1
               fi
               mode=preflight
-              version="$source_rocksdb_version-fluss-SNAPSHOT"
+              version="$source_rocksdb_version-fluss-nightly-SNAPSHOT"
               ;;
             push)
               if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-fluss-[1-9][0-9]*(-rc[1-9][0-9]*)?$ ]]; then
@@ -699,6 +678,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REQUESTED_PR_NUMBER: ${{ inputs.pr_number }}
           ROCKSDB_VERSION: ${{ inputs.rocksdb_version }}
+          PUBLICATION_MODE: pr-snapshot
         run: |
           set -euo pipefail
           gh api "repos/$GITHUB_REPOSITORY/pulls/$REQUESTED_PR_NUMBER" \
@@ -719,14 +699,14 @@ jobs:
             "$RUNNER_TEMP/sorted-current-manifest.json"
 
   publish-snapshot:
-    name: Publish Snapshot
+    name: Publish ${{ needs.prepare.outputs.mode == 'nightly' && 'Nightly' || 'PR Snapshot' }}
     needs: [prepare, package, verify_pr_snapshot]
     if: >-
       always() &&
       needs.prepare.result == 'success' &&
       needs.package.result == 'success' &&
       needs.prepare.outputs.should-build == 'true' &&
-      (needs.prepare.outputs.mode == 'snapshot' ||
+      (needs.prepare.outputs.mode == 'nightly' ||
        (needs.prepare.outputs.mode == 'pr-snapshot' &&
         needs.verify_pr_snapshot.result == 'success'))
     runs-on: ubuntu-24.04
