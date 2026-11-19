@@ -6,12 +6,60 @@
 import io.github.fluss_contrib.rocksdb.*;
 import io.github.fluss_contrib.rocksdb.util.SizeUnit;
 import java.lang.IllegalArgumentException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class RocksDBSample {
+  private static byte[] timestamp(final long value) {
+    return ByteBuffer.allocate(Long.BYTES).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
+  }
+
+  private static void timestampExample(final RocksDB db) {
+    try (final ColumnFamilyOptions options = new ColumnFamilyOptions().setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final ColumnFamilyHandle cf = db.createColumnFamily(new ColumnFamilyDescriptor(
+             "timestamped".getBytes(java.nio.charset.StandardCharsets.UTF_8), options))) {
+      try (final WriteOptions write = new WriteOptions()) {
+        final byte[] key = new byte[] {1};
+        db.put(cf, write, key, timestamp(3), new byte[] {3});
+        try (final WriteBatch batch = new WriteBatch()) {
+          batch.delete(cf, key, timestamp(15));
+          batch.put(cf, key, timestamp(20), new byte[] {20});
+          db.write(write, batch);
+        }
+        // Keep the timestamp Slice open until all reads and iterators finish.
+        try (final Slice ts = new Slice(timestamp(12));
+             final ReadOptions read = new ReadOptions().setTimestamp(ts);
+             final RocksIterator iterator = db.newIterator(cf, read)) {
+          if (!Arrays.equals(db.get(cf, read, key), new byte[] {3})) {
+            throw new IllegalStateException("Unexpected value for timestamped point read");
+          }
+          iterator.seek(key);
+          iterator.status();
+          if (!iterator.isValid() || !Arrays.equals(iterator.key(), key)
+              || !Arrays.equals(iterator.value(), new byte[] {3})) {
+            throw new IllegalStateException("Unexpected entry for timestamped iteration");
+          }
+        }
+        db.increaseFullHistoryTsLow(cf, timestamp(12));
+        if (!Arrays.equals(db.getFullHistoryTsLow(cf), timestamp(12))) {
+          throw new IllegalStateException("Unexpected history lower bound");
+        }
+        try (final CompactRangeOptions compact =
+                 new CompactRangeOptions().setFullHistoryTsLowBytes(timestamp(12))) {
+          db.compactRange(cf, null, null, compact);
+        }
+      } finally {
+        db.dropColumnFamily(cf);
+      }
+    } catch (final RocksDBException e) {
+      throw new IllegalStateException("Timestamp example failed", e);
+    }
+  }
   static {
     RocksDB.loadLibrary();
   }
@@ -286,6 +334,7 @@ public class RocksDBSample {
         for (final byte[] value1 : values) {
           assert (value1 != null);
         }
+        timestampExample(db);
       } catch (final RocksDBException e) {
         System.err.println(e);
       }

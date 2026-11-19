@@ -13,6 +13,7 @@
 #include <cstring>
 #include <exception>
 #include <functional>
+#include <new>
 #include <string>
 
 #include "rocksdb/rocksdb_namespace.h"
@@ -92,6 +93,57 @@ class KVException : public std::exception {
 
  private:
   jint kCode_;
+};
+
+// Read-only access to a whole Java byte array for a single JNI call.
+class JByteArrayElements {
+ public:
+  JByteArrayElements(JNIEnv* env, jbyteArray array) : env_(env), array_(array) {
+    const jsize size = env_->GetArrayLength(array_);
+    if (size == 0) {
+      return;
+    }
+    elements_ = env_->GetByteArrayElements(array_, nullptr);
+    if (elements_ == nullptr) {
+      ThrowAllocationError(env_);
+    }
+    slice_ = Slice(reinterpret_cast<const char*>(elements_), size);
+  }
+
+  ~JByteArrayElements() {
+    if (elements_ != nullptr) {
+      env_->ReleaseByteArrayElements(array_, elements_, JNI_ABORT);
+    }
+  }
+
+  JByteArrayElements(const JByteArrayElements&) = delete;
+  JByteArrayElements& operator=(const JByteArrayElements&) = delete;
+
+  const Slice& slice() const { return slice_; }
+
+  std::string CopyToString() const {
+    try {
+      return slice_.ToString();
+    } catch (const std::bad_alloc&) {
+      ThrowAllocationError(env_);
+    }
+  }
+
+ private:
+  [[noreturn]] static void ThrowAllocationError(JNIEnv* env) {
+    if (!env->ExceptionCheck()) {
+      jclass error = OutOfMemoryErrorJni::getJClass(env);
+      if (error != nullptr) {
+        env->ThrowNew(error, "Unable to allocate native byte array storage");
+      }
+    }
+    throw KVException(KVException::kStatusError);
+  }
+
+  JNIEnv* env_;
+  jbyteArray array_;
+  jbyte* elements_ = nullptr;
+  Slice slice_;
 };
 
 /**

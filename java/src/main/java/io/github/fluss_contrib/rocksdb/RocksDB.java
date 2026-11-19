@@ -38,6 +38,7 @@ public class RocksDB extends RocksObject {
 
   private static final String BB_ALL_DIRECT_OR_INDIRECT =
       "ByteBuffer parameters must all be direct, or must all be indirect";
+  private final boolean readOnly_;
   private ColumnFamilyHandle defaultColumnFamilyHandle_;
   private final ReadOptions defaultReadOptions_ = new ReadOptions();
 
@@ -178,7 +179,12 @@ public class RocksDB extends RocksObject {
    * @param nativeHandle The native handle of the C++ RocksDB object
    */
   protected RocksDB(final long nativeHandle) {
+    this(nativeHandle, false);
+  }
+
+  private RocksDB(final long nativeHandle, final boolean readOnly) {
     super(nativeHandle);
+    readOnly_ = readOnly;
   }
 
   /**
@@ -415,7 +421,8 @@ public class RocksDB extends RocksObject {
     // when non-default Options is used, keeping an Options reference
     // in RocksDB can prevent Java to GC during the life-time of
     // the currently-created RocksDB.
-    final RocksDB db = new RocksDB(openROnly(options.nativeHandle_, path, errorIfWalFileExists));
+    final RocksDB db =
+        new RocksDB(openROnly(options.nativeHandle_, path, errorIfWalFileExists), true);
     db.storeOptionsInstance(options);
     db.storeDefaultColumnFamilyHandle(db.makeDefaultColumnFamilyHandle());
     return db;
@@ -526,7 +533,7 @@ public class RocksDB extends RocksObject {
 
     final long[] handles =
         openROnly(options.nativeHandle_, path, cfNames, cfOptionHandles, errorIfWalFileExists);
-    final RocksDB db = new RocksDB(handles[0]);
+    final RocksDB db = new RocksDB(handles[0], true);
     db.storeOptionsInstance(options);
 
     for (int i = 1; i < handles.length; i++) {
@@ -978,6 +985,47 @@ public class RocksDB extends RocksObject {
   }
 
   /**
+   * Writes a version in the default column family. Timestamps are opaque bytes
+   * interpreted by its comparator; U64 timestamps use eight little-endian bytes.
+   * Writes of the same key must have nondecreasing timestamps.
+   *
+   * @param options write policy
+   * @param key logical key without a timestamp suffix
+   * @param timestamp version timestamp
+   * @param value value copied by this call
+   * @throws RocksDBException if the native write fails, including invalid timestamps
+   */
+  public void put(final WriteOptions options, final byte[] key, final byte[] timestamp,
+      final byte[] value) throws RocksDBException {
+    put(0, options, key, timestamp, value);
+  }
+
+  /**
+   * Writes a timestamped version to the specified column family.
+   *
+   * @param cf target column family, including the default handle
+   * @param options write policy
+   * @param key logical key
+   * @param timestamp bytes matching the comparator's format and length
+   * @param value value copied by this call
+   * @throws RocksDBException if the native write fails
+   * @see #put(WriteOptions, byte[], byte[], byte[])
+   */
+  public void put(final ColumnFamilyHandle cf, final WriteOptions options, final byte[] key,
+      final byte[] timestamp, final byte[] value) throws RocksDBException {
+    put(Objects.requireNonNull(cf).nativeHandle_, options, key, timestamp, value);
+  }
+
+  private void put(final long cfHandle, final WriteOptions options, final byte[] key,
+      final byte[] timestamp, final byte[] value) throws RocksDBException {
+    Objects.requireNonNull(options);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(timestamp);
+    Objects.requireNonNull(value);
+    putWithTimestamp(nativeHandle_, cfHandle, options.nativeHandle_, key, timestamp, value);
+  }
+
+  /**
    * Set the database entry for "key" to "value".
    *
    * @param writeOpts {@link io.github.fluss_contrib.rocksdb.WriteOptions} instance.
@@ -1371,6 +1419,42 @@ public class RocksDB extends RocksObject {
     }
     key.position(key.limit());
     return result;
+  }
+
+  /**
+   * Writes a timestamped deletion in the default column family. Older reads can
+   * still see versions preceding the deletion.
+   *
+   * @param options write policy
+   * @param key logical key
+   * @param timestamp deletion timestamp
+   * @throws RocksDBException if the native deletion fails
+   */
+  public void delete(final WriteOptions options, final byte[] key, final byte[] timestamp)
+      throws RocksDBException {
+    delete(0, options, key, timestamp);
+  }
+
+  /**
+   * Writes a timestamped deletion to the specified column family.
+   *
+   * @param cf target column family
+   * @param options write policy
+   * @param key logical key
+   * @param timestamp bytes matching the comparator's format and length
+   * @throws RocksDBException if the native deletion fails
+   */
+  public void delete(final ColumnFamilyHandle cf, final WriteOptions options, final byte[] key,
+      final byte[] timestamp) throws RocksDBException {
+    delete(Objects.requireNonNull(cf).nativeHandle_, options, key, timestamp);
+  }
+
+  private void delete(final long cfHandle, final WriteOptions options, final byte[] key,
+      final byte[] timestamp) throws RocksDBException {
+    Objects.requireNonNull(options);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(timestamp);
+    deleteWithTimestamp(nativeHandle_, cfHandle, options.nativeHandle_, key, timestamp);
   }
 
   /**
@@ -2380,6 +2464,10 @@ public class RocksDB extends RocksObject {
    * Note: Every key needs to have a related column family name in
    * {@code columnFamilyHandleList}.
    * </p>
+   *
+   * <p>The read timestamp applies to every key. If set, it must match the timestamp
+   * format and length of every requested column family. Read column families without timestamps
+   * in a separate call using read options without a timestamp.
    *
    * @param opt Read options.
    * @param columnFamilyHandleList {@link java.util.List} containing
@@ -3720,6 +3808,62 @@ public class RocksDB extends RocksObject {
   }
 
   /**
+   * Advances the default CF's persisted history lower bound. This does not
+   * trigger compaction; the caller must ensure older reads are no longer needed.
+   *
+   * @param timestamp lower bound in the CF comparator's timestamp format
+   * @throws RocksDBException if the database is read-only or the requested bound cannot be applied
+   */
+  public void increaseFullHistoryTsLow(final byte[] timestamp) throws RocksDBException {
+    increaseFullHistoryTsLow(0, timestamp);
+  }
+
+  /**
+   * Advances a CF's history lower bound without an implicit retry.
+   *
+   * @param cf target CF
+   * @param timestamp lower bound in the CF comparator's timestamp format
+   * @throws RocksDBException if the database is read-only or the requested bound cannot be applied,
+   *     including when a concurrent call advances it further
+   */
+  public void increaseFullHistoryTsLow(final ColumnFamilyHandle cf, final byte[] timestamp)
+      throws RocksDBException {
+    increaseFullHistoryTsLow(Objects.requireNonNull(cf).nativeHandle_, timestamp);
+  }
+
+  private void increaseFullHistoryTsLow(final long cfHandle, final byte[] timestamp)
+      throws RocksDBException {
+    Objects.requireNonNull(timestamp);
+    if (readOnly_) {
+      throw new RocksDBException(new Status(
+          Status.Code.NotSupported, Status.SubCode.None, "Database opened in read-only mode"));
+    }
+    increaseFullHistoryTsLow(nativeHandle_, cfHandle, timestamp);
+  }
+
+  /**
+   * Reads the default CF's history lower bound.
+   *
+   * @return a copy of the bound, or an empty array if not set
+   * @throws RocksDBException if UDT is disabled or the native read fails
+   */
+  public byte[] getFullHistoryTsLow() throws RocksDBException {
+    return getFullHistoryTsLow(nativeHandle_, 0);
+  }
+
+  /**
+   * Reads a CF's history lower bound.
+   *
+   * @param cf target CF
+   * @return a copy of the bound, or an empty array if not set
+   * @throws RocksDBException if UDT is disabled or the native read fails
+   */
+  public byte[] getFullHistoryTsLow(final ColumnFamilyHandle cf) throws RocksDBException {
+    Objects.requireNonNull(cf);
+    return getFullHistoryTsLow(nativeHandle_, cf.nativeHandle_);
+  }
+
+  /**
    * <p>Range compaction of database.</p>
    * <p><strong>Note</strong>: After the database has been compacted,
    * all data will have been pushed down to the last level containing
@@ -4888,6 +5032,15 @@ public class RocksDB extends RocksObject {
       throws RocksDBException;
   private static native void dropColumnFamilies(final long handle, final long[] cfHandles)
       throws RocksDBException;
+  private static native void putWithTimestamp(long db, long cf, long options, byte[] key,
+      byte[] timestamp, byte[] value) throws RocksDBException;
+  private static native void deleteWithTimestamp(
+      long db, long cf, long options, byte[] key, byte[] timestamp) throws RocksDBException;
+
+  private static native void increaseFullHistoryTsLow(long db, long cf, byte[] timestamp)
+      throws RocksDBException;
+  private static native byte[] getFullHistoryTsLow(long db, long cf) throws RocksDBException;
+
   private static native void put(final long handle, final byte[] key, final int keyOffset,
       final int keyLength, final byte[] value, final int valueOffset, int valueLength)
       throws RocksDBException;

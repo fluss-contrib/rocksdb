@@ -30,6 +30,74 @@
 #include "rocksjni/kv_helper.h"
 #include "rocksjni/portal.h"
 
+void Java_io_github_fluss_1contrib_rocksdb_RocksDB_putWithTimestamp(
+    JNIEnv* env, jclass, jlong jdb, jlong jcf, jlong joptions, jbyteArray jkey,
+    jbyteArray jtimestamp, jbyteArray jval) {
+  auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
+  auto* cf =
+      jcf == 0 ? db->DefaultColumnFamily()
+               : reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::WriteOptions*>(joptions);
+  try {
+    ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
+    ROCKSDB_NAMESPACE::JByteArrayElements value(env, jval);
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, db->Put(*options, cf, key.slice(), ts.slice(), value.slice()));
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
+  }
+}
+
+void Java_io_github_fluss_1contrib_rocksdb_RocksDB_deleteWithTimestamp(
+    JNIEnv* env, jclass, jlong jdb, jlong jcf, jlong joptions, jbyteArray jkey,
+    jbyteArray jtimestamp) {
+  auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
+  auto* cf =
+      jcf == 0 ? db->DefaultColumnFamily()
+               : reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  auto* options = reinterpret_cast<ROCKSDB_NAMESPACE::WriteOptions*>(joptions);
+  try {
+    ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, db->Delete(*options, cf, key.slice(), ts.slice()));
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
+  }
+}
+
+void Java_io_github_fluss_1contrib_rocksdb_RocksDB_increaseFullHistoryTsLow(
+    JNIEnv* env, jclass, jlong jdb, jlong jcf, jbyteArray jtimestamp) {
+  auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
+  auto* cf =
+      jcf == 0 ? db->DefaultColumnFamily()
+               : reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  try {
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, db->IncreaseFullHistoryTsLow(cf, ts.CopyToString()));
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
+  }
+}
+
+jbyteArray Java_io_github_fluss_1contrib_rocksdb_RocksDB_getFullHistoryTsLow(
+    JNIEnv* env, jclass, jlong jdb, jlong jcf) {
+  auto* db = reinterpret_cast<ROCKSDB_NAMESPACE::DB*>(jdb);
+  auto* cf =
+      jcf == 0 ? db->DefaultColumnFamily()
+               : reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  std::string timestamp;
+  const auto status = db->GetFullHistoryTsLow(cf, &timestamp);
+  if (!status.ok()) {
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(env, status);
+    return nullptr;
+  }
+  return ROCKSDB_NAMESPACE::JniUtil::copyBytes(
+      env, ROCKSDB_NAMESPACE::Slice(timestamp));
+}
+
 #ifdef min
 #undef min
 #endif
@@ -2655,7 +2723,21 @@ void Java_io_github_fluss_1contrib_rocksdb_RocksDB_compactRange(
   if (jend_len > 0) {
     end.reset(new ROCKSDB_NAMESPACE::Slice(str_end));
   }
-  s = db->CompactRange(*compact_range_opts, cf_handle, begin.get(), end.get());
+  const auto* history_bound = compact_range_opts->full_history_ts_low;
+  const bool set_history_bound =
+      history_bound != nullptr && !history_bound->empty();
+  if (set_history_bound && (jbegin != nullptr || jend != nullptr)) {
+    s = ROCKSDB_NAMESPACE::Status::InvalidArgument(
+        "Cannot specify a key range with a history timestamp bound");
+  } else if (set_history_bound &&
+             cf_handle->GetComparator()->timestamp_size() !=
+                 history_bound->size()) {
+    s = ROCKSDB_NAMESPACE::Status::InvalidArgument(
+        "History timestamp size does not match the column family comparator");
+  } else {
+    s = db->CompactRange(*compact_range_opts, cf_handle, begin.get(),
+                         end.get());
+  }
   if (jcompact_range_opts_handle == 0) {
     delete compact_range_opts;
   }

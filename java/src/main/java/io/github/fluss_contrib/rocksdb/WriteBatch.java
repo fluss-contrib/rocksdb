@@ -6,6 +6,7 @@
 package io.github.fluss_contrib.rocksdb;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
  * WriteBatch holds a collection of updates to apply atomically to a DB.
@@ -25,6 +26,48 @@ import java.nio.ByteBuffer;
  * external synchronization.
  */
 public class WriteBatch extends AbstractWriteBatch {
+  /**
+   * Appends a timestamped value. Arguments are copied before returning.
+   * Versions of a key must be appended in nondecreasing timestamp order.
+   * Use the timestamped overloads with an explicit handle when batching writes
+   * to a column family that enables user-defined timestamps.
+   *
+   * @param cf column family handle, including an explicit default CF handle
+   * @param key logical key without a timestamp suffix
+   * @param timestamp bytes matching the CF comparator's format and length
+   * @param value value to write
+   * @throws RocksDBException if the native append fails
+   */
+  public void put(final ColumnFamilyHandle cf, final byte[] key, final byte[] timestamp,
+      final byte[] value) throws RocksDBException {
+    Objects.requireNonNull(cf);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(timestamp);
+    Objects.requireNonNull(value);
+    putWithTimestamp(nativeHandle_, cf.nativeHandle_, key, timestamp, value);
+  }
+
+  /**
+   * Appends a timestamped deletion without removing older versions.
+   *
+   * @param cf column family handle, including an explicit default CF handle
+   * @param key logical key
+   * @param timestamp deletion timestamp in the CF comparator's format
+   * @throws RocksDBException if the native append fails
+   */
+  public void delete(final ColumnFamilyHandle cf, final byte[] key, final byte[] timestamp)
+      throws RocksDBException {
+    Objects.requireNonNull(cf);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(timestamp);
+    deleteWithTimestamp(nativeHandle_, cf.nativeHandle_, key, timestamp);
+  }
+
+  private static native void putWithTimestamp(
+      long batch, long cf, byte[] key, byte[] timestamp, byte[] value) throws RocksDBException;
+  private static native void deleteWithTimestamp(long batch, long cf, byte[] key, byte[] timestamp)
+      throws RocksDBException;
+
   /**
    * Constructs a WriteBatch instance.
    */

@@ -12,6 +12,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -25,6 +26,71 @@ public class MultiGetTest {
       new RocksNativeLibraryResource();
 
   @Rule public TemporaryFolder dbFolder = new TemporaryFolder();
+
+  @Test
+  public void multiGetReportsInvalidReadTimestamp() throws Exception {
+    final List<byte[]> keys = Arrays.asList(new byte[] {1});
+    try (final Options options = new Options().setCreateIfMissing(true).setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final WriteOptions write = new WriteOptions();
+         final CompactRangeOptions compact =
+             new CompactRangeOptions().setFullHistoryTsLowBytes(TestUtil.u64Timestamp(8));
+         final Slice shortTimestamp = new Slice(new byte[4]);
+         final Slice oldTimestamp = new Slice(TestUtil.u64Timestamp(3));
+         final ReadOptions read = new ReadOptions()) {
+      db.put(write, keys.get(0), TestUtil.u64Timestamp(3), new byte[] {7});
+      assertThatThrownBy(() -> db.multiGetAsList(keys))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
+      read.setTimestamp(shortTimestamp);
+      assertThatThrownBy(() -> db.multiGetAsList(read, keys))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
+      db.compactRange(null, null, null, compact);
+      read.setTimestamp(oldTimestamp);
+      assertThatThrownBy(() -> db.multiGetAsList(read, keys))
+          .isInstanceOf(RocksDBException.class)
+          .extracting("status.code")
+          .containsExactly(Status.Code.InvalidArgument);
+    }
+  }
+
+  @Test
+  public void multiGetRequiresTimestampCompatibleColumnFamilies() throws Exception {
+    final byte[] plainKey = {1};
+    final byte[] udtKey = {2};
+    final byte[] plainValue = {3};
+    final byte[] udtValue = {4};
+    final byte[] timestamp = TestUtil.u64Timestamp(7);
+    try (final Options options = new Options().setCreateIfMissing(true);
+         final RocksDB db = RocksDB.open(options, dbFolder.getRoot().getAbsolutePath());
+         final ColumnFamilyOptions udtOptions = new ColumnFamilyOptions().setComparator(
+             BuiltinComparator.BYTEWISE_COMPARATOR_WITH_U64_TS);
+         final ColumnFamilyHandle udt =
+             db.createColumnFamily(new ColumnFamilyDescriptor(new byte[] {2}, udtOptions));
+         final WriteOptions write = new WriteOptions();
+         final Slice timestampSlice = new Slice(timestamp);
+         final ReadOptions read = new ReadOptions().setTimestamp(timestampSlice)) {
+      final ColumnFamilyHandle plain = db.getDefaultColumnFamily();
+      db.put(plainKey, plainValue);
+      db.put(udt, write, udtKey, timestamp, udtValue);
+      assertThat(db.multiGetAsList(Collections.singletonList(plainKey)).get(0))
+          .isEqualTo(plainValue);
+      assertThat(
+          db.multiGetAsList(read, Collections.singletonList(udt), Collections.singletonList(udtKey))
+              .get(0))
+          .isEqualTo(udtValue);
+      assertThatThrownBy(
+          () -> db.multiGetAsList(read, Arrays.asList(plain, udt), Arrays.asList(plainKey, udtKey)))
+          .isInstanceOf(RocksDBException.class);
+      assertThatThrownBy(
+          () -> db.multiGetAsList(read, Arrays.asList(udt, plain), Arrays.asList(udtKey, plainKey)))
+          .isInstanceOf(RocksDBException.class);
+    }
+  }
 
   @Test
   public void multiGetFailsOnCorruption() throws Exception {

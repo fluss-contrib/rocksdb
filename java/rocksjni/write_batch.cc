@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "db/memtable.h"
-#include "db/write_batch_internal.h"
 #include "include/io_github_fluss_contrib_rocksdb_WriteBatch.h"
 #include "include/io_github_fluss_contrib_rocksdb_WriteBatch_Handler.h"
 #include "logging/logging.h"
@@ -20,8 +19,40 @@
 #include "rocksdb/status.h"
 #include "rocksdb/write_buffer_manager.h"
 #include "rocksjni/cplusplus_to_java_convert.h"
+#include "rocksjni/kv_helper.h"
 #include "rocksjni/portal.h"
 #include "rocksjni/writebatchhandlerjnicallback.h"
+
+void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_putWithTimestamp(
+    JNIEnv* env, jclass, jlong jbatch, jlong jcf, jbyteArray jkey,
+    jbyteArray jtimestamp, jbyteArray jval) {
+  auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
+  auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  try {
+    ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
+    ROCKSDB_NAMESPACE::JByteArrayElements value(env, jval);
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, batch->Put(cf, key.slice(), ts.slice(), value.slice()));
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
+  }
+}
+
+void Java_io_github_fluss_1contrib_rocksdb_WriteBatch_deleteWithTimestamp(
+    JNIEnv* env, jclass, jlong jbatch, jlong jcf, jbyteArray jkey,
+    jbyteArray jtimestamp) {
+  auto* batch = reinterpret_cast<ROCKSDB_NAMESPACE::WriteBatch*>(jbatch);
+  auto* cf = reinterpret_cast<ROCKSDB_NAMESPACE::ColumnFamilyHandle*>(jcf);
+  try {
+    ROCKSDB_NAMESPACE::JByteArrayElements key(env, jkey);
+    ROCKSDB_NAMESPACE::JByteArrayElements ts(env, jtimestamp);
+    ROCKSDB_NAMESPACE::RocksDBExceptionJni::ThrowNew(
+        env, batch->Delete(cf, key.slice(), ts.slice()));
+  } catch (const ROCKSDB_NAMESPACE::KVException&) {
+    // The Java exception is already pending.
+  }
+}
 
 /*
  * Class:     io_github_fluss_contrib_rocksdb_WriteBatch

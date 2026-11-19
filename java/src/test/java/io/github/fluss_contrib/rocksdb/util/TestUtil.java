@@ -11,12 +11,25 @@ import io.github.fluss_contrib.rocksdb.CompactionPriority;
 import io.github.fluss_contrib.rocksdb.Options;
 import io.github.fluss_contrib.rocksdb.WALRecoveryMode;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Random;
 
 /**
  * General test utilities.
  */
 public class TestUtil {
+  /**
+   * Encodes the bits of an unsigned U64 timestamp for the native comparator.
+   *
+   * @param timestamp unsigned timestamp bits
+   * @return eight little-endian bytes
+   */
+  public static byte[] u64Timestamp(final long timestamp) {
+    return ByteBuffer.allocate(Long.BYTES)
+        .order(ByteOrder.LITTLE_ENDIAN)
+        .putLong(timestamp)
+        .array();
+  }
 
   /**
    * Get the options for log iteration tests.

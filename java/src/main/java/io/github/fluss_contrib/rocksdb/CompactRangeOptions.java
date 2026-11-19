@@ -255,6 +255,41 @@ public class CompactRangeOptions extends RocksObject {
     return this;
   }
 
+  /**
+   * Sets the raw history lower bound for whole-CF compaction.
+   * The bytes are copied and must match the target CF comparator's timestamp
+   * format. A nonempty bound requires both key range boundaries to be null.
+   * An empty byte array does not advance the bound.
+   *
+   * <p>Manual compaction can advance the history lower bound before flushing and compacting data.
+   * If either step fails, use {@link RocksDB#getFullHistoryTsLow(ColumnFamilyHandle)} to check
+   * the current bound.
+   *
+   * @param timestamp lower bound, or null to clear the option
+   * @return this options instance
+   */
+  public CompactRangeOptions setFullHistoryTsLowBytes(final byte[] timestamp) {
+    setFullHistoryTsLowBytes(nativeHandle_, timestamp);
+    return this;
+  }
+
+  /**
+   * Returns a copy of the raw history lower bound.
+   *
+   * @return bound bytes, or null if unset
+   */
+  public byte[] fullHistoryTsLowBytes() {
+    return fullHistoryTsLowBytes(nativeHandle_);
+  }
+
+  private static native void setFullHistoryTsLowBytes(long handle, byte[] timestamp);
+  private static native byte[] fullHistoryTsLowBytes(long handle);
+
+  /**
+   * Returns the history bound in the legacy two-U64 format.
+   *
+   * @return a decoded bound if it has exactly sixteen bytes, or null otherwise
+   */
   public Timestamp fullHistoryTSLow() {
     return fullHistoryTSLow(nativeHandle_);
   }

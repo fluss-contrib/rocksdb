@@ -11,6 +11,30 @@ import io.github.fluss_contrib.rocksdb.CompactRangeOptions.BottommostLevelCompac
 import org.junit.Test;
 
 public class CompactRangeOptionsTest {
+  @Test
+  public void historyBoundaryOwnsItsBytes() {
+    try (final CompactRangeOptions opt = new CompactRangeOptions()) {
+      assertThat(opt.fullHistoryTsLowBytes()).isNull();
+      final byte[] bytes = new byte[8];
+      bytes[0] = 12;
+      opt.setFullHistoryTsLowBytes(bytes);
+      bytes[0] = 99;
+      assertThat(opt.fullHistoryTsLowBytes()).containsExactly(12, 0, 0, 0, 0, 0, 0, 0);
+      final byte[] copy = opt.fullHistoryTsLowBytes();
+      copy[0] = 88;
+      assertThat(opt.fullHistoryTsLowBytes()).containsExactly(12, 0, 0, 0, 0, 0, 0, 0);
+      opt.setFullHistoryTsLowBytes(null);
+      assertThat(opt.fullHistoryTsLowBytes()).isNull();
+      opt.setFullHistoryTSLow(new CompactRangeOptions.Timestamp(1, 2));
+      assertThat(opt.fullHistoryTSLow()).isEqualTo(new CompactRangeOptions.Timestamp(1, 2));
+      assertThat(opt.fullHistoryTsLowBytes()).hasSize(16);
+      final byte[] raw = new byte[17];
+      raw[16] = 1;
+      opt.setFullHistoryTsLowBytes(raw);
+      assertThat(opt.fullHistoryTSLow()).isNull();
+      assertThat(opt.fullHistoryTsLowBytes()).isEqualTo(raw);
+    }
+  }
 
   static {
     RocksDB.loadLibrary();
