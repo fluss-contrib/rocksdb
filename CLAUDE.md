@@ -236,6 +236,10 @@ from an implementation detail instead of an explicit option.
 
 ## Important tips
 
+### Fluss JNI publication
+* For a PR Snapshot, Nightly, RC, or release preflight, follow
+  [Fluss RocksDB Versioning and Releases](docs/fluss/versioning-and-releases.md).
+
 ### Build system
 * There are 3 build system. Make for git clones, BUCK (meta internal) for hg
   clones, and CMake for some special cases.

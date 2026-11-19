@@ -33,21 +33,16 @@ manifest_file=$4
 : "${GITHUB_REF:?GITHUB_REF is required}"
 : "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
 : "${REQUESTED_PR_NUMBER:?REQUESTED_PR_NUMBER is required}"
+: "${PUBLICATION_MODE:?PUBLICATION_MODE is required}"
 
-case "$GITHUB_EVENT_NAME" in
-  workflow_dispatch)
-    if [[ "$GITHUB_REF" != refs/heads/fluss-main ]]; then
-      echo "Manual PR Snapshot publication must run from fluss-main" >&2
-      exit 1
-    fi
-    ;;
-  pull_request)
-    ;;
-  *)
-    echo "Unsupported PR Snapshot event: $GITHUB_EVENT_NAME" >&2
-    exit 1
-    ;;
-esac
+if [[ "$GITHUB_EVENT_NAME" != workflow_dispatch || "$GITHUB_REF" != refs/heads/fluss-main ]]; then
+  echo "PR publication workflows must be dispatched from fluss-main" >&2
+  exit 1
+fi
+if [[ "$PUBLICATION_MODE" != pr-snapshot && "$PUBLICATION_MODE" != preflight ]]; then
+  echo "Unsupported PR publication mode: $PUBLICATION_MODE" >&2
+  exit 1
+fi
 
 if [[ ! "$REQUESTED_PR_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
   echo "Invalid pull request number: $REQUESTED_PR_NUMBER" >&2
@@ -73,11 +68,11 @@ fi
 base_repository=$(jq -er '.base.repo.full_name' "$pull_request_json")
 base_ref=$(jq -er '.base.ref' "$pull_request_json")
 allowed_base=fluss-main
-if [[ "$GITHUB_EVENT_NAME" == pull_request && "$base_ref" == "fluss-release-${rocksdb_version%.*}" ]]; then
+if [[ "$PUBLICATION_MODE" == preflight && "$base_ref" == "fluss-release-${rocksdb_version%.*}" ]]; then
   allowed_base=$base_ref
 fi
 if [[ "$base_repository" != "$GITHUB_REPOSITORY" || "$base_ref" != "$allowed_base" ]]; then
-  echo "Pull request $REQUESTED_PR_NUMBER must target $GITHUB_REPOSITORY:fluss-main" >&2
+  echo "Pull request $REQUESTED_PR_NUMBER has an unsupported base for $PUBLICATION_MODE" >&2
   exit 1
 fi
 

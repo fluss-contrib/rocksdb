@@ -63,11 +63,13 @@ run_prepare() {
   local event_name=${4:-workflow_dispatch}
   local git_ref=${5:-refs/heads/fluss-main}
   local requested_pr_number=${6:-42}
+  local publication_mode=${7:-pr-snapshot}
 
   GITHUB_EVENT_NAME=$event_name \
     GITHUB_REF=$git_ref \
     GITHUB_REPOSITORY=fluss-contrib/rocksdb \
     REQUESTED_PR_NUMBER=$requested_pr_number \
+    PUBLICATION_MODE=$publication_mode \
     "$script" "$pr_json" 11.8.1 "$output_file" "$manifest_file"
 }
 
@@ -119,7 +121,7 @@ assert_failure \
 wrong_base_pr="$temporary_directory/wrong-base-pr.json"
 write_pull_request "$wrong_base_pr" open main
 assert_failure \
-  "Pull request 42 must target fluss-contrib/rocksdb:fluss-main" \
+  "Pull request 42 has an unsupported base for pr-snapshot" \
   run_prepare "$wrong_base_pr" "$outputs" "$manifest"
 
 missing_source_pr="$temporary_directory/missing-source-pr.json"
@@ -129,37 +131,40 @@ assert_failure \
   run_prepare "$missing_source_pr" "$outputs" "$manifest"
 
 assert_failure \
-  "Manual PR Snapshot publication must run from fluss-main" \
+  "PR publication workflows must be dispatched from fluss-main" \
   run_prepare "$valid_pr" "$outputs" "$manifest" \
     workflow_dispatch refs/heads/feature-branch
 
 assert_failure \
+  "PR publication workflows must be dispatched from fluss-main" \
+  run_prepare "$valid_pr" "$outputs" "$manifest" pull_request
+
+assert_failure \
   "Requested pull request 41 does not match API response 42" \
-  run_prepare "$valid_pr" "$outputs" "$manifest" \
-    pull_request refs/pull/42/merge 41
+  run_prepare "$valid_pr" "$outputs" "$manifest" workflow_dispatch refs/heads/fluss-main 41
 
 release_pr="$temporary_directory/release-pr.json"
 write_pull_request "$release_pr" open fluss-release-11.8
 run_prepare "$release_pr" "$temporary_directory/release-outputs" "$manifest" \
-  pull_request refs/pull/42/merge
+  workflow_dispatch refs/heads/fluss-main 42 preflight
 jq -e '.target_branch == "fluss-release-11.8"' "$manifest" > /dev/null
 
 assert_failure \
-  "Pull request 42 must target fluss-contrib/rocksdb:fluss-main" \
+  "Pull request 42 has an unsupported base for pr-snapshot" \
   run_prepare "$release_pr" "$outputs" "$manifest"
 
 wrong_series_pr="$temporary_directory/wrong-series-pr.json"
 write_pull_request "$wrong_series_pr" open fluss-release-11.9
 assert_failure \
-  "Pull request 42 must target fluss-contrib/rocksdb:fluss-main" \
+  "Pull request 42 has an unsupported base for preflight" \
   run_prepare "$wrong_series_pr" "$outputs" "$manifest" \
-    pull_request refs/pull/42/merge
+    workflow_dispatch refs/heads/fluss-main 42 preflight
 
 wrong_repository_pr="$temporary_directory/wrong-repository-pr.json"
 jq '.base.repo.full_name = "contributor/rocksdb"' "$release_pr" > "$wrong_repository_pr"
 assert_failure \
-  "Pull request 42 must target fluss-contrib/rocksdb:fluss-main" \
+  "Pull request 42 has an unsupported base for preflight" \
   run_prepare "$wrong_repository_pr" "$outputs" "$manifest" \
-    pull_request refs/pull/42/merge
+    workflow_dispatch refs/heads/fluss-main 42 preflight
 
 echo "PR Snapshot preparation tests passed"
