@@ -1,9 +1,12 @@
 # Agent Instructions
 
-This repository's authoritative agent instructions live in `CLAUDE.md`.
+## Fluss JNI publication
 
-Read and follow [`CLAUDE.md`](./CLAUDE.md) in full before making changes or
-reviewing code in this checkout.
+For PR Snapshots, Nightlies, publication preflights, release candidates, and
+final releases, follow
+[Fluss RocksDB Versioning and Releases](docs/fluss/versioning-and-releases.md).
 
-If there is any ambiguity between this file and `CLAUDE.md`, `CLAUDE.md` takes
-precedence.
+## RocksDB code changes and reviews
+
+Read and follow the [RocksDB coding and review guide](CLAUDE.md) in full before
+making or reviewing code changes in this checkout.
